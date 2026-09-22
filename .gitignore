@@ -1,0 +1,34 @@
+# Kredensial — JANGAN pernah commit ke git
+ml-service/kaggle.json
+**/kaggle.json
+ml-service/roboflow_key.txt
+**/roboflow_key.txt
+*.env
+.env.local
+
+# Dependencies
+node_modules/
+.dart_tool/
+build/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Model artifacts training mentah (checkpoint Keras) — TIDAK termasuk *.tflite:
+# ml-service/models/*.tflite justru HARUS ikut ter-commit, itu yang di-load FastAPI saat
+# startup dan yang di-deploy ke Railway (build dari repo ini, bukan upload folder lokal).
+*.h5
+*.keras
+
+# Arsip zip mentah — isinya sudah diekstrak ke ml-service/models/ dan .../evaluation/,
+# tidak perlu duplikat di git.
+ml-service/agrivision_models.zip
+
+# Test cache
+.pytest_cache/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/

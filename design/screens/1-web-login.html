@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Web — Masuk</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'IBM Plex Sans',sans-serif;}
+a{text-decoration:none;}
+input::placeholder{color:#B0AA96;}
+input{outline:none;}
+input:focus{border-color:#46603C;}
+</style>
+</head>
+<body style="margin:0;">
+<div style="width: 1280px; height: 800px; box-sizing: border-box; display: flex; overflow: hidden; background: #FFFFFF;">
+
+  <div style="width: 560px; height: 800px; box-sizing: border-box; background: #20261B; padding: 56px; display: flex; flex-direction: column; justify-content: space-between; position: relative; flex-shrink: 0; overflow: hidden;">
+
+    <svg viewBox="0 0 200 220" width="300" height="330" style="position: absolute; right: -50px; bottom: -40px; opacity: 0.1;">
+      <path d="M100 8 C46 26 14 84 14 146 C14 188 52 214 100 214 C148 214 186 188 186 146 C186 84 154 26 100 8 Z" fill="#EEEADC"/>
+    </svg>
+
+    <div style="display: flex; align-items: center; gap: 10px; position: relative;">
+      <div style="width: 34px; height: 34px; border-radius: 50%; background: #EEEADC; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#20261B" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19C5 9 12 5 20 4c1 8-3 15-13 15-1 0-2 0-2 0z"/><path d="M6 18C10 14 14 10 19 5.5"/></svg>
+      </div>
+      <span style="font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; font-size: 19px; color: #EEEADC; letter-spacing: 0.2px;">AgriVision</span>
+    </div>
+
+    <div style="position: relative;">
+      <h1 style="margin: 0; font-family: 'Fraunces', serif; font-weight: 600; font-size: 42px; line-height: 1.16; color: #F5F2E6; white-space: pre-line;">Diagnosis dini,
+panen lebih baik.</h1>
+      <p style="margin: 18px 0 0; font-family: 'IBM Plex Sans', sans-serif; font-size: 15.5px; line-height: 1.65; color: #B9C2A8; max-width: 380px;">Sistem computer vision untuk deteksi penyakit dan pemantauan kesehatan tanaman tomat &amp; cabai.</p>
+    </div>
+
+    <p style="margin: 0; font-family: 'IBM Plex Sans', sans-serif; font-size: 12.5px; color: #74815F; position: relative;">Tugas Akhir — Teknologi Rekayasa Perangkat Lunak, IPB University</p>
+  </div>
+
+  <div style="width: 720px; height: 800px; box-sizing: border-box; padding: 64px 88px; display: flex; flex-direction: column; justify-content: center; gap: 22px;">
+    <div>
+      <h1 style="margin: 0; font-family: 'Fraunces', serif; font-weight: 600; font-size: 30px; color: #20261B;">Masuk ke AgriVision</h1>
+      <p style="margin: 8px 0 0; font-family: 'IBM Plex Sans', sans-serif; font-size: 14.5px; color: #8B9280;">Pantau kesehatan tanaman Anda dari mana saja.</p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <label for="email" style="font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 500; color: #20261B;">Email</label>
+        <input id="email" type="email" placeholder="nama@email.com" style="padding: 12px 14px; border: 1px solid #D7D2C2; border-radius: 8px; font-family: 'IBM Plex Sans', sans-serif; font-size: 14.5px; color: #20261B; background: #FBFAF5; box-sizing: border-box;">
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <label for="password" style="font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 500; color: #20261B;">Kata sandi</label>
+        <input id="password" type="password" placeholder="••••••••" style="padding: 12px 14px; border: 1px solid #D7D2C2; border-radius: 8px; font-family: 'IBM Plex Sans', sans-serif; font-size: 14.5px; color: #20261B; background: #FBFAF5; box-sizing: border-box;">
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 7px;">
+          <input id="remember" type="checkbox" style="width: 15px; height: 15px; accent-color: #46603C;">
+          <label for="remember" style="font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; color: #8B9280;">Ingat saya</label>
+        </div>
+        <a href="#" style="font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; color: #46603C; font-weight: 500;">Lupa kata sandi?</a>
+      </div>
+      <button type="button" style="margin-top: 6px; padding: 14px; border: none; border-radius: 8px; background: #46603C; color: #FFFFFF; font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; font-size: 15px; cursor: pointer;">Masuk</button>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div style="flex-grow: 1; height: 1px; background: #E7E4D8;"></div>
+      <span style="font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; color: #B7B2A0;">atau</span>
+      <div style="flex-grow: 1; height: 1px; background: #E7E4D8;"></div>
+    </div>
+
+    <p style="text-align: center; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; color: #8B9280; margin: 0;">Belum punya akun? <a href="#" style="color: #46603C; font-weight: 600;">Hubungi admin di wilayah Anda</a></p>
+  </div>
+</div>
+</body>
+</html>
