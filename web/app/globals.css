@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+/*
+ * Token AgriVision — persis dari design/design-system.md ditambah nilai hex
+ * yang ditemukan langsung di HTML mockup (design/screens/*.html) untuk
+ * varian kontras chip/teks yang tidak ada di tabel token dokumen. Jangan
+ * improvisasi warna baru di luar daftar ini (lihat CLAUDE.md).
+ */
+@theme {
+  --color-ink: #20261b;
+  --color-parchment: #eeeadc;
+  --color-paper: #ffffff;
+
+  --color-moss: #46603c;
+  --color-moss-tint: #e7ece0;
+  --color-moss-deep: #33472b;
+  --color-moss-mid: #5c7a4e;
+
+  --color-ochre: #bd8a2e;
+  --color-ochre-tint: #f3e8ce;
+  --color-ochre-text: #8a6620;
+
+  --color-rust: #ae4f2e;
+  --color-rust-tint: #f3e2da;
+  --color-rust-soft: #fbf1ec;
+  --color-rust-text: #8a3b22;
+  --color-rust-divider: #e7cfc2;
+
+  --color-sage: #8b9280;
+  --color-sage-alt: #8b9a7e;
+  --color-border: #ded9c7;
+  --color-border-soft: #e3dfcf;
+
+  /* Ditemukan di mockup, tidak ada di tabel token design-system.md */
+  --color-panel-headline: #f5f2e6;
+  --color-panel-body: #b9c2a8;
+  --color-panel-caption: #74815f;
+  --color-sidebar-muted: #aeb6a0;
+  --color-sidebar-divider: #333c29;
+  --color-input-border: #d7d2c2;
+  --color-input-bg: #fbfaf5;
+  --color-input-placeholder: #b0aa96;
+  --color-divider-soft: #e7e4d8;
+  --color-muted-2: #b7b2a0;
+  --color-tips-text: #454f3e;
+  --color-recommendation-text: #452216;
+  --color-dropzone-bg: #f5f3e9;
+  --color-leaf-panel-bg: #f0eee2;
+  --color-meter-inactive: #e7e0cc;
+
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-ibm-plex-sans), Arial, Helvetica, sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
+  --radius-pill: 100px;
+}
+
+body {
+  background: var(--color-parchment);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+/* Reset dasar yang dipakai konsisten di semua mockup */
+input,
+select,
+textarea {
+  outline: none;
+  font-family: inherit;
+}
+input::placeholder {
+  color: var(--color-input-placeholder);
+}
