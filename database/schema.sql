@@ -229,6 +229,82 @@ create table zone_health_daily (
 
 create index idx_zone_health_zone_date on zone_health_daily(zone_id, date desc);
 
+-- Trigger: isi zone_health_daily on-the-fly setiap ada vegetation_index_reading
+-- baru (tabel ini kosong sampai baris ini ditambahkan -- dashboard/monitoring/
+-- detail zona semuanya bergantung padanya).
+--
+-- DEPENDENSI: lookup "severity terburuk hari ini" di bawah mengasumsikan row
+-- diagnoses untuk upload_id ini SUDAH ADA saat trigger ini jalan. Ini benar
+-- selama ml-service/app/routers/diagnose.py insert diagnoses SEBELUM
+-- vegetation_index_readings untuk request yang sama -- kalau urutan itu pernah
+-- dibalik, trigger ini akan melewatkan diagnosis terbaru hari itu di
+-- perhitungan "severity terburuk".
+--
+-- "Hari ini" dihitung di zona waktu Asia/Jakarta (bukan UTC/current_date)
+-- supaya batas hari cocok dengan hari petani sebenarnya, bukan jam server DB.
+create or replace function public.upsert_zone_health_daily()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_zone_id uuid;
+  v_today date := (now() at time zone 'Asia/Jakarta')::date;
+  v_avg_health numeric(5,2);
+  v_count int;
+  v_worst_severity severity_level;
+begin
+  select u.zone_id into v_zone_id from uploads u where u.id = new.upload_id;
+  if v_zone_id is null then
+    return new;
+  end if;
+
+  select avg(vir.health_score), count(*)
+    into v_avg_health, v_count
+  from vegetation_index_readings vir
+  join uploads u on u.id = vir.upload_id
+  where u.zone_id = v_zone_id
+    and (vir.created_at at time zone 'Asia/Jakarta')::date = v_today;
+
+  select d.severity into v_worst_severity
+  from diagnoses d
+  join uploads u on u.id = d.upload_id
+  where u.zone_id = v_zone_id
+    and (d.created_at at time zone 'Asia/Jakarta')::date = v_today
+  order by case d.severity when 'parah' then 3 when 'sedang' then 2 else 1 end desc
+  limit 1;
+
+  insert into zone_health_daily (zone_id, date, avg_health_score, diagnosis_count, status)
+  values (
+    v_zone_id, v_today, v_avg_health, coalesce(v_count, 0),
+    coalesce(
+      case v_worst_severity
+        when 'parah' then 'perlu_tindakan'
+        when 'sedang' then 'waspada'
+        else 'sehat'
+      end::zone_status,
+      'sehat'
+    )
+  )
+  on conflict (zone_id, date) do update set
+    avg_health_score = excluded.avg_health_score,
+    diagnosis_count  = excluded.diagnosis_count,
+    status           = excluded.status;
+
+  return new;
+end;
+$$;
+
+-- Fungsi ini HANYA dipanggil oleh trigger di bawah, tidak pernah lewat RPC
+-- client manapun -- revoke total dari public/anon/authenticated.
+revoke execute on function public.upsert_zone_health_daily() from public, anon, authenticated;
+
+drop trigger if exists trg_zone_health_daily on vegetation_index_readings;
+create trigger trg_zone_health_daily
+  after insert on vegetation_index_readings
+  for each row execute procedure public.upsert_zone_health_daily();
+
 -- ============================================================================
 -- Row Level Security (RLS)
 -- ============================================================================
@@ -280,8 +356,15 @@ create policy "uploads_select" on uploads for select
       and (z.owner_id = auth.uid() or public.current_user_role() = 'admin_ppl')
     )
   );
+-- uploads_insert juga verifikasi zone_id memang milik uploader (bukan cuma
+-- uploaded_by = auth.uid()) -- tidak tereksploitasi lewat app UI (dropdown zona
+-- sudah difilter RLS), tapi menutup celah di level DB juga, konsisten dengan
+-- pola zones_select/zones_insert_own.
 create policy "uploads_insert" on uploads for insert
-  with check (uploaded_by = auth.uid());
+  with check (
+    uploaded_by = auth.uid()
+    and exists (select 1 from zones z where z.id = uploads.zone_id and z.owner_id = auth.uid())
+  );
 
 -- diagnoses, vegetation_index_readings, recommendations: ikut akses upload terkait
 create policy "diagnoses_select" on diagnoses for select
