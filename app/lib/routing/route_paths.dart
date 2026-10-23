@@ -2,6 +2,8 @@ abstract final class RoutePaths {
   static const login = '/login';
   static const forgotPassword = '/lupa-password';
   static const verifyCode = '/verifikasi-kode';
+  static const daftar = '/daftar';
+  static const mulai = '/mulai';
 
   static const beranda = '/beranda';
   static const unggah = '/unggah';

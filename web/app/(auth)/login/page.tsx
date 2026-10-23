@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 
 import { LoginForm } from "./LoginForm";
@@ -27,7 +28,9 @@ export default function LoginPage() {
 
       <p className="text-center font-sans text-[13px] text-sage">
         Belum punya akun?{" "}
-        <span className="font-semibold text-moss">Hubungi admin di wilayah Anda</span>
+        <Link href="/register" className="font-semibold text-moss">
+          Daftar sekarang
+        </Link>
       </p>
     </div>
   );

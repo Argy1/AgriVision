@@ -127,17 +127,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     const SizedBox(height: 20),
                     Center(
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: const TextSpan(
-                          style: TextStyle(fontSize: 12.5, color: AppColors.sage),
-                          children: [
-                            TextSpan(text: 'Belum punya akun?\n'),
-                            TextSpan(
-                              text: 'Hubungi admin di wilayah Anda',
-                              style: TextStyle(color: AppColors.moss, fontWeight: FontWeight.w600),
-                            ),
-                          ],
+                      child: GestureDetector(
+                        // go (bukan push): lokasi router harus persis /daftar
+                        // supaya redirect ke /mulai berlaku saat sesi terbentuk.
+                        onTap: () => context.go(RoutePaths.daftar),
+                        child: RichText(
+                          textAlign: TextAlign.center,
+                          text: const TextSpan(
+                            style: TextStyle(fontSize: 12.5, color: AppColors.sage),
+                            children: [
+                              TextSpan(text: 'Belum punya akun?\n'),
+                              TextSpan(
+                                text: 'Daftar sekarang',
+                                style: TextStyle(color: AppColors.moss, fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

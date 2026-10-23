@@ -6,7 +6,7 @@ import { NextResponse, type NextRequest } from "next/server";
 // session cookie on every request and does an OPTIMISTIC redirect for
 // unauthenticated access to protected routes. It is NOT the only line of
 // defense -- every page/query still relies on RLS + its own auth check.
-const PUBLIC_PATHS = ["/login", "/signup", "/forgot-password", "/reset-password"];
+const PUBLIC_PATHS = ["/login", "/register", "/signup", "/forgot-password", "/reset-password"];
 
 function isPublicPath(pathname: string) {
   return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
@@ -48,7 +48,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (user && pathname === "/login") {
+  if (user && (pathname === "/login" || pathname === "/register")) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);

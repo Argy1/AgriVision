@@ -2,13 +2,14 @@ import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 import 'package:supabase_flutter/supabase_flutter.dart' as supa show AuthException;
 
 import '../../core/errors/app_exception.dart';
+import '../../core/errors/auth_error_mapper.dart';
 import '../models/profile.dart';
 
-/// Login TIDAK punya self-signup -- akun disediakan admin (lihat copy di
-/// mockup login: "Belum punya akun? Hubungi admin di wilayah Anda"). Reset
-/// password pakai flow OTP 6-digit (bukan magic-link), supaya tidak perlu
-/// setup Android App Links / iOS Universal Links yang tidak sepadan untuk
-/// app thesis.
+/// Pendaftaran publik (`signUp`) membuat akun `petani` -- role dipaksa trigger
+/// DB handle_new_user(); admin_ppl dinaikkan manual. Tanpa verifikasi email
+/// (Confirm email dimatikan di Supabase), jadi signUp langsung mengembalikan
+/// sesi. Reset password pakai flow OTP 6-digit (bukan magic-link), supaya
+/// tidak perlu setup Android App Links / iOS Universal Links.
 class AuthRepository {
   AuthRepository(this._client);
 
@@ -25,7 +26,30 @@ class AuthRepository {
     try {
       await _client.auth.signInWithPassword(email: email, password: password);
     } on supa.AuthException catch (e) {
-      throw _mapAuthError(e);
+      throw AuthException(AuthErrorMapper.signIn(e.message));
+    }
+  }
+
+  /// Daftar akun baru. Melempar [AuthException] bila gagal, atau bila server
+  /// tidak mengembalikan sesi (berarti "Confirm email" masih aktif di Supabase).
+  Future<void> signUp({
+    required String fullName,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final res = await _client.auth.signUp(
+        email: email,
+        password: password,
+        data: {'full_name': fullName},
+      );
+      if (res.session == null) {
+        throw const AuthException(
+          'Akun dibuat, tapi verifikasi email masih aktif di server sehingga belum bisa langsung masuk. Hubungi admin.',
+        );
+      }
+    } on supa.AuthException catch (e) {
+      throw AuthException(AuthErrorMapper.signUp(e.message, code: e.code));
     }
   }
 
@@ -36,7 +60,7 @@ class AuthRepository {
     try {
       await _client.auth.signInWithOtp(email: email, shouldCreateUser: false);
     } on supa.AuthException catch (e) {
-      throw _mapAuthError(e);
+      throw AuthException(AuthErrorMapper.otp(e.message));
     }
   }
 
@@ -53,7 +77,7 @@ class AuthRepository {
         type: OtpType.email,
       );
     } on supa.AuthException catch (e) {
-      throw _mapAuthError(e);
+      throw AuthException(AuthErrorMapper.otp(e.message));
     }
   }
 
@@ -61,7 +85,7 @@ class AuthRepository {
     try {
       await _client.auth.updateUser(UserAttributes(password: newPassword));
     } on supa.AuthException catch (e) {
-      throw _mapAuthError(e);
+      throw AuthException(e.message);
     }
   }
 
@@ -88,14 +112,4 @@ class AuthRepository {
         .eq('id', userId);
   }
 
-  AuthException _mapAuthError(supa.AuthException e) {
-    final msg = e.message.toLowerCase();
-    if (msg.contains('invalid login credentials')) {
-      return const AuthException('Email atau kata sandi salah.');
-    }
-    if (msg.contains('token has expired') || msg.contains('invalid')) {
-      return const AuthException('Kode tidak valid atau sudah kedaluwarsa.');
-    }
-    return AuthException(e.message);
-  }
 }

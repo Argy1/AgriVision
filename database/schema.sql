@@ -15,22 +15,56 @@ create table profiles (
   full_name text not null,
   role user_role not null default 'petani',
   phone text,
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  constraint profiles_full_name_length check (char_length(full_name) between 1 and 100)
 );
 
--- Trigger: auto-buat row profiles saat user baru daftar
+-- Trigger: auto-buat row profiles saat user baru daftar. Role SELALU 'petani'
+-- (pendaftaran publik); admin_ppl dinaikkan manual lewat dashboard/SQL Editor.
+-- full_name datang dari metadata yang dikontrol client, jadi dibatasi 100 karakter.
 create function handle_new_user()
-returns trigger as $$
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
 begin
   insert into public.profiles (id, full_name, role)
-  values (new.id, coalesce(new.raw_user_meta_data->>'full_name', 'Pengguna Baru'), 'petani');
+  values (
+    new.id,
+    left(trim(coalesce(nullif(trim(new.raw_user_meta_data->>'full_name'), ''), 'Pengguna Baru')), 100),
+    'petani'
+  );
   return new;
 end;
-$$ language plpgsql security definer;
+$$;
+
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
 
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure handle_new_user();
+
+-- Cegah user mengubah role-nya sendiri. policy profiles_update_own tidak membatasi
+-- kolom, jadi tanpa trigger ini user login mana pun bisa jadi admin_ppl lewat
+-- profiles.update({role:'admin_ppl'}). auth.uid() hanya terisi untuk request client
+-- (JWT user); service_role dan SQL Editor tidak terkena.
+create or replace function public.prevent_profile_role_change()
+returns trigger
+language plpgsql
+set search_path = public
+as $$
+begin
+  if new.role is distinct from old.role and auth.uid() is not null then
+    raise exception 'Role tidak boleh diubah dari client' using errcode = '42501';
+  end if;
+  return new;
+end;
+$$;
+
+create trigger trg_prevent_profile_role_change
+  before update on profiles
+  for each row execute procedure public.prevent_profile_role_change();
 
 -- ---------------------------------------------------------------------------
 -- 2. zones — petak/lahan yang dipantau

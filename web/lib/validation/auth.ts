@@ -7,13 +7,24 @@ export const loginSchema = z.object({
 });
 export type LoginInput = z.infer<typeof loginSchema>;
 
-export const signupSchema = z.object({
-  fullName: z.string().min(2, { message: "Nama minimal 2 karakter." }),
-  email: z.string().email({ message: "Masukkan email yang valid." }),
-  password: z.string().min(8, { message: "Kata sandi minimal 8 karakter." }),
-  role: z.enum(["petani", "admin_ppl"], { message: "Pilih peran." }),
-});
-export type SignupInput = z.infer<typeof signupSchema>;
+// Pendaftaran publik: TIDAK ada field role -- akun baru selalu 'petani'
+// (dipaksa trigger handle_new_user di DB; admin_ppl dinaikkan manual).
+export const registerSchema = z
+  .object({
+    fullName: z
+      .string()
+      .trim()
+      .min(2, { message: "Nama minimal 2 karakter." })
+      .max(100, { message: "Nama maksimal 100 karakter." }),
+    email: z.string().email({ message: "Masukkan email yang valid." }),
+    password: z.string().min(8, { message: "Kata sandi minimal 8 karakter." }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Konfirmasi kata sandi tidak cocok.",
+    path: ["confirmPassword"],
+  });
+export type RegisterInput = z.infer<typeof registerSchema>;
 
 export const forgotPasswordSchema = z.object({
   email: z.string().email({ message: "Masukkan email yang valid." }),

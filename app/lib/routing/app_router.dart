@@ -5,11 +5,13 @@ import 'package:go_router/go_router.dart';
 import '../features/auth/forgot_password_request_screen.dart';
 import '../features/auth/forgot_password_verify_screen.dart';
 import '../features/auth/login_screen.dart';
+import '../features/auth/register_screen.dart';
 import '../features/dashboard/dashboard_screen.dart';
 import '../features/diagnosis/diagnosis_result_screen.dart';
 import '../features/disease_guide/disease_guide_screen.dart';
 import '../features/history/history_screen.dart';
 import '../features/notifications/notifications_screen.dart';
+import '../features/onboarding/first_zone_screen.dart';
 import '../features/profile/profile_screen.dart';
 import '../features/upload/upload_screen.dart';
 import '../features/zone_detail/zone_detail_screen.dart';
@@ -40,15 +42,21 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         RoutePaths.login,
         RoutePaths.forgotPassword,
         RoutePaths.verifyCode,
+        RoutePaths.daftar,
       };
       final isPublicPath = publicPaths.contains(path);
 
       if (!isLoggedIn && !isPublicPath) return RoutePaths.login;
+      // Sesi baru terbentuk saat signUp berhasil di /daftar -> lanjut ke
+      // onboarding zona pertama, bukan langsung ke beranda.
+      if (isLoggedIn && path == RoutePaths.daftar) return RoutePaths.mulai;
       if (isLoggedIn && isPublicPath) return RoutePaths.beranda;
       return null;
     },
     routes: [
       GoRoute(path: RoutePaths.login, builder: (_, _) => const LoginScreen()),
+      GoRoute(path: RoutePaths.daftar, builder: (_, _) => const RegisterScreen()),
+      GoRoute(path: RoutePaths.mulai, builder: (_, _) => const FirstZoneScreen()),
       GoRoute(
         path: RoutePaths.forgotPassword,
         builder: (_, _) => const ForgotPasswordRequestScreen(),

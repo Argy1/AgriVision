@@ -33,8 +33,16 @@ export const getProfile = cache(async () => {
     .eq("id", user.id)
     .single();
 
+  // Trigger handle_new_user() selalu membuat baris profil saat daftar, jadi ini
+  // seharusnya tidak terjadi -- tapi jangan sampai layout seluruh app crash
+  // untuk akun yang baris profilnya hilang; tampilkan fallback minimal.
   if (error || !data) {
-    throw new Error("Profil pengguna tidak ditemukan");
+    return {
+      id: user.id,
+      full_name: user.email?.split("@")[0] ?? "Pengguna",
+      role: "petani" as const,
+      phone: null,
+    };
   }
 
   return data;
