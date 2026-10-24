@@ -4,8 +4,8 @@
 
 | Layer | Teknologi | Alasan |
 |---|---|---|
-| Web | Next.js (React) + Tailwind CSS | SSR, deploy mudah ke Vercel, cocok untuk dashboard admin/PPL |
-| Mobile App | Flutter (Dart) | Native feel, akses kamera matang (`image_picker`/`camera`), package resmi `supabase_flutter` |
+| Web | Next.js 16 (App Router, `proxy.ts`) + React + Tailwind CSS v4 + `@supabase/ssr`, zod, react-hook-form, Recharts, Radix Dialog | SSR, deploy mudah ke Vercel, cocok untuk dashboard admin/PPL |
+| Mobile App | Flutter 3.41 (Dart 3.11) + Riverpod 3 (tanpa codegen) + go_router + `supabase_flutter` + dio + fl_chart + image_picker + google_fonts | Native feel, akses kamera matang, package resmi Supabase |
 | Database / Auth / Storage | Supabase (Postgres) | Auth, Storage, Postgres dalam satu paket terintegrasi; RLS built-in |
 | ML Inference | FastAPI (Python) di Railway | Menjalankan model CNN (deteksi penyakit) + hitung ExG/VARI (classical CV) |
 | Model | MobileNetV2 / EfficientNetB4 (transfer learning), TFLite/ONNX untuk inference ringan | Standar de-facto untuk klasifikasi penyakit daun (lihat `07-referensi.md`) |
@@ -24,15 +24,15 @@
 ```
 User (web/app) → upload foto → Supabase Storage
                               → Supabase Postgres (buat record uploads)
-Frontend → panggil FastAPI (Railway) dengan image_url
-FastAPI  → download foto dari Supabase Storage
-         → jalankan model CNN (diagnosis) → label + confidence + severity
-         → hitung ExG/VARI (OpenCV) → health_score
+Frontend → cek diagnoses untuk upload_id (idempotensi) lalu POST FastAPI /api/diagnose (Bearer token user)
+FastAPI  → download foto dari Supabase Storage (service role)
+         → jalankan model CNN (diagnosis) → label + confidence
+         → hitung affected_area_pct (HSV) → severity; hitung ExG/VARI (OpenCV) → health_score
          → lookup rule-based recommendation dari disease_reference
-         → return JSON gabungan
-Frontend → simpan hasil ke Supabase Postgres (diagnoses, vegetation_index_readings, recommendations)
-         → render hasil ke user
-Dashboard → query Supabase langsung (tren, status zona, histori)
+         → FastAPI SENDIRI insert diagnoses, vegetation_index_readings, recommendations (service role)
+         → trigger DB upsert_zone_health_daily mengisi zone_health_daily
+         → return JSON gabungan; frontend hanya menampilkan (TIDAK insert ulang)
+Dashboard → query Supabase langsung (tren, status zona, histori) lewat RLS
 ```
 
 ## Kenapa Web ≠ App (Next.js vs Flutter), bukan port satu sama lain
@@ -58,15 +58,20 @@ SUPABASE_ANON_KEY=
 ML_API_URL=
 ```
 
-**ML Service (FastAPI) — `.env`:**
+**ML Service (FastAPI) — `.env` / Railway Variables:**
 ```
 SUPABASE_URL=
-SUPABASE_SERVICE_ROLE_KEY=     # untuk baca Storage dari backend
-MODEL_PATH=./models/disease_classifier.tflite
+SUPABASE_SERVICE_ROLE_KEY=     # baca Storage + insert hasil; JANGAN ke klien
+STORAGE_BUCKET=plant-photos
+MODEL_DIR=models               # tomato_classifier.tflite, chili_classifier.tflite, label_map.json
+ALLOWED_ORIGINS=               # origin web, dipisah koma (jangan * di produksi)
 ```
+(Daftar lengkap + cara pakai: `09-operasional-dan-runbook.md`.)
 
-## Deployment
-- Web → Vercel
-- Mobile App → build APK/IPA lokal untuk demo sidang (tidak perlu publish ke Play Store/App Store untuk scope tugas akhir)
-- ML Service → Railway
-- Database → Supabase (managed)
+## Deployment (aktual)
+- Web → Vercel (project `agrivision`, root `web`, auto-deploy dari `main`)
+- Mobile App → build APK lokal (`flutter build apk --release`) lalu `adb install` ke HP; tidak dipublish ke Play Store/App Store
+- ML Service → Railway (project `AgriVision`, root `ml-service`, auto-deploy dari `main`)
+- Database → Supabase (managed, ap-southeast-1)
+
+URL & ID konkret ada di `09-operasional-dan-runbook.md` bagian 1.

@@ -2,6 +2,12 @@
 
 Referensi visual lengkap ada di `screens/` (8 file `.html` + `.png`, bisa dibuka langsung di browser). Dokumen ini adalah token & aturan yang harus diikuti persis saat implementasi di Next.js maupun Flutter — supaya web dan app terlihat sebagai satu produk yang sama.
 
+## Lokasi implementasi token (aktual)
+- **Web:** `web/app/globals.css` (blok `@theme`, Tailwind v4) dan `web/components/severity/tokens.ts` (pemetaan severity/status → kelas warna; satu-satunya sumber).
+- **App:** `app/lib/core/theme/color_tokens.dart` (semua hex), `severity_tokens.dart` (pemetaan severity/status), `text_theme.dart`, `app_theme.dart`.
+- **Ilustrasi daun + blob lesi:** `web/components/leaf-illustration/LeafIllustration.tsx` dan `app/lib/features/diagnosis/widgets/leaf_illustration_card.dart` (path SVG & rumus skala identik: `scale = sqrt(max(pct,0.1)/35)`, clamp 0.4–1.6; blob selalu rust, outline mengikuti severity).
+- **Aturan keras:** Moss/Ochre/Rust hanya untuk makna severity/status. Jangan dipakai untuk chart ranking, indikator kekuatan password, atau dekorasi. Palet kategorikal chart multi-zona (`#2a78d6, #1baf7a, #e87ba4, #4a3aa7, #e34948`) sengaja menghindari ketiga hue itu.
+
 ## Konsep
 Identitas visual diambil dari dunia **spesimen tanaman / field guide botani**, bukan "green tech dashboard" generik. Warna severity (rust/ochre/moss) bukan dekorasi — itu adalah sistem klasifikasi 3-tingkat yang sama dengan yang dipakai modul diagnosis (ringan/sedang/parah). Ilustrasi daun dengan overlay warna menggambarkan area terdampak (representasi visual dari `affected_area_pct`).
 

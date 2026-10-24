@@ -16,8 +16,9 @@ disease_reference                 (knowledge base, di-lookup oleh diagnoses.dise
 ## Tabel
 
 ### `profiles`
-Extends `auth.users` bawaan Supabase. Dibuat otomatis lewat trigger saat user daftar.
-- `role`: `admin_ppl` | `petani` — menentukan scope akses (lihat RLS).
+Extends `auth.users` bawaan Supabase. Dibuat otomatis lewat trigger `handle_new_user()` saat user daftar (publik).
+- `role`: `admin_ppl` | `petani` — menentukan scope akses (lihat RLS). **Pendaftaran selalu menghasilkan `petani`** (hardcode di trigger; metadata klien diabaikan). `full_name` dibatasi 1–100 karakter.
+- Trigger `prevent_profile_role_change` menolak perubahan `role` dari request klien (`auth.uid()` terisi). Menaikkan ke `admin_ppl` hanya lewat SQL Editor/service role. Alasan: policy `profiles_update_own` tidak membatasi kolom, sehingga tanpa trigger ini siapa pun bisa menjadikan dirinya admin dan melihat data semua orang.
 
 ### `zones`
 Satu row = satu petak/lahan yang dipantau (contoh: "A3 — Blok Tomat").
@@ -45,13 +46,16 @@ Knowledge base rule-based (modul rekomendasi). **Satu-satunya sumber teks rekome
 Snapshot rekomendasi per diagnosis (disalin dari `disease_reference` pada saat diagnosis dibuat). Alasan disimpan sebagai snapshot, bukan selalu join live ke `disease_reference`: jika teks rekomendasi di knowledge base diperbarui nanti, histori diagnosis lama tetap menampilkan rekomendasi yang benar-benar diberikan saat itu.
 
 ### `zone_health_daily`
-Snapshot agregat harian per zona (dihitung oleh scheduled job atau on-the-fly saat diagnosis baru masuk) — sumber data untuk grafik tren dashboard "30 hari terakhir" dan status warna zona (hijau/kuning/merah).
+Snapshot agregat harian per zona — sumber data untuk grafik tren dashboard dan status warna zona (sehat/waspada/perlu_tindakan). **Diisi on-the-fly oleh trigger `upsert_zone_health_daily`** (AFTER INSERT pada `vegetation_index_readings`, SECURITY DEFINER; fungsi tidak bisa dipanggil via RPC). Isi: rata-rata `health_score` hari itu + status dari severity terburuk hari itu (parah→perlu_tindakan, sedang→waspada, lainnya→sehat). "Hari" = kalender **Asia/Jakarta**. Trigger mengandalkan baris `diagnoses` sudah ada saat `vegetation_index_readings` di-insert (urutan di `ml-service/app/routers/diagnose.py`).
 
 ## Row Level Security (RLS)
 
 Prinsip: **petani hanya melihat data zona miliknya sendiri; `admin_ppl` melihat semua zona.** Semua tabel turunan (`uploads`, `diagnoses`, `vegetation_index_readings`, `recommendations`, `zone_health_daily`) mewarisi akses lewat relasi ke `zones.owner_id`.
 
 **Penting:** insert ke `diagnoses`, `vegetation_index_readings`, `recommendations`, dan `zone_health_daily` dilakukan oleh FastAPI service memakai `SUPABASE_SERVICE_ROLE_KEY` (bypass RLS by design) — bukan langsung dari client. Ini mencegah hasil inferensi dipalsukan dari sisi frontend.
+
+## Migrasi
+`database/schema.sql` adalah sumber kebenaran dan harus selalu sama dengan produksi. Perubahan tambahan dijalankan manual lewat `database/migrations/` lalu disalin ke `schema.sql`. Saat ini: `003_public_signup_hardening.sql` (trigger blokir ubah role, `handle_new_user` aman, constraint panjang nama). Perubahan historis (policy `uploads_insert` yang memverifikasi zona milik pengunggah, trigger `zone_health_daily`) sudah tergabung di `schema.sql`.
 
 ## Storage
 

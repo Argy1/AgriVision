@@ -2,7 +2,7 @@
 
 Ini adalah **satu-satunya kontrak** antara backend ML dan kedua frontend (web & app). Implementasikan identik di kedua sisi klien — jangan menyimpang formatnya.
 
-Base URL: `NEXT_PUBLIC_ML_API_URL` (web) / `ML_API_URL` (app), contoh: `https://agrivision-ml.up.railway.app`
+Base URL: `NEXT_PUBLIC_ML_API_URL` (web) / `ML_API_URL` (app). Produksi saat ini: `https://agrivision-production.up.railway.app` (berubah jika service Railway dibuat ulang — lihat runbook). Kontrak ini sudah **terimplementasi dan teruji** di `ml-service/app/schemas.py`, `web/lib/ml-service/client.ts`, dan `app/lib/data/sources/ml_service_client.dart`.
 
 ## Autentikasi
 Request dari frontend ke FastAPI menyertakan header:
@@ -76,6 +76,10 @@ Health check untuk Railway (dipanggil otomatis oleh platform, bukan oleh fronten
 ```
 
 ## Catatan Implementasi
+- **Idempotensi:** `diagnoses.upload_id` UNIQUE. Memanggil endpoint ini dua kali untuk `upload_id` yang sama menghasilkan `500`. Klien WAJIB mengecek `diagnoses` by `upload_id` sebelum memanggil/mengulang.
+- **CORS:** hanya origin di `ALLOWED_ORIGINS` yang diizinkan (aplikasi mobile native tidak terkena CORS).
+- **Error body:** `{"detail": "pesan"}` (FastAPI `HTTPException`).
+- **Penulisan DB dilakukan oleh FastAPI**; klien tidak meng-insert `diagnoses`/`vegetation_index_readings`/`recommendations`.
 - Endpoint ini **tidak** menerima file upload langsung — foto sudah ada di Supabase Storage sebelum endpoint ini dipanggil (alur: upload ke Storage dulu dari client → baru panggil `/api/diagnose` dengan referensinya). Ini menghindari FastAPI menjadi bottleneck untuk transfer file besar.
 - Response harus selalu berisi ketiga bagian (`diagnosis`, `vegetation_index`, `recommendation`) dalam satu request — sesuai keputusan "satu kali unggah foto = diagnosis + monitoring + rekomendasi sekaligus", bukan tiga endpoint terpisah.
 - `disease_label` yang dikembalikan model **harus** match persis dengan key di tabel `disease_reference` — jaga konsistensi penamaan antara training label, kode inference, dan seed data SQL.

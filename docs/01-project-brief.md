@@ -38,18 +38,21 @@ Petani tomat dan cabai kesulitan mendeteksi penyakit tanaman secara dini karena 
 3. **Modul Rekomendasi** (rule-based) — knowledge base pemetaan disease_label → rekomendasi penanganan (jenis, dosis, jadwal), disusun dari literatur agronomi (lihat `07-referensi.md`).
 
 ## Target Pengguna
-- **Admin PPL (Penyuluh Pertanian Lapangan):** mengelola zona/petak, memantau banyak zona sekaligus, melihat dashboard agregat.
-- **Petani:** mengunggah foto dari lapangan (mobile app, kamera-first), melihat hasil diagnosis & rekomendasi untuk zonanya sendiri.
+- **Admin PPL (Penyuluh Pertanian Lapangan):** mengelola zona/petak, memantau banyak zona sekaligus, melihat dashboard agregat. Akun ini **tidak bisa dibuat lewat pendaftaran**; dinaikkan manual dari akun petani (lihat `09-operasional-dan-runbook.md`).
+- **Petani:** mengunggah foto dari lapangan (mobile app, kamera-first), melihat hasil diagnosis & rekomendasi untuk zonanya sendiri. **Siapa pun bisa mendaftar sendiri** (web & app) dan otomatis menjadi petani — keputusan user agar sistem bisa dipakai banyak orang.
 
 ## Deliverable Akhir
-- Web app (Next.js) — dashboard admin/PPL.
-- Mobile app (Flutter) — upload cepat dari lapangan, hasil diagnosis, dashboard ringkas.
-- Backend ML inference (FastAPI di Railway).
-- Database & Auth (Supabase).
-- Laporan tugas akhir dengan evaluasi model (confusion matrix, akurasi lab vs. lapangan) dan studi kasus rekomendasi.
+*(Status per 2026-10-24 — rincian di `08-status-dan-progres.md`)*
+- ✅ Web app (Next.js) — dashboard + monitoring + analitik, live di Vercel.
+- ✅ Mobile app (Flutter) — kamera-first, hasil diagnosis, dashboard ringkas, panduan penyakit, notifikasi; APK terpasang di HP.
+- ✅ Backend ML inference (FastAPI di Railway).
+- ✅ Database & Auth (Supabase), termasuk registrasi publik.
+- ⏳ Laporan tugas akhir dengan evaluasi model (confusion matrix lab sudah ada; **akurasi lapangan & penulisan laporan belum**) dan studi kasus rekomendasi.
 
 ## Keputusan Desain yang Sudah Diambil (ringkasan diskusi)
 - 2 komoditas (bukan lebih) — keputusan sadar demi kedalaman evaluasi, bukan keterbatasan teknis.
 - 3 modul (diagnosis + monitoring + rekomendasi), robotic farming di-exclude.
 - Web (Next.js) dan mobile app (Flutter) dibangun terpisah, tapi berbagi satu backend (Supabase + FastAPI) sebagai kontrak API yang sama.
+- Jumlah layar **sengaja diperluas** di atas mockup awal (web 13 route, app 13 route) supaya modul diagnosis & monitoring termanfaatkan maksimal — atas permintaan user; jangan dikembalikan ke 4 layar.
+- Pendaftaran publik tanpa verifikasi email; role selalu `petani` (dipaksa DB).
 - Supabase untuk database/auth/storage; Railway untuk ML inference (FastAPI) — karena Supabase Edge Functions (Deno) tidak bisa menjalankan model deep learning.
