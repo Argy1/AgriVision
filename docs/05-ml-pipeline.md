@@ -55,20 +55,20 @@ Export model ke **TFLite** atau **ONNX** untuk inference ringan di FastAPI (Rail
 
 ---
 
-## Rencana training ulang tomat (v2) — status: direncanakan
+## Training ulang tomat (v2) — status: notebook siap, training belum dijalankan
 
 Alasan: angka validasi 94,33% (MobileNetV2) hanya berlaku untuk foto lab. Dataset sekarang adalah augmentasi offline PlantVillage yang di-split *setelah* augmentasi, sehingga validasi kemungkinan berisi turunan daun yang sama dengan set latih (optimistis), dan set validasi juga dipakai untuk early stopping. **Menambah gambar PlantVillage tidak menaikkan akurasi lapangan** — masalahnya domain, bukan jumlah.
 
 Rencana (detail & status di `08-status-dan-progres.md`):
 1. Audit dataset: jumlah per kelas per sumber, deteksi duplikat antar sumber (hash), pemetaan label ke 10 kelas.
-2. Basis bersih: PlantVillage asli (non-augmentasi), split sebelum augmentasi; campur data berfoto non-lab (kandidat: PlantDoc subset tomat, Tomato-Village — lisensi dan pemetaan kelas diverifikasi saat implementasi; kelas yang tak bisa dipetakan tidak dipakai).
-3. **Set uji lapangan terpisah** (tidak ikut training) dari PlantDoc/Tomato-Village; tidak ada foto lapangan milik sendiri.
+2. Basis bersih: PlantVillage asli non-augmentasi lewat Hugging Face `mohanty/PlantVillage` (config `color`, CC BY-SA 3.0, punya kolom `leaf_id`, split 80/20 per daun; `lab_val` dipisah lagi per `leaf_id`). Data non-lab: PlantDoc lewat `Project-AgML/plant_doc_classification` (CC BY-SA 4.0, 2.569 gambar/28 kelas; 8 kelas tomat dipetakan ke 10 label kita). Target Spot tidak ada di PlantDoc dan spider mites hanya 2 gambar (dikecualikan) → kedua kelas tanpa uji lapangan.
+3. **Set uji lapangan terpisah** (`field_test` ±30% PlantDoc, stratified, tidak ikut training, near-duplicate lintas set dibuang dengan dHash); tidak ada foto lapangan milik sendiri. Tomato-Village tidak dipakai (tidak berhasil diverifikasi).
 4. Augmentasi domain (crop/zoom acak, color jitter, blur), class weight, dua tahap fine-tuning seperti v1; bandingkan MobileNetV2 dengan satu kandidat lebih kuat (mis. EfficientNetB0) dengan batas ukuran TFLite untuk Railway.
 5. Pilih model berdasarkan akurasi **uji lapangan**; laporkan metrik lab dan lapangan terpisah (akurasi/P/R/F1, matriks kebingungan, selang Wilson).
 6. Ekspor `tomato_classifier.tflite` + `label_map.json` baru (naikkan `model_version`; pertahankan 10 label agar `disease_reference` tetap sinkron), deploy, E2E produksi.
 7. Opsional (mengubah kontrak, butuh persetujuan): ambang confidence "perlu verifikasi manual".
 
-Notebook: `ml-service/agrivision_training_tomato_v2.ipynb` (belum dibuat). Training dijalankan user di Colab; integrasi model ke ml-service dikerjakan setelahnya.
+Notebook: `ml-service/agrivision_training_tomato_v2.ipynb` (dibuat 2026-11-12; tanpa API key; sintaks sudah dicek tapi **belum pernah dijalankan** di Colab). Dua kandidat: MobileNetV2 dan EfficientNetB0 (224px); model dipilih dari akurasi `field_val`, uji akhir sekali pada model terpilih, plus perbandingan dengan v1 pada set uji yang sama dan verifikasi TFLite vs Keras (≥97% argmax sama). Keluaran: `tomato_classifier.tflite`, `label_map.json` (kunci `tomato`, 10 label identik dengan v1), `metrics.json`, matriks kebingungan. Training dijalankan user di Colab; integrasi model ke ml-service dikerjakan setelahnya. Jangan deploy bila akurasi lapangan v2 tidak lebih baik dari v1.
 
 ---
 

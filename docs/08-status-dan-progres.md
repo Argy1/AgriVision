@@ -118,4 +118,4 @@ Arahan pembimbing: fitur deteksi cabai dihapus, fokus ke daun tomat. Keputusan u
 - App: `CropType` hanya `tomat` dengan `fromJson` toleran; pemilih tanaman, chip filter tanaman, dan tab Panduan Penyakit cabai dihapus; Panduan hanya menampilkan label `tomato_*`.
 - DB: seed `disease_reference` cabai dihapus dari `schema.sql`; `migrations/004_remove_chili_data.sql` dan `ml-service/scripts/purge_chili_data.py` (dry-run default; `--execute` menghapus Storage + zona + referensi cabai). Pra-cek produksi (2026-11-12): 0 zona cabai, 0 upload, 0 diagnosis, 6 baris `disease_reference` cabai.
 
-**Fase 2 — training ulang tomat v2:** lihat `05-ml-pipeline.md` (bagian "Rencana training ulang tomat"). Status: belum dimulai. **Fase 3 — revisi naskah & pptx:** setelah Fase 2.
+**Fase 2 — training ulang tomat v2:** notebook `ml-service/agrivision_training_tomato_v2.ipynb` sudah dibuat (split per daun, PlantVillage + PlantDoc, uji lab dan lapangan terpisah); **menunggu user menjalankannya di Colab (T4)**, lalu integrasi model. Detail: `05-ml-pipeline.md`. **Fase 3 — revisi naskah & pptx:** setelah Fase 2.
