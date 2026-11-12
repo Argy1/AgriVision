@@ -36,6 +36,14 @@ Sudah di-split train/valid, 10 kelas persis (jangan diubah nama foldernya, noteb
 ### Affected Area (`affected_area_pct`)
 Dihitung dengan segmentasi sederhana (bukan model segmentasi terpisah — di luar scope): threshold warna pada channel HSV untuk mendeteksi area bercak/lesi (biasanya kecoklatan/kekuningan) relatif terhadap total area daun (dipisahkan dari background lewat masking hijau). Ini classical CV, bukan deep learning — konsisten dengan pendekatan modul monitoring.
 
+### Wilayah daun, objek non-daun, dan kualitas foto (diubah 2026-11-12)
+Pengujian pada foto kebun nyata (daun dipegang tangan, buah dan ajir di latar) menunjukkan dua masalah: (1) ambang HSV lesi menangkap kulit tangan, ajir, tangkai, dan buah jingga sehingga luas terdampak membengkak (28–52% pada daun yang tampak hampir sehat; mask lesi menandai telapak tangan), dan (2) model klasifikasi memberi keyakinan 87–98% pada penyakit yang kemungkinan keliru. Perbaikan di `app/cv/`:
+- `leaf_region.py`: piksel berwarna buah matang (jingga jenuh & terang) bukan lesi; lesi hanya dihitung di dalam **wilayah daun** (hijau yang ditutup secara morfologis, lubang yang terkurung diisi); pembukaan morfologi kecil membuang garis tipis; bila piksel hijau < 15% foto (daun sangat nekrotik) wilayah daun juga memakai piksel lesi (perilaku lama).
+- `segmentation.py`: syarat ExG minimum 0,02 — sebelumnya gambar seragam (dinding polos, foto gelap) menghasilkan "100% vegetasi" karena ambang Otsu ≈ 0.
+- `photo_quality.py`: penilaian kelayakan foto. Foto tanpa wilayah daun (< 3%) ditolak dengan HTTP 400; masalah lain (foto dipenuhi dedaunan ≥ 70%, objek non-daun ≥ 8%, daun terlalu kecil < 15%, keyakinan < 60%) hanya memberi peringatan di `warning_note`.
+- Validasi (heuristik, bukan anotasi pakar): 18 foto lab PlantVillage tomat acak — tidak ada peringatan "latar ramai" (wilayah daun 10–59%), hanya 1 peringatan "daun terlalu kecil" yang memang benar; luas terdampak turun sedikit dibanding versi lama (mis. 23,5→13,2%, 13,9→10,9%), daun sangat nekrotik tetap tinggi (71,8→63,3%). 9 foto nyata (wilayah daun 78–100%) semuanya mendapat peringatan "latar ramai"; luas terdampak foto tomat turun dari 30–53% menjadi 28–44%.
+- **Keterbatasan:** foto kebun tetap menghasilkan luas terdampak yang tinggi (daun latar, tangkai, dan buah di latar ikut terhitung) — peringatan memang dimaksudkan memberi tahu bahwa angka itu kurang andal. Model klasifikasi **tidak punya penolakan "bukan daun tomat"**: foto cabai dibaca sebagai penyakit tomat dengan keyakinan tinggi. Solusi yang lebih benar adalah kelas negatif (non-tomat) saat training dan anotasi lesi piksel untuk validasi.
+
 ### Mapping Severity
 Aturan sederhana (dokumentasikan di kode, sesuaikan berdasarkan validasi):
 ```

@@ -32,3 +32,6 @@ ml-service/agrivision_models.zip
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Foto lapangan milik pengguna (privasi; belum berlabel) -- jangan di-commit
+Foto daun real/

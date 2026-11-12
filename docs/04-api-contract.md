@@ -61,7 +61,7 @@ Dipanggil setelah foto berhasil diunggah ke Supabase Storage dan record `uploads
 ```
 
 **Error responses:**
-- `400` — `image_path` tidak ditemukan di Storage, atau `upload_id` tidak ditemukan.
+- `400` — `image_path` tidak ditemukan di Storage, `upload_id` tidak ditemukan, file bukan gambar valid, atau **foto tidak memuat daun yang dapat dikenali** (wilayah daun < 3% foto; `detail` berisi saran mengambil foto satu daun dari dekat).
 - `422` — body tidak valid, termasuk `crop_type` selain `tomat` (divalidasi sebagai `Literal["tomat"]`).
 - `401` — token tidak valid/kedaluwarsa.
 - `403` — user bukan pemilik zona terkait dan bukan `admin_ppl`.
@@ -84,3 +84,5 @@ Health check untuk Railway (dipanggil otomatis oleh platform, bukan oleh fronten
 - Endpoint ini **tidak** menerima file upload langsung — foto sudah ada di Supabase Storage sebelum endpoint ini dipanggil (alur: upload ke Storage dulu dari client → baru panggil `/api/diagnose` dengan referensinya). Ini menghindari FastAPI menjadi bottleneck untuk transfer file besar.
 - Response harus selalu berisi ketiga bagian (`diagnosis`, `vegetation_index`, `recommendation`) dalam satu request — sesuai keputusan "satu kali unggah foto = diagnosis + monitoring + rekomendasi sekaligus", bukan tiga endpoint terpisah.
 - `disease_label` yang dikembalikan model **harus** match persis dengan key di tabel `disease_reference` — jaga konsistensi penamaan antara training label, kode inference, dan seed data SQL.
+
+**Catatan kualitas foto (sejak 2026-11-12):** bila foto kurang layak untuk diagnosis, ml-service menambahkan kalimat "Perhatian kualitas foto: …" ke **`recommendation.warning_note`** (digabung dengan `warning_note` dari `disease_reference`, dipisah ` | `) dan ikut tersimpan di tabel `recommendations`. Tidak ada field baru; web dan app menampilkannya lewat kartu rekomendasi yang sudah ada. Penyebabnya: foto dipenuhi dedaunan/latar ramai (bukan close-up satu daun), ≥ 8% foto berupa objek non-daun (tangan, ajir, buah), daun terlalu kecil, atau keyakinan model < 60%.

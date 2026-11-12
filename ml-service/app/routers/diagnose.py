@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app import supabase_client as db
 from app.auth import get_current_user_id
 from app.cv.analyzer import analyze_image
+from app.cv.photo_quality import assess_photo
 from app.imaging import decode_image
 from app.ml.inference import classify
 from app.ml.labels import get_crop_key
@@ -88,6 +89,21 @@ def diagnose(
             detail="Gagal menghitung vegetation index / affected area",
         )
 
+    # --- 6b. Kelayakan foto (heuristik). Tanpa daun sama sekali -> tolak (400). ---
+    masks = cv_result["masks"]
+    quality = assess_photo(
+        masks["green"],
+        masks["lesion"],
+        masks["nonleaf"],
+        cv_result["scene_fraction"],
+        classification["confidence"],
+    )
+    if quality.rejected:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Foto tidak memuat daun yang dapat dikenali. Ambil foto satu daun dari dekat dengan latar polos.",
+        )
+
     # --- 7. Lookup disease_reference ---
     reference = db.get_disease_reference(classification["disease_label"])
     if reference is None:
@@ -96,6 +112,12 @@ def diagnose(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Referensi penyakit tidak ditemukan untuk hasil diagnosis ini",
         )
+
+    # Catatan kualitas foto digabung ke warning_note (snapshot rekomendasi per diagnosis), jadi
+    # tampil di web/app tanpa perubahan skema maupun field kontrak.
+    warning_note = " | ".join(
+        part for part in (reference.get("warning_note"), quality.warning_text()) if part
+    ) or None
 
     # --- 8. Simpan hasil (service role key, bypass RLS) ---
     try:
@@ -122,7 +144,7 @@ def diagnose(
                 "recommendation_text": reference["recommendation_text"],
                 "dosage": reference.get("dosage"),
                 "application_schedule": reference.get("application_schedule"),
-                "warning_note": reference.get("warning_note"),
+                "warning_note": warning_note,
             }
         )
     except Exception:
@@ -146,6 +168,6 @@ def diagnose(
             recommendation_text=reference["recommendation_text"],
             dosage=reference.get("dosage"),
             application_schedule=reference.get("application_schedule"),
-            warning_note=reference.get("warning_note"),
+            warning_note=warning_note,
         ),
     )
