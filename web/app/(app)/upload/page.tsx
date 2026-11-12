@@ -7,7 +7,7 @@ import { LeafGlyph } from "@/components/leaf-illustration/LeafGlyph";
 import { Card, CardTitle } from "@/components/ui/Card";
 import { getRecentDiagnoses } from "@/lib/data/diagnoses";
 import { getZones } from "@/lib/data/zones";
-import { CROP_LABEL, formatRelativeDateTime } from "@/lib/format";
+import { formatRelativeDateTime } from "@/lib/format";
 
 import { UploadPageClient } from "./UploadPageClient";
 
@@ -57,7 +57,7 @@ export default async function UploadPage() {
                   <LeafGlyph severity={d.severity} />
                   <div className="flex-1">
                     <div className="font-sans text-[13.5px] font-medium text-ink">
-                      {CROP_LABEL[d.uploads.zones.crop_type]} • Zona {d.uploads.zones.name}
+                      Zona {d.uploads.zones.name}
                     </div>
                     <div className="font-sans text-[12px] text-sage">
                       {formatRelativeDateTime(d.created_at)}

@@ -32,7 +32,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           </h1>
           <p className="mt-4.5 max-w-[380px] font-sans text-[15.5px] leading-[1.65] text-panel-body">
             Sistem computer vision untuk deteksi penyakit dan pemantauan kesehatan tanaman
-            tomat &amp; cabai.
+            tomat.
           </p>
         </div>
 

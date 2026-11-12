@@ -9,12 +9,11 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/Button";
 import { FieldError, Input, Label } from "@/components/ui/Input";
 import { createClient } from "@/lib/supabase/client";
-import { type CreateZoneInput, createZoneSchema } from "@/lib/validation/zone";
-
-const CROPS = [
-  { value: "tomat", label: "Tomat", hint: "10 jenis penyakit dikenali" },
-  { value: "cabai", label: "Cabai", hint: "6 jenis penyakit dikenali" },
-] as const;
+import {
+  type CreateZoneInput,
+  createZoneSchema,
+  ZONE_CROP_TYPE,
+} from "@/lib/validation/zone";
 
 export function OnboardingZoneForm() {
   const router = useRouter();
@@ -24,10 +23,7 @@ export function OnboardingZoneForm() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<CreateZoneInput>({
-    resolver: zodResolver(createZoneSchema),
-    defaultValues: { crop_type: "tomat" },
-  });
+  } = useForm<CreateZoneInput>({ resolver: zodResolver(createZoneSchema) });
 
   async function onSubmit(values: CreateZoneInput) {
     setFormError(null);
@@ -44,7 +40,7 @@ export function OnboardingZoneForm() {
       .from("zones")
       .insert({
         name: values.name,
-        crop_type: values.crop_type,
+        crop_type: ZONE_CROP_TYPE,
         location_note: values.location_note || null,
         owner_id: user.id,
       })
@@ -67,29 +63,6 @@ export function OnboardingZoneForm() {
         <Input id="zone-name" placeholder="Contoh: A1" {...register("name")} />
         <FieldError>{errors.name?.message}</FieldError>
       </div>
-
-      <fieldset className="flex flex-col gap-1.5">
-        <legend className="mb-1.5 font-sans text-[13.5px] font-medium text-ink">
-          Jenis tanaman
-        </legend>
-        <div className="grid grid-cols-2 gap-3">
-          {CROPS.map((crop) => (
-            <label key={crop.value} className="cursor-pointer">
-              <input
-                type="radio"
-                value={crop.value}
-                className="peer sr-only"
-                {...register("crop_type")}
-              />
-              <div className="rounded-sm border border-input-border bg-input-bg px-4 py-3.5 transition-colors peer-checked:border-moss peer-checked:bg-moss-tint peer-focus-visible:ring-2 peer-focus-visible:ring-moss">
-                <p className="font-display text-[18px] font-semibold text-ink">{crop.label}</p>
-                <p className="mt-0.5 font-sans text-[12px] text-sage">{crop.hint}</p>
-              </div>
-            </label>
-          ))}
-        </div>
-        <FieldError>{errors.crop_type?.message}</FieldError>
-      </fieldset>
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="zone-note">Catatan lokasi (opsional)</Label>

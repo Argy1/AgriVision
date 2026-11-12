@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { SeverityPill } from "@/components/severity/SeverityBadge";
-import { CROP_LABEL, formatRelativeDateTime } from "@/lib/format";
+import { formatRelativeDateTime } from "@/lib/format";
 import type { Enums } from "@/types/database.types";
 
 export interface HistoryRow {
@@ -11,7 +11,6 @@ export interface HistoryRow {
   confidence: number;
   created_at: string;
   zoneName: string;
-  cropType: Enums<"crop_type">;
 }
 
 export function HistoryTable({ rows, showZoneColumn = true }: { rows: HistoryRow[]; showZoneColumn?: boolean }) {
@@ -43,7 +42,7 @@ export function HistoryTable({ rows, showZoneColumn = true }: { rows: HistoryRow
           </div>
           {showZoneColumn && (
             <span className="font-sans text-[13px] text-sage">
-              {row.zoneName} · {CROP_LABEL[row.cropType]}
+              {row.zoneName}
             </span>
           )}
           <span className="font-sans text-[13px] text-sage">{Math.round(row.confidence * 100)}%</span>

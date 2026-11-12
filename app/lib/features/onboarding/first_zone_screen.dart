@@ -23,7 +23,6 @@ class _FirstZoneScreenState extends ConsumerState<FirstZoneScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _noteController = TextEditingController();
-  CropType _crop = CropType.tomat;
   bool _loading = false;
   String? _error;
 
@@ -44,7 +43,7 @@ class _FirstZoneScreenState extends ConsumerState<FirstZoneScreen> {
       final note = _noteController.text.trim();
       final zone = await ref.read(zonesProvider.notifier).createZone(
             name: _nameController.text.trim(),
-            cropType: _crop,
+            cropType: CropType.tomat,
             locationNote: note.isEmpty ? null : note,
           );
       ref.invalidate(dashboardSummaryProvider);
@@ -56,37 +55,6 @@ class _FirstZoneScreenState extends ConsumerState<FirstZoneScreen> {
     } finally {
       if (mounted) setState(() => _loading = false);
     }
-  }
-
-  Widget _cropCard(CropType crop, String hint) {
-    final selected = _crop == crop;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => setState(() => _crop = crop),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-          decoration: BoxDecoration(
-            color: selected ? AppColors.mossTint : AppColors.inputBg,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: selected ? AppColors.moss : AppColors.inputBorder,
-              width: selected ? 1.6 : 1,
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                crop.label,
-                style: GoogleFonts.fraunces(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 2),
-              Text(hint, style: const TextStyle(fontSize: 11.5, color: AppColors.sage)),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   Widget _label(String text) => Padding(
@@ -132,15 +100,6 @@ class _FirstZoneScreenState extends ConsumerState<FirstZoneScreen> {
                   decoration: const InputDecoration(hintText: 'Contoh: A1'),
                   validator: (v) =>
                       (v == null || v.trim().isEmpty) ? 'Nama zona wajib diisi' : null,
-                ),
-                const SizedBox(height: 16),
-                _label('Jenis tanaman'),
-                Row(
-                  children: [
-                    _cropCard(CropType.tomat, '10 jenis penyakit dikenali'),
-                    const SizedBox(width: 10),
-                    _cropCard(CropType.cabai, '6 jenis penyakit dikenali'),
-                  ],
                 ),
                 const SizedBox(height: 16),
                 _label('Catatan lokasi (opsional)'),

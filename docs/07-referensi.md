@@ -67,13 +67,7 @@
 
 25. Rani, dkk. (2025). VGG-EffAttnNet [transfer learning untuk klasifikasi penyakit daun cabai]. *Food Science & Nutrition*. DOI: 10.1002/fsn3.70653 — *Sama seperti #24 — awalnya dipakai untuk memvalidasi dataset Kaggle dhenyd, sekarang relevan sebagai referensi metodologi transfer learning untuk cabai, bukan sitasi provenance dataset #23.*
 
-**Catatan riwayat dataset cabai (4 iterasi, lihat juga `docs/05-ml-pipeline.md`):**
-1. Dua kandidat Kaggle awal ditolak (2 kelas kesehatan buah saja / struktur tidak terverifikasi).
-2. Mendeley Data `wzc6r6w5w5` (Ahmed, dkk., DOI: 10.17632/wzc6r6w5w5, CC BY 4.0, 4 kelas, 1.544 gambar) — kontennya bagus tapi tidak API-downloadable, menghambat Colab "Run All".
-3. Kaggle `dhenyd/chili-plant-disease` (5 kelas, 500 gambar, divalidasi oleh #24 dan #25 di atas) — full-API tapi terlalu kecil.
-4. **Roboflow `chili-leaves-disease-classification` (#23) — pilihan final**, lebih besar dari opsi Kaggle dan tetap full-API.
-
-Kalau workflow-nya diubah untuk mengizinkan upload manual (misal demi mengejar akurasi lebih tinggi lewat data yang lebih besar), dataset Mendeley (poin 2) dan varian Mendeley lain yang lebih besar (COLD dataset, 10.987 gambar; `tm3v4zmh7c`, 8.814 gambar) adalah kandidat kembali yang baik — cantumkan sebagai alternatif yang dipertimbangkan di bab metodologi jika relevan.
+**Catatan (2026-11-12):** cabai dihapus dari scope proyek (fokus tomat). Referensi cabai di atas (#6, #7, #8, #23–#25) dipertahankan hanya sebagai *related work*/pembanding di naskah; dataset cabai tidak lagi dipakai. Riwayat 4 kali pergantian dataset cabai ada di riwayat git (`docs/05-ml-pipeline.md` sebelum 2026-11-12).
 
 ## Catatan Penting
 

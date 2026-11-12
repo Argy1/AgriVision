@@ -4,8 +4,8 @@ Sesuaikan tanggal mulai dengan kalender akademik. Setiap minggu punya deliverabl
 
 | Minggu | Fokus | Deliverable | Status |
 |---|---|---|---|
-| 1–2 | Persiapan dataset | Dataset tomat & cabai terkumpul (PlantVillage/Roboflow), difilter & dibagi train/val/test | ✅ Selesai |
-| 3–4 | Training model diagnosis | Model MobileNetV2 (tomat) & EfficientNetB4 (cabai) terlatih, evaluasi awal (confusion matrix) | ✅ Selesai (confusion matrix lab ada di `ml-service/evaluation/`) |
+| 1–2 | Persiapan dataset | Dataset tomat terkumpul (PlantVillage; dataset cabai ikut dikumpulkan lalu dibuang saat scope fokus ke tomat), difilter & dibagi train/val/test | ✅ Selesai |
+| 3–4 | Training model diagnosis | Model MobileNetV2 (tomat) terlatih (model cabai EfficientNetB4 dihapus 2026-11-12), evaluasi awal (confusion matrix) | ✅ Selesai (confusion matrix lab ada di `ml-service/evaluation/`) |
 | 5 | Modul monitoring | Implementasi ExG/VARI (OpenCV), validasi manual terhadap foto sehat vs sakit | ⚠️ Terimplementasi; **kalibrasi `health_score` dengan foto nyata belum** (rentang ExG masih placeholder) |
 | 6 | Setup backend | Skema Supabase di-deploy, FastAPI `/api/diagnose` jalan dengan model terlatih | ✅ Selesai |
 | 7 | Modul rekomendasi | `disease_reference` lengkap untuk semua kelas, terverifikasi sumber agronomi | ⚠️ 16/16 baris terisi, tapi **hanya 4 `is_verified=true`** — verifikasi ke pembimbing belum |
@@ -21,7 +21,7 @@ Sesuaikan tanggal mulai dengan kalender akademik. Setiap minggu punya deliverabl
 | Risiko | Mitigasi |
 |---|---|
 | Akurasi lapangan jauh di bawah lab | Sudah diantisipasi — laporkan keduanya terpisah (lihat `05-ml-pipeline.md`), gunakan PlantDoc sebagai data uji tambahan sejak awal |
-| Data cabai Indonesia terbatas di PlantVillage | Kumpulkan tambahan foto lapangan sendiri jika waktu memungkinkan, atau perjelas batasan di laporan |
+| Model tomat hanya dievaluasi pada foto lab (PlantVillage augmentasi) | Training ulang v2: campur data non-lab (PlantDoc/Tomato-Village, split bersih) + set uji lapangan terpisah; lihat `05-ml-pipeline.md` |
 | Integrasi web + app + backend molor | *(Teratasi)* kontrak API difiksasi di awal, web selesai dulu baru app |
 | Waktu habis di 2 platform (web+app) | *(Teratasi)* keduanya selesai |
 | Infrastruktur gratis berhenti (Supabase pause, service Railway terhapus) | Runbook pemulihan di `09-operasional-dan-runbook.md`; model ter-commit di git sehingga tidak hilang |

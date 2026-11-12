@@ -20,7 +20,7 @@ const ibmPlexSans = IBM_Plex_Sans({
 export const metadata: Metadata = {
   title: "AgriVision",
   description:
-    "Sistem computer vision untuk deteksi penyakit dan pemantauan kesehatan tanaman tomat & cabai.",
+    "Sistem computer vision untuk deteksi penyakit dan pemantauan kesehatan tanaman tomat.",
 };
 
 export default function RootLayout({

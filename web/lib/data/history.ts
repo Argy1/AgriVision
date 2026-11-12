@@ -7,7 +7,6 @@ import { getUser } from "./auth";
 
 export interface HistoryFilters {
   zoneId?: string;
-  cropType?: Enums<"crop_type">;
   severity?: Enums<"severity_level">;
   dateFrom?: string;
   dateTo?: string;
@@ -26,14 +25,13 @@ export async function getDiagnosesHistory(filters: HistoryFilters = {}) {
   let query = supabase
     .from("diagnoses")
     .select(
-      "id, disease_name, severity, confidence, created_at, uploads!inner(zone_id, zones!inner(id, name, crop_type))",
+      "id, disease_name, severity, confidence, created_at, uploads!inner(zone_id, zones!inner(id, name))",
       { count: "exact" },
     )
     .order("created_at", { ascending: false })
     .range(from, to);
 
   if (filters.zoneId) query = query.eq("uploads.zone_id", filters.zoneId);
-  if (filters.cropType) query = query.eq("uploads.zones.crop_type", filters.cropType);
   if (filters.severity) query = query.eq("severity", filters.severity);
   if (filters.dateFrom) query = query.gte("created_at", filters.dateFrom);
   if (filters.dateTo) query = query.lte("created_at", filters.dateTo);
@@ -49,7 +47,6 @@ export async function getDiagnosesHistory(filters: HistoryFilters = {}) {
       confidence: d.confidence,
       created_at: d.created_at,
       zoneName: d.uploads.zones.name,
-      cropType: d.uploads.zones.crop_type,
     })),
     total: count ?? 0,
     page,

@@ -2,13 +2,11 @@ import Link from "next/link";
 
 import { ChevronRightIcon } from "@/components/icons";
 import { ZONE_STATUS_DOT_CLASSES } from "@/components/severity/tokens";
-import { CROP_LABEL } from "@/lib/format";
 import type { Enums } from "@/types/database.types";
 
 export interface RankingRow {
   zoneId: string;
   zoneName: string;
-  cropType: Enums<"crop_type">;
   status: Enums<"zone_status"> | null;
   currentScore: number | null;
   trendDelta: number | null;
@@ -46,7 +44,7 @@ export function ZoneHealthRanking({ rows }: { rows: RankingRow[] }) {
             }`}
           />
           <span className="flex-1 font-sans text-[13.5px] text-ink">
-            {row.zoneName} — {CROP_LABEL[row.cropType]}
+            {row.zoneName}
           </span>
           <span className="font-display text-[15px] font-semibold text-ink">
             {row.currentScore != null ? Math.round(row.currentScore) : "—"}

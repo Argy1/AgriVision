@@ -1,6 +1,6 @@
 -- ============================================================================
 -- AgriVision — Supabase Postgres Schema
--- Sistem Deteksi Penyakit dan Pemantauan Kesehatan Tanaman Tomat & Cabai
+-- Sistem Deteksi Penyakit dan Pemantauan Kesehatan Tanaman Tomat
 -- ============================================================================
 -- Jalankan lewat Supabase SQL editor atau `supabase db push` / mcp__Supabase__apply_migration.
 -- Urutan CREATE TABLE penting karena foreign key.
@@ -69,6 +69,8 @@ create trigger trg_prevent_profile_role_change
 -- ---------------------------------------------------------------------------
 -- 2. zones — petak/lahan yang dipantau
 -- ---------------------------------------------------------------------------
+-- Catatan: proyek kini fokus ke tomat saja. Nilai 'cabai' dibiarkan di enum karena Postgres
+-- tidak mendukung DROP VALUE dengan rapi; nilai ini TIDAK dipakai lagi (lihat migrations/004).
 create type crop_type as enum ('tomat', 'cabai');
 
 create table zones (
@@ -200,37 +202,7 @@ insert into disease_reference (disease_label, disease_name, crop_type, descripti
  'Cabut dan musnahkan tanaman terinfeksi, sterilisasi alat kerja, hindari menangani tanaman sehat setelah tanaman sakit.',
  null, null,
  'Virus tidak dapat disembuhkan dan sangat mudah menular lewat kontak/alat kerja.', false),
-('tomato_healthy', 'Sehat', 'tomat', 'Tidak ada gejala penyakit terdeteksi.', 'Lanjutkan perawatan rutin.', null, null, null, true),
-
--- Cabai (6 kelas — Roboflow chili-leaves-disease-classification; lihat docs/05-ml-pipeline.md
--- untuk riwayat pergantian dataset cabai dan kenapa nama kelasnya beda dari versi-versi sebelumnya)
-('chili_leaf_curl', 'Leaf Curl (Keriting Daun)', 'cabai',
- 'Umumnya disebabkan virus yang ditularkan kutu kebul (whitefly), daun mengeriting dan menebal.',
- 'Kendalikan populasi kutu kebul dengan insektisida sistemik, cabut dan musnahkan tanaman yang terinfeksi berat.',
- 'Sesuai label insektisida',
- 'Setiap 5-7 hari selama populasi vektor masih tinggi',
- 'Virus tidak dapat disembuhkan — fokus pencegahan penyebaran ke tanaman sehat.', true),
-('chili_powdery_mildew', 'Powdery Mildew (Embun Tepung)', 'cabai',
- 'Disebabkan jamur (kompleks Leveillula/Oidiopsis pada cabai), lapisan tepung putih di permukaan daun, biasanya di bawah daun terlebih dahulu.',
- 'Gunakan fungisida berbahan sulfur atau triazol sesuai anjuran, perbaiki sirkulasi udara antar tanaman untuk kurangi kelembapan mikro.',
- 'Sesuai label produk', 'Setiap 7-10 hari saat gejala muncul',
- null, false),
-('chili_leaf_spot', 'Leaf Spot (Bercak Daun)', 'cabai',
- 'Bercak pada daun, umumnya disebabkan jamur (mis. Cercospora capsici) — label dataset tidak merinci patogen spesifik, verifikasi visual/lab dianjurkan untuk kasus nyata.',
- 'Gunakan fungisida sesuai anjuran, pangkas daun bawah yang terinfeksi untuk kurangi sumber inokulum.',
- 'Sesuai label produk', 'Setiap 7-10 hari',
- 'Gejala bercak daun ini bisa disebabkan beberapa jenis jamur berbeda — kalau tidak membaik setelah penanganan awal, konsultasikan ke PPL setempat.', false),
-('chili_whitefly', 'Whitefly (Kutu Kebul)', 'cabai',
- 'Serangan hama kutu kebul (Bemisia tabaci) — bukan penyakit, tapi vektor penyebar virus (termasuk leaf curl) dan penyebab kerusakan langsung lewat hisapan cairan daun.',
- 'Gunakan insektisida sistemik atau perangkap kuning lengket, kendalikan populasi sejak dini karena berperan sebagai vektor virus.',
- 'Sesuai label produk', 'Sesuai anjuran produk / saat populasi terdeteksi tinggi',
- 'Ini hama vektor, bukan penyakit — populasi tinggi berisiko menyebarkan virus keriting daun ke tanaman sehat.', false),
-('chili_yellowish', 'Yellowish (Daun Menguning)', 'cabai',
- 'Gejala umum daun menguning — bisa disebabkan banyak hal (kekurangan nutrisi, serangan virus, kelebihan air, dll). Label dataset ini adalah gejala, bukan diagnosis penyebab spesifik.',
- 'Periksa faktor lain (drainase, pemupukan, tanda hama/virus penyerta) sebelum menentukan penanganan — gejala ini butuh observasi lanjutan, bukan resep tunggal.',
- null, null,
- 'Gejala menguning bisa disebabkan banyak hal (nutrisi, air, awal infeksi virus) — pantau perkembangannya beberapa hari sebelum penanganan lanjutan.', false),
-('chili_healthy', 'Sehat', 'cabai', 'Tidak ada gejala penyakit terdeteksi.', 'Lanjutkan perawatan rutin.', null, null, null, true);
+('tomato_healthy', 'Sehat', 'tomat', 'Tidak ada gejala penyakit terdeteksi.', 'Lanjutkan perawatan rutin.', null, null, null, true);
 
 -- ---------------------------------------------------------------------------
 -- 7. recommendations — snapshot rekomendasi per diagnosis (historical record)

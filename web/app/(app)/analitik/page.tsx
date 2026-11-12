@@ -1,32 +1,17 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { DiseaseFrequencyChart } from "@/components/analytics/DiseaseFrequencyChart";
 import { SeverityTrendChart } from "@/components/analytics/SeverityTrendChart";
 import { Card, CardTitle } from "@/components/ui/Card";
 import { getAverageConfidence, getDiseaseFrequency, getSeverityTrendByWeek } from "@/lib/data/analytics";
-import type { Enums } from "@/types/database.types";
 
 export const metadata: Metadata = { title: "Analitik — AgriVision" };
 
-const CROP_FILTERS: { value: Enums<"crop_type"> | ""; label: string }[] = [
-  { value: "", label: "Semua" },
-  { value: "tomat", label: "Tomat" },
-  { value: "cabai", label: "Cabai" },
-];
-
-export default async function AnalitikPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ crop?: string }>;
-}) {
-  const { crop } = await searchParams;
-  const cropType = (crop as Enums<"crop_type">) || undefined;
-
+export default async function AnalitikPage() {
   const [diseaseFrequency, severityTrend, avgConfidence] = await Promise.all([
-    getDiseaseFrequency(cropType),
-    getSeverityTrendByWeek(cropType),
-    getAverageConfidence(cropType),
+    getDiseaseFrequency(),
+    getSeverityTrendByWeek(),
+    getAverageConfidence(),
   ]);
 
   return (
@@ -37,19 +22,6 @@ export default async function AnalitikPage({
           <p className="mt-1.5 font-sans text-[14px] text-sage">
             Insight agregat lintas zona dari 8 minggu terakhir
           </p>
-        </div>
-        <div className="flex gap-1 rounded-pill border border-border bg-paper p-1">
-          {CROP_FILTERS.map((f) => (
-            <Link
-              key={f.value}
-              href={f.value ? `/analitik?crop=${f.value}` : "/analitik"}
-              className={`rounded-pill px-4 py-1.5 font-sans text-[13px] font-medium transition-colors ${
-                (crop ?? "") === f.value ? "bg-moss text-white" : "text-sage"
-              }`}
-            >
-              {f.label}
-            </Link>
-          ))}
         </div>
       </div>
 

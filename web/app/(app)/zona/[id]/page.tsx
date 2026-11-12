@@ -8,7 +8,7 @@ import { HistoryTable } from "@/components/history/HistoryTable";
 import { getDiagnosesHistory, getZoneDiseaseFrequency } from "@/lib/data/history";
 import { getZone } from "@/lib/data/zones";
 import { buildDailyAverageSeries, getZoneHealthHistory } from "@/lib/data/zone-health";
-import { CROP_LABEL, daysSince } from "@/lib/format";
+import { daysSince } from "@/lib/format";
 
 const ALL_TIME_DAYS = 3650;
 const DISPLAY_DAYS = 90;
@@ -34,9 +34,6 @@ export default async function ZonaDetailPage({ params }: { params: Promise<{ id:
         <div>
           <div className="flex items-center gap-2.5">
             <h1 className="font-display text-[27px] font-semibold text-ink">Zona {zone.name}</h1>
-            <span className="rounded-pill bg-moss-tint px-2.5 py-1 font-sans text-[12px] font-medium text-moss-deep">
-              {CROP_LABEL[zone.crop_type]}
-            </span>
           </div>
           {zone.location_note && (
             <p className="mt-1.5 font-sans text-[13.5px] text-sage">{zone.location_note}</p>

@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { CreateZoneModal } from "@/components/upload/CreateZoneModal";
 import { createClient } from "@/lib/supabase/client";
-import { CROP_LABEL } from "@/lib/format";
 import type { Tables } from "@/types/database.types";
 
 export function ZoneManageList({ initialZones }: { initialZones: Tables<"zones">[] }) {
@@ -58,7 +57,7 @@ export function ZoneManageList({ initialZones }: { initialZones: Tables<"zones">
           ) : (
             <>
               <span className="flex-1 font-sans text-[13.5px] text-ink">
-                {zone.name} — {CROP_LABEL[zone.crop_type]}
+                {zone.name}
               </span>
               <button
                 type="button"

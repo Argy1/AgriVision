@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-# Rentang hue kecoklatan/kekuningan (bercak/lesi umum pada daun tomat & cabai) di ruang
+# Rentang hue kecoklatan/kekuningan (bercak/lesi umum pada daun tomat) di ruang
 # HSV OpenCV (H: 0-179). Saturasi/value minimum dinaikkan (bukan cuma di atas nol) supaya
 # tidak ikut menangkap background gelap/kusam bernuansa coklat (tanah, meja kayu) sebagai
 # lesi — warna lesi asli biasanya lebih terang & jenuh karena permukaan daun yang mengkilap.

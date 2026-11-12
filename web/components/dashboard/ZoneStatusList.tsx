@@ -2,11 +2,10 @@ import Link from "next/link";
 
 import { ChevronRightIcon } from "@/components/icons";
 import { ZONE_STATUS_DOT_CLASSES } from "@/components/severity/tokens";
-import { CROP_LABEL } from "@/lib/format";
 import type { Enums } from "@/types/database.types";
 
 export interface ZoneStatusRow {
-  zone: { id: string; name: string; crop_type: Enums<"crop_type"> };
+  zone: { id: string; name: string };
   status: Enums<"zone_status"> | null;
 }
 
@@ -31,7 +30,7 @@ export function ZoneStatusList({ rows }: { rows: ZoneStatusRow[] }) {
             }`}
           />
           <span className="flex-1 font-sans text-[13.5px] text-ink">
-            {row.zone.name} — {CROP_LABEL[row.zone.crop_type]}
+            {row.zone.name}
           </span>
           <ChevronRightIcon size={14} className="text-muted-2" />
         </Link>

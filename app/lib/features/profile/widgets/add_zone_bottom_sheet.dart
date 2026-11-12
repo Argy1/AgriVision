@@ -29,7 +29,6 @@ class _AddZoneSheetContentState extends ConsumerState<AddZoneSheetContent> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _locationController = TextEditingController();
-  CropType _cropType = CropType.tomat;
   bool _loading = false;
   String? _error;
 
@@ -42,7 +41,7 @@ class _AddZoneSheetContentState extends ConsumerState<AddZoneSheetContent> {
     try {
       await ref.read(zonesProvider.notifier).createZone(
             name: _nameController.text.trim(),
-            cropType: _cropType,
+            cropType: CropType.tomat,
             locationNote: _locationController.text.trim().isEmpty ? null : _locationController.text.trim(),
           );
       if (mounted) Navigator.of(context).pop();
@@ -76,16 +75,6 @@ class _AddZoneSheetContentState extends ConsumerState<AddZoneSheetContent> {
               controller: _nameController,
               decoration: const InputDecoration(hintText: 'Contoh: A4'),
               validator: (v) => (v == null || v.trim().isEmpty) ? 'Nama zona wajib diisi' : null,
-            ),
-            const SizedBox(height: 13),
-            const Text('Jenis Tanaman', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500)),
-            const SizedBox(height: 6),
-            DropdownButtonFormField<CropType>(
-              initialValue: _cropType,
-              items: CropType.values
-                  .map((c) => DropdownMenuItem(value: c, child: Text(c.label)))
-                  .toList(),
-              onChanged: (v) => setState(() => _cropType = v ?? CropType.tomat),
             ),
             const SizedBox(height: 13),
             const Text('Catatan Lokasi (opsional)', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500)),

@@ -8,7 +8,7 @@ import { SeverityMeter } from "@/components/severity/SeverityMeter";
 import { RecommendationCard } from "@/components/diagnosis/RecommendationCard";
 import { ZoneHistoryDots } from "@/components/diagnosis/ZoneHistoryDots";
 import { getDiagnosisDetail } from "@/lib/data/diagnoses";
-import { CROP_LABEL, daysSince, formatRelativeDateTime } from "@/lib/format";
+import { daysSince, formatRelativeDateTime } from "@/lib/format";
 
 export default async function DiagnosisPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -33,8 +33,7 @@ export default async function DiagnosisPage({ params }: { params: Promise<{ id: 
         <div>
           <h1 className="font-display text-[25px] font-semibold text-ink">Hasil Diagnosis</h1>
           <p className="mt-0.5 font-sans text-[13px] text-sage">
-            {formatRelativeDateTime(diagnosis.created_at)} • Zona {zone.name} — Blok{" "}
-            {CROP_LABEL[zone.crop_type]}
+            {formatRelativeDateTime(diagnosis.created_at)} • Zona {zone.name}
           </p>
         </div>
       </div>

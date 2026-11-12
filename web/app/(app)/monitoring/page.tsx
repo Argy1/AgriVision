@@ -39,7 +39,6 @@ export default async function MonitoringPage({
       return {
         zoneId: z.zone.id,
         zoneName: z.zone.name,
-        cropType: z.zone.crop_type,
         status: z.health?.status ?? null,
         currentScore: z.health?.avg_health_score ?? null,
         trendDelta: series ? computeTrendDelta(series.points) : null,

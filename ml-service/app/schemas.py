@@ -7,7 +7,9 @@ from pydantic import BaseModel, ConfigDict
 class DiagnoseRequest(BaseModel):
     upload_id: UUID
     image_path: str
-    crop_type: Literal["tomat", "cabai"]
+    # Proyek fokus ke tomat saja. Field tetap ada demi kompatibilitas kontrak API
+    # dengan web & app (keduanya selalu mengirim "tomat").
+    crop_type: Literal["tomat"]
 
 
 class DiagnosisResult(BaseModel):

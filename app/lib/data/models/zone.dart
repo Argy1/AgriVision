@@ -33,6 +33,6 @@ class Zone {
     if (locationNote != null && locationNote!.isNotEmpty) 'location_note': locationNote,
   };
 
-  /// "A3 — Blok Tomat", sesuai gaya mockup.
-  String get displayLabel => '$name — Blok ${cropType.label}';
+  /// Hanya nama zona (proyek fokus tomat, jenis tanaman tidak perlu ditampilkan).
+  String get displayLabel => name;
 }

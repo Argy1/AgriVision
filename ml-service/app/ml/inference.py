@@ -7,7 +7,7 @@ from app.ml.model_loader import model_registry
 
 def _resize_for_model(image_rgb_uint8: np.ndarray, target_size: tuple[int, int]) -> np.ndarray:
     """Resize ke ukuran input model. TIDAK melakukan rescaling manual (mis. dibagi 255):
-    preprocessing MobileNetV2/EfficientNetB4 (preprocess_input) sudah dibakar ke dalam
+    preprocessing MobileNetV2 (preprocess_input) sudah dibakar ke dalam
     graph model saat training — lihat agrivision_training.ipynb, Step 5. Model
     mengharapkan input raw 0-255 float32.
     """

@@ -63,7 +63,7 @@ ML_API_URL=
 SUPABASE_URL=
 SUPABASE_SERVICE_ROLE_KEY=     # baca Storage + insert hasil; JANGAN ke klien
 STORAGE_BUCKET=plant-photos
-MODEL_DIR=models               # tomato_classifier.tflite, chili_classifier.tflite, label_map.json
+MODEL_DIR=models               # tomato_classifier.tflite, label_map.json
 ALLOWED_ORIGINS=               # origin web, dipisah koma (jangan * di produksi)
 ```
 (Daftar lengkap + cara pakai: `09-operasional-dan-runbook.md`.)

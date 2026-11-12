@@ -5,11 +5,6 @@ import { useState } from "react";
 import { ChevronDownIcon } from "@/components/icons";
 import type { Tables } from "@/types/database.types";
 
-const CROP_LABEL: Record<Tables<"zones">["crop_type"], string> = {
-  tomat: "Tomat",
-  cabai: "Cabai",
-};
-
 export function ZoneSelector({
   zones,
   selectedZoneId,
@@ -31,7 +26,7 @@ export function ZoneSelector({
         onClick={() => setOpen((v) => !v)}
         className="flex items-center gap-2 rounded-pill border border-border bg-paper px-4 py-2.5 font-sans text-[13.5px] text-ink"
       >
-        {selected ? `Zona: ${selected.name} — ${CROP_LABEL[selected.crop_type]}` : "Pilih zona"}
+        {selected ? `Zona: ${selected.name}` : "Pilih zona"}
         <ChevronDownIcon size={15} className="text-sage" />
       </button>
 
@@ -52,7 +47,7 @@ export function ZoneSelector({
                 }}
                 className="block w-full px-4 py-2 text-left font-sans text-[13.5px] text-ink hover:bg-parchment"
               >
-                {zone.name} — {CROP_LABEL[zone.crop_type]}
+                {zone.name}
               </button>
             ))}
             <div className="my-1 border-t border-border-soft" />

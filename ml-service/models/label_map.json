@@ -58,45 +58,5 @@
         "disease_label": "tomato_healthy"
       }
     ]
-  },
-  "chili": {
-    "model_version": "v1",
-    "img_size": [
-      380,
-      380
-    ],
-    "source_dataset": "roboflow:chili-leaves-disease-classification/chili-leaves-disease-classification (v1 — verifikasi nomor versi asli di Step 3)",
-    "classes": [
-      {
-        "index": 0,
-        "raw_class_name": "healthy",
-        "disease_label": "chili_healthy"
-      },
-      {
-        "index": 1,
-        "raw_class_name": "leaf curl",
-        "disease_label": "chili_leaf_curl"
-      },
-      {
-        "index": 2,
-        "raw_class_name": "leaf spot",
-        "disease_label": "chili_leaf_spot"
-      },
-      {
-        "index": 3,
-        "raw_class_name": "powdery mildew",
-        "disease_label": "chili_powdery_mildew"
-      },
-      {
-        "index": 4,
-        "raw_class_name": "whitefly",
-        "disease_label": "chili_whitefly"
-      },
-      {
-        "index": 5,
-        "raw_class_name": "yellowish",
-        "disease_label": "chili_yellowish"
-      }
-    ]
   }
 }

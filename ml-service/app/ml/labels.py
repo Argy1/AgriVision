@@ -5,11 +5,11 @@ from typing import Literal
 
 from app.config import settings
 
-CropKey = Literal["tomato", "chili"]
+CropKey = Literal["tomato"]
 
 # Jembatan antara nilai crop_type di API contract (Indonesia, sesuai enum Postgres)
 # dengan key bahasa Inggris yang dipakai di label_map.json / nama file model.
-CROP_TYPE_TO_KEY: dict[str, CropKey] = {"tomat": "tomato", "cabai": "chili"}
+CROP_TYPE_TO_KEY: dict[str, CropKey] = {"tomat": "tomato"}
 
 
 @lru_cache

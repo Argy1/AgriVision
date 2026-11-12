@@ -1,13 +1,13 @@
 # ML Pipeline — Diagnosis & Monitoring
 
-## Status implementasi (aktual, 2026-10-24)
+## Status implementasi (aktual, 2026-11-12)
 
-- **Model terlatih & ter-deploy:** `ml-service/models/tomato_classifier.tflite` (MobileNetV2, 224px, 10 kelas), `chili_classifier.tflite` (EfficientNetB4, 380px, 6 kelas), dan `label_map.json` (urutan kelas + `model_version` + `img_size` per komoditas). File ter-commit di git, dimuat sekali saat startup (`ml-service/app/ml/model_loader.py`, thread-lock per model), sehingga redeploy tidak membutuhkan training ulang. Training dilakukan di Google Colab (`ml-service/agrivision_training.ipynb`); hasil diekspor ke TFLite.
+- **Model terlatih & ter-deploy:** `ml-service/models/tomato_classifier.tflite` (MobileNetV2, 224px, 10 kelas) dan `label_map.json` (urutan kelas + `model_version` + `img_size`). **Fokus tomat saja** sejak 2026-11-12: model cabai (`chili_classifier.tflite`, EfficientNetB4 380px 6 kelas) dan seluruh kodenya dihapus. File ter-commit di git, dimuat sekali saat startup (`ml-service/app/ml/model_loader.py`, thread-lock per model), sehingga redeploy tidak membutuhkan training ulang. Training dilakukan di Google Colab (`ml-service/agrivision_training.ipynb`); hasil diekspor ke TFLite.
 - **Pipeline inferensi** (`ml-service/app/`): `imaging.py` (decode/resize) → `ml/inference.py` (klasifikasi) → `cv/segmentation.py` (mask daun = hijau ∪ lesi) → `cv/affected_area.py` (lesi via HSV, ambang saturasi/value ≥ 60 agar tidak salah deteksi latar coklat) → `cv/severity.py` (aturan di bawah) → `cv/vegetation_index.py` (ExG/VARI) → lookup `disease_reference` → insert ke Supabase (`routers/diagnose.py`).
-- **Evaluasi yang sudah ada:** confusion matrix lab di `ml-service/evaluation/confusion_matrix_{tomat,cabai}.png`.
+- **Evaluasi yang sudah ada:** confusion matrix lab di `ml-service/evaluation/confusion_matrix_tomat.png`.
 - **BELUM:** evaluasi pada data lapangan (PlantDoc / foto sendiri), metrik precision/recall/F1 terpisah lab vs lapangan, dan kalibrasi `health_score` dengan foto sehat vs sakit nyata. Lihat `08-status-dan-progres.md` bagian 8.
 - **Catatan kualitas yang diketahui:** (1) `_EXG_MIN=-0.2` / `_EXG_MAX=0.6` di `cv/vegetation_index.py` adalah placeholder kalibrasi. (2) `affected_area_pct` berbasis ambang warna: pada daun sehat yang berbayang nilainya bisa > 0 sehingga `severity` bukan nol meski diagnosis "Sehat" — validasi dengan foto nyata. (3) VARI dijaga dari penyebut mendekati nol (piksel dengan |G+R−B| < 1e-3 dianggap 0, hasil di-clip ke [−1, 1]).
-- **Pengujian yang sudah dilakukan:** E2E `/api/diagnose` di produksi untuk tomat dan cabai dengan gambar sintetis (status 200, CORS benar, trigger `zone_health_daily` terisi). Belum dengan foto lapangan nyata.
+- **Pengujian yang sudah dilakukan:** E2E `/api/diagnose` di produksi untuk tomat dengan gambar sintetis (status 200, CORS benar, trigger `zone_health_daily` terisi). Belum dengan foto lapangan nyata.
 
 ## Modul 1: Diagnosis (Deep Learning)
 
@@ -17,31 +17,19 @@
 Sudah di-split train/valid, 10 kelas persis (jangan diubah nama foldernya, notebook melakukan assertion terhadap daftar ini):
 `Bacterial_spot`, `Early_blight`, `Late_blight`, `Leaf_Mold`, `Septoria_leaf_spot`, `Spider_mites Two-spotted_spider_mite`, `Target_Spot`, `Tomato_Yellow_Leaf_Curl_Virus`, `Tomato_mosaic_virus`, `healthy` (prefix `Tomato___` pada nama folder asli). Download otomatis via Kaggle API di notebook (cell Step 1–2).
 
-**Cabai — Roboflow Universe `chili-leaves-disease-classification`**
-6 kelas: `healthy`, `leaf curl`, `leaf spot`, `powdery mildew`, `whitefly`, `yellowish` — 1.147 gambar total. Download otomatis via Roboflow Python SDK (`pip install roboflow`, cell Step 3 di notebook) — **tidak ada langkah upload manual**, hanya butuh API key gratis (ditempel sekali di Step 1, mirip login, bukan file besar yang diupload). Struktur hasil download (sudah ter-split train/valid/test, atau flat) dideteksi otomatis saat runtime — begitu juga nama folder kelas, karena berpotensi mengandung spasi/variasi kapitalisasi.
-- **Riwayat perubahan dataset cabai (4 kali ganti — didokumentasikan lengkap supaya jelas alasannya, bukan asal ganti-ganti):**
-  1. Dua kandidat Kaggle awal ditolak: `shuvokumarbasak4004/chili-plant-disease-detection` (cuma 2 kelas kesehatan buah, bukan penyakit daun) dan `ravindubandara3002/...` (struktur tidak bisa diverifikasi).
-  2. Sempat pindah ke Mendeley Data `wzc6r6w5w5` (Ahmed et al., CC BY 4.0, 4 kelas, 1.544 gambar) — datanya bagus, tapi Mendeley tidak punya API download otomatis, dan upload manual ZIP-nya ke Colab lewat `files.upload()` sering macet/stuck di 0%.
-  3. Pindah ke Kaggle `dhenyd/chili-plant-disease` (5 kelas, 500 gambar) — solusi sementara yang full-API, tapi ternyata terlalu kecil untuk kebutuhan user.
-  4. **Pindah final ke Roboflow `chili-leaves-disease-classification`** (6 kelas, 1.147 gambar) — lebih dari 2x lipat dataset Kaggle sebelumnya, tetap foto close-up daun (bukan foto kanopi/lapangan) dan tetap punya kelas *healthy*, didownload otomatis lewat Roboflow SDK persis seperti alur Kaggle untuk tomat.
-- **Kenapa bukan opsi yang lebih besar lagi:** ada dataset *pepper* (bukan chili/cabai) di Hugging Face dengan 26.377 gambar tanpa perlu API key — tapi itu foto tanaman lapangan/kanopi, **tanpa kelas sehat**, dan provenance-nya diragukan (paper yang disitasi angkanya tidak cocok). Dataset cabai terbesar yang benar-benar cocok secara konten (10.987 dan 8.814 gambar, termasuk kelas sehat) semuanya ada di Mendeley — masalah yang sama seperti poin 2 di atas (tidak API-downloadable). Roboflow adalah titik seimbang terbaik saat ini antara ukuran, kecocokan konten, dan otomatisasi penuh.
-- **Trade-off yang harus dilaporkan apa adanya:** meski lebih besar dari opsi Kaggle sebelumnya, 1.147 gambar/6 kelas (±190 gambar/kelas) masih jauh lebih kecil dari dataset tomat (~87.900 gambar). Akurasi validasi cabai kemungkinan tetap lebih fluktuatif/rendah dan lebih rawan overfitting dibanding tomat — mitigasi lewat augmentasi + transfer learning + fine-tuning bertahap (sudah diimplementasikan di notebook), tapi angka evaluasi tetap harus dilaporkan jujur.
-- **Semantik kelas:** `whitefly` (kutu kebul — nama hama vektor, bukan nama penyakit) dan `yellowish`/`leaf spot` (gejala/deskripsi umum, bukan nama patogen spesifik) — beda dari penamaan spesifik seperti `Anthracnose` di versi Mendeley yang tidak dipakai. Sesuaikan istilah ini di teks laporan/UI.
-- **Verifikasi nomor versi dataset:** notebook mengasumsikan `version(1)` di project Roboflow — ini bisa berubah kalau pemilik project merilis versi baru. Notebook sudah melakukan assertion otomatis kalau kelas yang ditemukan tidak sesuai; cek juga nomor versi terbaru langsung di halaman project sebelum training final.
+**Cabai:** dihapus dari scope (2026-11-12). Dataset Roboflow `chili-leaves-disease-classification` (6 kelas, 1.147 gambar) dan riwayat penggantian datasetnya tidak lagi dipakai; model cabai sempat mencapai akurasi validasi 80,69% (terbatas oleh data kecil). Riwayat lengkap ada di git (commit sebelum penghapusan).
 
 **Label penyakit final (dipakai di `disease_reference.disease_label`, dihasilkan otomatis oleh notebook lewat fungsi `slugify()`/`to_disease_label()`):**
 - Tomat: `tomato_bacterial_spot`, `tomato_early_blight`, `tomato_late_blight`, `tomato_leaf_mold`, `tomato_septoria_leaf_spot`, `tomato_spider_mites_two_spotted_spider_mite`, `tomato_target_spot`, `tomato_tomato_yellow_leaf_curl_virus`, `tomato_tomato_mosaic_virus`, `tomato_healthy`
-- Cabai: `chili_healthy`, `chili_leaf_curl`, `chili_leaf_spot`, `chili_powdery_mildew`, `chili_whitefly`, `chili_yellowish`
 
-**Untuk generalisasi ke kondisi lapangan (bukan hanya foto lab):** tambahkan/gunakan PlantDoc (Singh et al. 2020) sebagai data uji tambahan untuk tomat — akurasi PlantVillage (lab) vs PlantDoc (lapangan) **harus dilaporkan terpisah** di evaluasi, karena keduanya biasanya berbeda signifikan (lihat catatan di `07-referensi.md`). Dataset cabai sejauh ini belum punya padanan data-lapangan terpisah — kalau ada waktu, ambil sendiri beberapa foto cabai dari lapangan sebagai uji tambahan kualitatif (makin penting mengingat ukuran dataset training-nya kecil).
+**Untuk generalisasi ke kondisi lapangan (bukan hanya foto lab):** tambahkan/gunakan PlantDoc (Singh et al. 2020) sebagai data uji tambahan untuk tomat — akurasi PlantVillage (lab) vs PlantDoc (lapangan) **harus dilaporkan terpisah** di evaluasi, karena keduanya biasanya berbeda signifikan (lihat catatan di `07-referensi.md`).
 
 ### Arsitektur Model
 - **Tomat:** MobileNetV2 (transfer learning, ImageNet pretrained) — ringan, cocok untuk inference cepat. Referensi: Sharma et al. 2025 (ensemble ResNet50+MobileNetV2 pada 10 kelas tomat, 99.91% akurasi test).
-- **Cabai:** EfficientNetB4 (transfer learning) — referensi Pratap & Kumar 2023 ("EfficientLeafNetB4" mengungguli ResNet-50/DenseNet-121/MobileNetV2/VGG-16 pada 5 kelas cabai).
-- Dua model terpisah per komoditas (bukan satu model gabungan) — lebih akurat karena distribusi kelas penyakit tomat dan cabai berbeda, dan `crop_type` sudah diketahui dari input user (zona sudah terikat ke satu crop_type).
+- Satu model tomat. `crop_type` tetap dikirim di API (selalu `tomat`) demi kontrak yang stabil.
 
 ### Preprocessing
-- Resize ke ukuran input model (224x224 untuk MobileNetV2, 380x380 untuk EfficientNetB4 — sesuaikan dengan varian yang dipakai).
+- Resize ke ukuran input model (224x224 untuk MobileNetV2 — sesuaikan dengan varian yang dipakai; ukuran dibaca dari `img_size` di `label_map.json`).
 - Normalisasi sesuai preprocessing bawaan arsitektur (`tf.keras.applications.mobilenet_v2.preprocess_input`, dst).
 - Augmentasi saat training: rotasi, flip, brightness/contrast jitter (agar model lebih robust ke variasi foto lapangan).
 
@@ -64,6 +52,23 @@ Export model ke **TFLite** atau **ONNX** untuk inference ringan di FastAPI (Rail
 - Confusion matrix per kelas.
 - Akurasi, precision, recall, F1 — dilaporkan terpisah untuk data uji lab (PlantVillage held-out) vs data uji lapangan (PlantDoc atau foto sendiri).
 - Diskusikan secara eksplisit **gap akurasi lab vs lapangan** di bab pembahasan (lihat caveat di `07-referensi.md`) — ini justru memperkuat kredibilitas evaluasi, bukan kelemahan yang perlu disembunyikan.
+
+---
+
+## Rencana training ulang tomat (v2) — status: direncanakan
+
+Alasan: angka validasi 94,33% (MobileNetV2) hanya berlaku untuk foto lab. Dataset sekarang adalah augmentasi offline PlantVillage yang di-split *setelah* augmentasi, sehingga validasi kemungkinan berisi turunan daun yang sama dengan set latih (optimistis), dan set validasi juga dipakai untuk early stopping. **Menambah gambar PlantVillage tidak menaikkan akurasi lapangan** — masalahnya domain, bukan jumlah.
+
+Rencana (detail & status di `08-status-dan-progres.md`):
+1. Audit dataset: jumlah per kelas per sumber, deteksi duplikat antar sumber (hash), pemetaan label ke 10 kelas.
+2. Basis bersih: PlantVillage asli (non-augmentasi), split sebelum augmentasi; campur data berfoto non-lab (kandidat: PlantDoc subset tomat, Tomato-Village — lisensi dan pemetaan kelas diverifikasi saat implementasi; kelas yang tak bisa dipetakan tidak dipakai).
+3. **Set uji lapangan terpisah** (tidak ikut training) dari PlantDoc/Tomato-Village; tidak ada foto lapangan milik sendiri.
+4. Augmentasi domain (crop/zoom acak, color jitter, blur), class weight, dua tahap fine-tuning seperti v1; bandingkan MobileNetV2 dengan satu kandidat lebih kuat (mis. EfficientNetB0) dengan batas ukuran TFLite untuk Railway.
+5. Pilih model berdasarkan akurasi **uji lapangan**; laporkan metrik lab dan lapangan terpisah (akurasi/P/R/F1, matriks kebingungan, selang Wilson).
+6. Ekspor `tomato_classifier.tflite` + `label_map.json` baru (naikkan `model_version`; pertahankan 10 label agar `disease_reference` tetap sinkron), deploy, E2E produksi.
+7. Opsional (mengubah kontrak, butuh persetujuan): ambang confidence "perlu verifikasi manual".
+
+Notebook: `ml-service/agrivision_training_tomato_v2.ipynb` (belum dibuat). Training dijalankan user di Colab; integrasi model ke ml-service dikerjakan setelahnya.
 
 ---
 

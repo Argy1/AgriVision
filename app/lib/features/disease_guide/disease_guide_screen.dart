@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/theme/color_tokens.dart';
-import '../../data/models/enums.dart';
 import '../../providers/disease_reference_providers.dart';
 import '../../routing/route_paths.dart';
 import '../../shared/widgets/icons.dart';
@@ -14,14 +13,13 @@ import 'widgets/disease_guide_tile.dart';
 /// Browse seluruh `disease_reference` -- LIST + DETAIL DIGABUNG jadi satu
 /// layar dengan expand/collapse (bukan push-to-detail terpisah), supaya
 /// petani tidak perlu bolak-balik tap-back berulang saat melihat referensi
-/// di lapangan (16 baris total, cukup kecil untuk satu layar scroll).
+/// di lapangan (10 baris, cukup kecil untuk satu layar scroll).
 class DiseaseGuideScreen extends ConsumerWidget {
   const DiseaseGuideScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final allAsync = ref.watch(diseaseReferenceProvider);
-    final cropFilter = ref.watch(diseaseGuideCropFilterProvider);
 
     return Scaffold(
       backgroundColor: AppColors.parchment,
@@ -55,30 +53,11 @@ class DiseaseGuideScreen extends ConsumerWidget {
             const Padding(
               padding: EdgeInsets.fromLTRB(22, 4, 22, 0),
               child: Text(
-                'Referensi gejala & rekomendasi penanganan untuk tomat dan cabai.',
+                'Referensi gejala & rekomendasi penanganan untuk penyakit daun tomat.',
                 style: TextStyle(fontSize: 12.5, color: AppColors.sage),
               ),
             ),
             const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 22),
-              child: Row(
-                children: CropType.values.map((crop) {
-                  final selected = cropFilter == crop;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: ChoiceChip(
-                      label: Text(crop.label),
-                      selected: selected,
-                      onSelected: (_) => ref.read(diseaseGuideCropFilterProvider.notifier).state = crop,
-                      selectedColor: AppColors.mossTint,
-                      side: BorderSide(color: selected ? AppColors.moss : AppColors.border),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-            const SizedBox(height: 8),
             Expanded(
               child: allAsync.when(
                 loading: () => const LoadingView(),
@@ -87,9 +66,11 @@ class DiseaseGuideScreen extends ConsumerWidget {
                   onRetry: () => ref.invalidate(diseaseReferenceProvider),
                 ),
                 data: (all) {
-                  final filtered = all.where((e) => e.cropType == cropFilter).toList();
+                  // Hanya penyakit tomat. Filter lewat prefix label (bukan cropType) karena
+                  // CropType.fromJson memetakan nilai tak dikenal ke tomat.
+                  final filtered = all.where((e) => e.diseaseLabel.startsWith('tomato_')).toList();
                   if (filtered.isEmpty) {
-                    return const EmptyState(message: 'Belum ada data untuk kategori ini.');
+                    return const EmptyState(message: 'Belum ada data panduan penyakit.');
                   }
                   return ListView.separated(
                     padding: const EdgeInsets.fromLTRB(22, 0, 22, 24),

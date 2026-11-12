@@ -27,12 +27,11 @@ except ImportError:
 
 _MODEL_FILENAMES = {
     "tomato": "tomato_classifier.tflite",
-    "chili": "chili_classifier.tflite",
 }
 
 
 class ModelRegistry:
-    """Load kedua model TFLite sekali saat startup service (bukan per-request), sesuai
+    """Load model TFLite sekali saat startup service (bukan per-request), sesuai
     05-ml-pipeline.md. Invoke() TFLite Interpreter tidak thread-safe untuk instance yang
     sama, jadi setiap crop punya lock sendiri untuk menyerialkan inference per model.
     """

@@ -4,7 +4,7 @@
 
 ## 1. Ringkasan satu paragraf
 
-AgriVision adalah sistem computer vision untuk diagnosis penyakit & pemantauan kesehatan tanaman **tomat dan cabai**. Pengguna memotret daun → foto diunggah ke Supabase Storage → FastAPI (Railway) menjalankan model CNN (diagnosis), menghitung ExG/VARI (kesehatan), dan mencari rekomendasi di tabel `disease_reference` → hasil disimpan di Postgres dan ditampilkan di **web (Next.js)** dan **app (Flutter)**. Semua komponen sudah dibangun, di-deploy, dan diuji end-to-end. Yang tersisa terutama **evaluasi dengan foto lapangan nyata, verifikasi konten rekomendasi, dan penulisan laporan** (pekerjaan user).
+AgriVision adalah sistem computer vision untuk diagnosis penyakit & pemantauan kesehatan tanaman **tomat** (cabai dihapus 2026-11-12, lihat bagian 5 dan 10). Pengguna memotret daun → foto diunggah ke Supabase Storage → FastAPI (Railway) menjalankan model CNN (diagnosis), menghitung ExG/VARI (kesehatan), dan mencari rekomendasi di tabel `disease_reference` → hasil disimpan di Postgres dan ditampilkan di **web (Next.js)** dan **app (Flutter)**. Semua komponen sudah dibangun, di-deploy, dan diuji end-to-end. Yang tersisa terutama **evaluasi dengan foto lapangan nyata, verifikasi konten rekomendasi, dan penulisan laporan** (pekerjaan user).
 
 ## 2. Inventaris sistem (apa yang ada & di mana)
 
@@ -14,7 +14,7 @@ AgriVision adalah sistem computer vision untuk diagnosis penyakit & pemantauan k
 | ML service | FastAPI + TensorFlow-CPU (TFLite) + OpenCV | `ml-service/` | Railway, project `AgriVision`, service `AgriVision`, domain `agrivision-production.up.railway.app` |
 | Web | Next.js 16, React, Tailwind v4, Supabase SSR, Recharts, zod, react-hook-form, Radix Dialog | `web/` | Vercel project `agrivision` (team `argy-fawwazs-projects`), domain `agrivision-blond-nine.vercel.app` |
 | Mobile app | Flutter 3.41 / Dart 3.11, Riverpod 3 (tanpa codegen), go_router, supabase_flutter, dio, fl_chart, image_picker, google_fonts | `app/` | APK release di-sideload ke HP via `adb` |
-| Model | MobileNetV2 (tomat, 10 kelas, 224px), EfficientNetB4 (cabai, 6 kelas, 380px), TFLite | `ml-service/models/` | ikut ter-deploy bersama ml-service |
+| Model | MobileNetV2 (tomat, 10 kelas, 224px), TFLite (model cabai EfficientNetB4 dihapus) | `ml-service/models/` | ikut ter-deploy bersama ml-service |
 | Notebook training | Google Colab | `ml-service/agrivision_training.ipynb` | — |
 | Desain | token + 8 mockup | `design/` | — |
 
@@ -36,14 +36,14 @@ Detail kontrak: `docs/04-api-contract.md`. Skema: `docs/03-database-schema.md` +
 
 **Web (13 route):** login, register (publik), onboarding zona pertama, forgot/reset-password, upload (dropzone dengan retry idempoten), hasil diagnosis (ilustrasi daun SVG yang skalanya mengikuti `affected_area_pct`, severity meter, rekomendasi, konteks histori zona), dashboard (KPI, tren 30 hari, status zona, aktivitas), monitoring (tren multi-zona 7/30/90 hari + ranking kesehatan), detail zona (tren penuh, frekuensi penyakit, histori), analitik (frekuensi penyakit, tren severity mingguan, rata-rata confidence), riwayat (filter + paginasi), pengaturan (profil, kata sandi, kelola zona, keluar).
 
-**App (13 route):** login, daftar, mulai (zona pertama), lupa-password + verifikasi kode OTP, beranda (KPI, sparkline, status zona), unggah (kamera-first, retry per-langkah, auto-resume saat koneksi kembali), hasil diagnosis (setara web), riwayat (filter + infinite scroll), detail zona, panduan penyakit (16 entri `disease_reference`, tab tomat/cabai), notifikasi (dihitung saat layar dibuka dari zona `perlu_tindakan` + diagnosis `parah` 7 hari), profil (profil, kata sandi, tambah zona, keluar).
+**App (13 route):** login, daftar, mulai (zona pertama), lupa-password + verifikasi kode OTP, beranda (KPI, sparkline, status zona), unggah (kamera-first, retry per-langkah, auto-resume saat koneksi kembali), hasil diagnosis (setara web), riwayat (filter + infinite scroll), detail zona, panduan penyakit (10 entri tomat dari `disease_reference`), notifikasi (dihitung saat layar dibuka dari zona `perlu_tindakan` + diagnosis `parah` 7 hari), profil (profil, kata sandi, tambah zona, keluar).
 
 ## 5. Keputusan penting yang sudah diambil (jangan dibalik tanpa tanya user)
 
 | Keputusan | Alasan |
 |---|---|
-| Hanya tomat & cabai, 3 modul | scope realistis 1 semester; kedalaman evaluasi (lihat 01) |
-| Dua model terpisah per komoditas | distribusi kelas berbeda; `crop_type` sudah diketahui dari zona |
+| **Hanya tomat** (cabai dihapus 2026-11-12), 3 modul | arahan pembimbing: fokus deteksi daun tomat; kedalaman evaluasi lebih penting. **Jangan mengembalikan cabai tanpa tanya user** |
+| `crop_type` tetap ada di API/DB, selalu `tomat`; enum Postgres tetap memuat `cabai` (tak dipakai) | menjaga kontrak API stabil; enum tidak bisa di-drop dengan rapi |
 | Inference di Railway, bukan Supabase Edge | Deno tidak bisa menjalankan TF/ONNX |
 | Perluasan layar di atas mockup (web 13, app 13) | user minta kedua modul ML dimanfaatkan maksimal |
 | Registrasi publik, role selalu `petani`, PPL dinaikkan manual | user ingin dipakai banyak orang; mencegah eskalasi hak akses |
@@ -63,12 +63,12 @@ Detail kontrak: `docs/04-api-contract.md`. Skema: `docs/03-database-schema.md` +
 - **2026-09-22:** web Next.js dibangun (13 route), trigger `zone_health_daily` + perbaikan RLS `uploads_insert` (migrasi 002), bug zona waktu (UTC vs Jakarta), deploy ke Vercel, Supabase Auth URL diatur.
 - **2026-09-22/23:** app Flutter dibangun (13 route), diverifikasi di browser pane terhadap backend nyata.
 - **2026-09-24:** APK dipasang ke HP Samsung; `schema.sql` disinkronkan dengan produksi.
-- **2026-10-23:** insiden — service Railway terhapus tidak sengaja & project Supabase sempat tidak merespons (pause). Supabase dipulihkan user; service Railway dibuat ulang (URL baru `agrivision-production.up.railway.app`), diuji E2E tomat & cabai.
+- **2026-10-23:** insiden — service Railway terhapus tidak sengaja & project Supabase sempat tidak merespons (pause). Supabase dipulihkan user; service Railway dibuat ulang (URL baru `agrivision-production.up.railway.app`), diuji E2E tomat & cabai (cabai kemudian dihapus dari sistem).
 - **2026-10-23/24:** registrasi publik web + app, migrasi 003 (blokir ubah role dari client, batasi panjang nama), pembersihan cache per-akun di app, APK dibangun ulang dengan URL baru dan dipasang ke HP.
 
 ## 7. Bukti verifikasi yang sudah dilakukan
 
-- ml-service: `/api/health` → `{"status":"ok","model_loaded":true}`; E2E `/api/diagnose` untuk tomat & cabai lewat URL produksi (status 200, header CORS cocok domain Vercel, trigger mengisi `zone_health_daily`).
+- ml-service: `/api/health` → `{"status":"ok","model_loaded":true}`; E2E `/api/diagnose` (saat itu tomat & cabai; kini tomat saja) lewat URL produksi (status 200, header CORS cocok domain Vercel, trigger mengisi `zone_health_daily`).
 - Isolasi RLS: dua akun berbeda tidak bisa melihat data satu sama lain (404 di web).
 - Registrasi: signUp langsung mengembalikan sesi; role selalu `petani` walau metadata berisi `admin_ppl`; `PATCH profiles role` ditolak 403; nama dipotong 100 karakter; email duplikat ditolak.
 - Web: `npm run lint` + `npm run build` lulus; alur daftar → onboarding → upload diuji di browser.
@@ -81,14 +81,14 @@ Detail kontrak: `docs/04-api-contract.md`. Skema: `docs/03-database-schema.md` +
 1. **Uji foto lapangan nyata** (roadmap minggu 13). Semua uji Claude memakai gambar sintetis.
 2. **Evaluasi akurasi lab vs lapangan** (minggu 14): akurasi/precision/recall/F1 dilaporkan terpisah (lab = PlantVillage held-out; lapangan = PlantDoc atau foto sendiri) + diskusi gap. Baru ada confusion matrix lab di `ml-service/evaluation/`. *Claude bisa membuatkan skrip evaluasi satu-perintah jika diminta.*
 3. **Penulisan laporan** (bab hasil & pembahasan).
-4. **Verifikasi isi rekomendasi:** hanya 4 dari 16 baris `disease_reference` berstatus `is_verified=true`. Dosis pestisida tampil langsung ke petani → verifikasi ke dosen pembimbing/sumber agronomi sebelum demo/laporan.
+4. **Verifikasi isi rekomendasi:** hanya 2 dari 10 baris tomat `disease_reference` berstatus `is_verified=true`. Dosis pestisida tampil langsung ke petani → verifikasi ke dosen pembimbing/sumber agronomi sebelum demo/laporan.
 5. **Rotasi service role key** Supabase (pernah ditempel di chat), lalu perbarui `ml-service/.env` + variable Railway.
 6. **Set `NEXT_PUBLIC_ML_API_URL` di Vercel** ke URL Railway terbaru dan redeploy (jika belum).
 
 **Keterbatasan teknis yang diketahui:**
 - `health_score`: rentang ExG (`_EXG_MIN=-0.2`, `_EXG_MAX=0.6` di `ml-service/app/cv/vegetation_index.py`) masih **placeholder** — perlu dikalibrasi dengan foto sehat vs sakit nyata (roadmap minggu 5). Foto sintetis hijau murni menghasilkan 100.
 - `affected_area_pct` berbasis ambang warna HSV; pada daun sehat yang berbayang/berwarna tidak merata nilainya bisa > 0 sehingga `severity` tidak nol walau diagnosis "Sehat". Validasi dengan foto nyata; pertimbangkan memaksa severity `ringan`/`0%` bila label `*_healthy` dengan confidence tinggi.
-- Dataset cabai kecil (1.147 gambar, 6 kelas) → akurasi lebih fluktuatif dibanding tomat; laporkan apa adanya.
+- Model tomat hanya dievaluasi pada foto lab; set validasi kemungkinan bocor (augmentasi offline sebelum split) dan dipakai juga untuk early stopping → 94,33% adalah batas atas. Training ulang v2 dengan data non-lab + set uji lapangan dijadwalkan (lihat bagian 10).
 - Tanpa verifikasi email & tanpa CAPTCHA: rawan akun spam. Mitigasi cadangan: rate limit Supabase, Cloudflare Turnstile, atau menyalakan lagi Confirm email + SMTP sendiri (email bawaan Supabase hanya beberapa email/jam).
 - iOS belum pernah dibangun/diuji (tidak ada Mac).
 - Cakupan tes otomatis tipis (unit test fungsi murni di app; 1 tes E2E ml-service). Tidak ada tes integrasi web.
@@ -107,3 +107,15 @@ Detail kontrak: `docs/04-api-contract.md`. Skema: `docs/03-database-schema.md` +
 4. Kalibrasi `health_score` dengan foto sehat vs sakit nyata.
 5. Tulis laporan; ambil screenshot dari web & app (bisa dibuat Claude via browser pane).
 6. Opsional: skrip evaluasi, tes integrasi, CAPTCHA, custom domain.
+
+## 10. Perubahan scope: fokus tomat saja (2026-11-12)
+
+Arahan pembimbing: fitur deteksi cabai dihapus, fokus ke daun tomat. Keputusan user: hapus UI + kode + model cabai (skema DB/enum tetap); data cabai di produksi dihapus; training ulang model tomat dengan dataset tambahan (hanya dataset publik, tanpa foto lapangan milik sendiri); naskah jurnal dan pptx direvisi setelah training.
+
+**Fase 1 — pembersihan cabai (selesai di kode):**
+- ml-service: `crop_type` hanya `Literal["tomat"]` (selain itu 422), model/label cabai dihapus (`chili_classifier.tflite`, kunci `chili` di `label_map.json`, `confusion_matrix_cabai.png`), tes offline `tests/test_schemas.py`.
+- Web: pemilih jenis tanaman dihapus (form onboarding & modal zona), filter tanaman di Analitik/Riwayat dihapus, label zona hanya nama; insert zona selalu `crop_type = 'tomat'` (`ZONE_CROP_TYPE` di `web/lib/validation/zone.ts`).
+- App: `CropType` hanya `tomat` dengan `fromJson` toleran; pemilih tanaman, chip filter tanaman, dan tab Panduan Penyakit cabai dihapus; Panduan hanya menampilkan label `tomato_*`.
+- DB: seed `disease_reference` cabai dihapus dari `schema.sql`; `migrations/004_remove_chili_data.sql` dan `ml-service/scripts/purge_chili_data.py` (dry-run default; `--execute` menghapus Storage + zona + referensi cabai). Pra-cek produksi (2026-11-12): 0 zona cabai, 0 upload, 0 diagnosis, 6 baris `disease_reference` cabai.
+
+**Fase 2 — training ulang tomat v2:** lihat `05-ml-pipeline.md` (bagian "Rencana training ulang tomat"). Status: belum dimulai. **Fase 3 — revisi naskah & pptx:** setelah Fase 2.

@@ -8,7 +8,11 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/Button";
 import { FieldError, Input, Label } from "@/components/ui/Input";
 import { createClient } from "@/lib/supabase/client";
-import { type CreateZoneInput, createZoneSchema } from "@/lib/validation/zone";
+import {
+  type CreateZoneInput,
+  createZoneSchema,
+  ZONE_CROP_TYPE,
+} from "@/lib/validation/zone";
 import type { Tables } from "@/types/database.types";
 
 export function CreateZoneModal({
@@ -40,7 +44,7 @@ export function CreateZoneModal({
       .from("zones")
       .insert({
         name: values.name,
-        crop_type: values.crop_type,
+        crop_type: ZONE_CROP_TYPE,
         location_note: values.location_note || null,
         owner_id: user.id,
       })
@@ -70,18 +74,6 @@ export function CreateZoneModal({
               <Label htmlFor="zone-name">Nama zona</Label>
               <Input id="zone-name" placeholder="Contoh: A4" {...register("name")} />
               <FieldError>{errors.name?.message}</FieldError>
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="zone-crop">Jenis tanaman</Label>
-              <select
-                id="zone-crop"
-                className="w-full rounded-sm border border-input-border bg-input-bg px-3.5 py-3 font-sans text-[14.5px] text-ink focus:border-moss"
-                {...register("crop_type")}
-              >
-                <option value="tomat">Tomat</option>
-                <option value="cabai">Cabai</option>
-              </select>
-              <FieldError>{errors.crop_type?.message}</FieldError>
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="zone-note">Catatan lokasi (opsional)</Label>

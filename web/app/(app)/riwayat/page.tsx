@@ -11,7 +11,6 @@ export const metadata: Metadata = { title: "Riwayat — AgriVision" };
 
 interface SearchParams {
   zona?: string;
-  crop?: string;
   severity?: string;
   page?: string;
 }
@@ -28,7 +27,6 @@ export default async function RiwayatPage({
     getZones(),
     getDiagnosesHistory({
       zoneId: params.zona || undefined,
-      cropType: (params.crop as Enums<"crop_type">) || undefined,
       severity: (params.severity as Enums<"severity_level">) || undefined,
       page,
     }),
@@ -40,7 +38,6 @@ export default async function RiwayatPage({
     const merged = { ...params, ...overrides };
     const usp = new URLSearchParams();
     if (merged.zona) usp.set("zona", merged.zona);
-    if (merged.crop) usp.set("crop", merged.crop);
     if (merged.severity) usp.set("severity", merged.severity);
     if (merged.page && String(merged.page) !== "1") usp.set("page", String(merged.page));
     const qs = usp.toString();
@@ -73,18 +70,6 @@ export default async function RiwayatPage({
           </select>
         </div>
         <div className="flex flex-col gap-1">
-          <label className="font-sans text-[12px] font-medium text-sage">Jenis tanaman</label>
-          <select
-            name="crop"
-            defaultValue={params.crop ?? ""}
-            className="rounded-sm border border-input-border bg-input-bg px-3 py-2 font-sans text-[13.5px] text-ink"
-          >
-            <option value="">Semua</option>
-            <option value="tomat">Tomat</option>
-            <option value="cabai">Cabai</option>
-          </select>
-        </div>
-        <div className="flex flex-col gap-1">
           <label className="font-sans text-[12px] font-medium text-sage">Tingkat keparahan</label>
           <select
             name="severity"
@@ -103,7 +88,7 @@ export default async function RiwayatPage({
         >
           Terapkan Filter
         </button>
-        {(params.zona || params.crop || params.severity) && (
+        {(params.zona || params.severity) && (
           <a href="/riwayat" className="font-sans text-[13px] font-medium text-sage">
             Hapus filter
           </a>

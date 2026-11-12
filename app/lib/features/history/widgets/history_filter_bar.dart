@@ -43,18 +43,6 @@ class HistoryFilterBar extends StatelessWidget {
             ),
             const SizedBox(width: 8),
           ],
-          for (final crop in CropType.values) ...[
-            _FilterChip(
-              label: crop.label,
-              selected: filter.cropType == crop,
-              onTap: () => onChanged(
-                filter.cropType == crop
-                    ? filter.copyWith(clearCropType: true)
-                    : filter.copyWith(cropType: crop),
-              ),
-            ),
-            const SizedBox(width: 8),
-          ],
         ],
       ),
     );

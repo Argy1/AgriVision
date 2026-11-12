@@ -27,7 +27,7 @@ Dipanggil setelah foto berhasil diunggah ke Supabase Storage dan record `uploads
 **Proses internal (urutan wajib):**
 1. Ambil foto dari Supabase Storage via `image_path` (signed URL internal, pakai service role key).
 2. Preprocess gambar (resize sesuai input model, normalisasi).
-3. Jalankan model CNN sesuai `crop_type` (model tomat atau model cabai — lihat `05-ml-pipeline.md`) → `disease_label`, `confidence`.
+3. Jalankan model CNN tomat (`crop_type` selalu `tomat` — lihat `05-ml-pipeline.md`) → `disease_label`, `confidence`.
 4. Hitung `affected_area_pct` (segmentasi area bercak/lesi terhadap total area daun).
 5. Mapping `confidence` + `affected_area_pct` → `severity` (`ringan`/`sedang`/`parah`) — aturan mapping di `05-ml-pipeline.md`.
 6. Hitung ExG & VARI dari gambar yang sama (OpenCV) → `health_score` (0–100).
@@ -61,7 +61,8 @@ Dipanggil setelah foto berhasil diunggah ke Supabase Storage dan record `uploads
 ```
 
 **Error responses:**
-- `400` — `image_path` tidak ditemukan di Storage, atau `crop_type` tidak valid (bukan `tomat`/`cabai`).
+- `400` — `image_path` tidak ditemukan di Storage, atau `upload_id` tidak ditemukan.
+- `422` — body tidak valid, termasuk `crop_type` selain `tomat` (divalidasi sebagai `Literal["tomat"]`).
 - `401` — token tidak valid/kedaluwarsa.
 - `403` — user bukan pemilik zona terkait dan bukan `admin_ppl`.
 - `500` — model gagal memuat / inference error (log detail di server, jangan expose stack trace ke client).

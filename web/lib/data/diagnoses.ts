@@ -11,7 +11,7 @@ export async function getRecentDiagnoses(limit = 3) {
   const { data, error } = await supabase
     .from("diagnoses")
     .select(
-      "id, disease_name, severity, created_at, uploads!inner(zone_id, zones!inner(id, name, crop_type))",
+      "id, disease_name, severity, created_at, uploads!inner(zone_id, zones!inner(id, name))",
     )
     .order("created_at", { ascending: false })
     .limit(limit);
@@ -29,7 +29,7 @@ export async function getDiagnosisDetail(diagnosisId: string) {
     .select(
       `id, disease_label, disease_name, confidence, severity, affected_area_pct, created_at, upload_id,
        recommendations(recommendation_text, dosage, application_schedule, warning_note),
-       uploads!inner(id, zone_id, captured_at, zones!inner(id, name, crop_type, location_note))`,
+       uploads!inner(id, zone_id, captured_at, zones!inner(id, name, location_note))`,
     )
     .eq("id", diagnosisId)
     .maybeSingle();

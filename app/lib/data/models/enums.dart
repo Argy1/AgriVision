@@ -3,18 +3,17 @@
 /// serialisasi request/response, bukan cuma label tampilan).
 library;
 
+/// Proyek fokus ke tomat saja. Enum Postgres `crop_type` masih memuat 'cabai'
+/// (tidak bisa di-drop dengan rapi), jadi `fromJson` sengaja toleran: nilai lain
+/// dipetakan ke tomat supaya baris lama tidak membuat layar crash.
 enum CropType {
-  tomat,
-  cabai;
+  tomat;
 
-  static CropType fromJson(String value) => CropType.values.byName(value);
+  static CropType fromJson(String value) => CropType.tomat;
 
   String toJson() => name;
 
-  String get label => switch (this) {
-    CropType.tomat => 'Tomat',
-    CropType.cabai => 'Cabai',
-  };
+  String get label => 'Tomat';
 }
 
 enum SeverityLevel {

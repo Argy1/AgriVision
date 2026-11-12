@@ -41,7 +41,7 @@ export async function getLatestZoneHealth() {
 
   const { data: zones, error: zonesError } = await supabase
     .from("zones")
-    .select("id, name, crop_type")
+    .select("id, name")
     .order("name");
   if (zonesError) throw new Error(zonesError.message);
 

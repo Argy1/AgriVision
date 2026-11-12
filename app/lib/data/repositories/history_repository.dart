@@ -32,9 +32,6 @@ class HistoryRepository {
     if (filter.zoneId != null) {
       query = query.eq('uploads.zone_id', filter.zoneId as Object);
     }
-    if (filter.cropType != null) {
-      query = query.eq('uploads.zones.crop_type', filter.cropType!.toJson());
-    }
     if (filter.severity != null) {
       query = query.eq('severity', filter.severity!.toJson());
     }

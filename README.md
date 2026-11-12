@@ -1,6 +1,6 @@
 # AgriVision — Projek Akhir Computer Vision
 
-Sistem Deteksi Penyakit dan Pemantauan Kesehatan Tanaman Tomat dan Cabai Berbasis Computer Vision untuk Precision Farming.
+Sistem Deteksi Penyakit dan Pemantauan Kesehatan Tanaman Tomat Berbasis Computer Vision untuk Precision Farming.
 Tugas akhir mata kuliah Visual Komputer Cerdas — Argy Fawwaz Akbar, D4 TRPL, Sekolah Vokasi IPB University.
 
 **Status (2026-10-24): sistem sudah dibangun, di-deploy, dan diuji end-to-end.** Yang tersisa: uji foto lapangan nyata, evaluasi akurasi lab vs lapangan, verifikasi konten rekomendasi, dan penulisan laporan. Rinciannya di [`docs/08-status-dan-progres.md`](docs/08-status-dan-progres.md).

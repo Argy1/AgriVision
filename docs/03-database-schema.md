@@ -22,7 +22,7 @@ Extends `auth.users` bawaan Supabase. Dibuat otomatis lewat trigger `handle_new_
 
 ### `zones`
 Satu row = satu petak/lahan yang dipantau (contoh: "A3 — Blok Tomat").
-- `crop_type`: `tomat` | `cabai` — **wajib salah satu**, sesuai scope project.
+- `crop_type`: enum Postgres `tomat` | `cabai`, tetapi **hanya `tomat` yang dipakai** (proyek fokus ke tomat; `cabai` dibiarkan sebagai nilai mati karena enum tidak bisa di-drop dengan rapi). Klien selalu mengisi `tomat`. Data cabai lama dihapus lewat `database/migrations/004_remove_chili_data.sql` / `ml-service/scripts/purge_chili_data.py`.
 - `owner_id`: pemilik zona (petani atau admin_ppl yang mengelola).
 
 ### `uploads`

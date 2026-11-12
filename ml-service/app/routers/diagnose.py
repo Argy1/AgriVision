@@ -31,7 +31,7 @@ def diagnose(
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="crop_type tidak valid (harus 'tomat' atau 'cabai')",
+            detail="crop_type tidak valid (harus 'tomat')",
         )
 
     # --- Otorisasi: pemilik zona terkait, atau admin_ppl (403) ---

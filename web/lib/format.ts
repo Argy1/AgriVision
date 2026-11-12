@@ -40,8 +40,3 @@ export function daysSince(iso: string) {
   const diffMs = Date.now() - new Date(iso).getTime();
   return Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
 }
-
-export const CROP_LABEL: Record<"tomat" | "cabai", string> = {
-  tomat: "Tomat",
-  cabai: "Cabai",
-};

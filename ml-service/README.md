@@ -1,6 +1,6 @@
 # AgriVision — ML Service (FastAPI)
 
-Backend inferensi: menerima `POST /api/diagnose`, menjalankan model CNN (tomat: MobileNetV2, cabai: EfficientNetB4, TFLite), menghitung `affected_area_pct`/`severity` (HSV) dan ExG/VARI → `health_score` (OpenCV), mencari rekomendasi di `disease_reference`, lalu menyimpan hasil ke Supabase dengan service role. Kontrak: `../docs/04-api-contract.md`. Konteks proyek: `../CLAUDE.md`.
+Backend inferensi: menerima `POST /api/diagnose`, menjalankan model CNN (tomat: MobileNetV2, TFLite), menghitung `affected_area_pct`/`severity` (HSV) dan ExG/VARI → `health_score` (OpenCV), mencari rekomendasi di `disease_reference`, lalu menyimpan hasil ke Supabase dengan service role. Kontrak: `../docs/04-api-contract.md`. Konteks proyek: `../CLAUDE.md`.
 
 Live: `https://agrivision-production.up.railway.app` (cek: `/api/health`). `/` mengembalikan `{"detail":"Not Found"}` — normal, API tidak punya halaman root.
 

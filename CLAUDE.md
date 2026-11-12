@@ -2,7 +2,7 @@
 
 Ini adalah proyek **AgriVision**: tugas akhir mata kuliah Visual Komputer Cerdas milik Argy Fawwaz Akbar (TRPL, Sekolah Vokasi IPB). **Baca file ini dulu sebelum mengubah apa pun.** Untuk detail progres, daftar yang belum selesai, dan runbook operasional, lanjut ke `docs/08-status-dan-progres.md` dan `docs/09-operasional-dan-runbook.md`.
 
-## Status Saat Ini (diperbarui 2026-10-24)
+## Status Saat Ini (diperbarui 2026-11-12)
 
 **Seluruh sistem sudah dibangun, di-deploy, dan diuji end-to-end.** Ini BUKAN lagi proyek tahap perencanaan.
 
@@ -12,7 +12,7 @@ Ini adalah proyek **AgriVision**: tugas akhir mata kuliah Visual Komputer Cerdas
 | ML Service (FastAPI) | ✅ Live | https://agrivision-production.up.railway.app (Railway, root `ml-service/`) |
 | Web (Next.js 16) | ✅ Live | https://agrivision-blond-nine.vercel.app (Vercel, root `web/`) |
 | Mobile app (Flutter) | ✅ Terpasang di HP (APK release) | `app/` (belum di Play Store — tidak perlu untuk scope TA) |
-| Model ML (tomat + cabai) | ✅ Terlatih, ter-commit | `ml-service/models/*.tflite` |
+| Model ML (tomat saja) | ✅ Terlatih, ter-commit; training ulang (v2) direncanakan | `ml-service/models/tomato_classifier.tflite` |
 | Registrasi publik | ✅ Web + app | lihat bagian "Auth & Registrasi" |
 | Evaluasi akurasi lapangan + laporan | ⏳ BELUM (butuh data & tulisan user) | `docs/06-roadmap.md` minggu 13–14 |
 
@@ -20,14 +20,14 @@ Repo: https://github.com/Argy1/AgriVision (branch `main`; Vercel & Railway auto-
 
 ## Apa yang Dibangun
 
-Sistem web + mobile app untuk petani/PPL tomat & cabai:
+Sistem web + mobile app untuk petani/PPL tomat:
 1. **Upload foto daun** → 2. **Diagnosis penyakit** (CNN) + **Pemantauan kesehatan** (vegetation index ExG/VARI, classical CV) → 3. **Rekomendasi penanganan** (rule-based dari tabel `disease_reference`).
 
 Konteks lengkap & alasan scope: `docs/01-project-brief.md`.
 
 ## Batasan yang TIDAK BOLEH Dilanggar Tanpa Konfirmasi User
 
-- **Hanya tomat dan cabai.** Jangan menambah komoditas lain atau men-generalisasi model.
+- **Hanya tomat.** Fitur cabai DIHAPUS (keputusan 2026-11-12, arahan pembimbing: fokus deteksi daun tomat). Jangan menambah komoditas lain (termasuk mengembalikan cabai) atau men-generalisasi model tanpa konfirmasi user. Catatan teknis: enum Postgres `crop_type` masih memuat nilai `'cabai'` (tidak bisa di-drop dengan rapi) tapi tidak dipakai; `crop_type` tetap dikirim di API dan selalu `'tomat'`.
 - **3 modul saja:** diagnosis (deep learning), monitoring (classical CV — BUKAN model DL terpisah), rekomendasi (lookup table — BUKAN model ML). Tidak ada "robotic farming".
 - **Supabase untuk data (Postgres/Auth/Storage), FastAPI di Railway untuk inference.** Jangan pindahkan inference ke Supabase Edge Functions (Deno tidak bisa menjalankan TF/ONNX).
 - **Next.js untuk web, Flutter untuk app** — dua codebase terpisah, berbagi kontrak API & skema DB yang sama.
@@ -63,7 +63,7 @@ database/
   migrations/            ← migrasi tambahan yang dijalankan manual (003 = pengerasan registrasi publik)
 ml-service/              ← FastAPI + model TFLite + notebook training + tes E2E
   app/{routers,cv,ml}    ← endpoint, classical CV (ExG/VARI, segmentasi), inferensi
-  models/                ← tomato_classifier.tflite, chili_classifier.tflite, label_map.json
+  models/                ← tomato_classifier.tflite, label_map.json
 web/                     ← Next.js 16 (App Router, Tailwind v4, Supabase SSR)
 app/                     ← Flutter (Riverpod, go_router, supabase_flutter)
 ```
@@ -111,7 +111,7 @@ Lihat `docs/09-operasional-dan-runbook.md` (perintah lengkap, env var, deploy, t
 
 ## Hal yang Masih Perlu Dikerjakan
 
-Daftar lengkap & terkini ada di `docs/08-status-dan-progres.md`. Ringkasnya: evaluasi akurasi lapangan vs lab, verifikasi isi `disease_reference` (hanya 4 dari 16 baris `is_verified=true`), kalibrasi `health_score` (ExG min/max masih placeholder), uji app di berbagai HP, dan penulisan laporan.
+Daftar lengkap & terkini ada di `docs/08-status-dan-progres.md`. Ringkasnya: evaluasi akurasi lapangan vs lab, verifikasi isi `disease_reference` (hanya 2 dari 10 baris tomat `is_verified=true`), kalibrasi `health_score` (ExG min/max masih placeholder), uji app di berbagai HP, **training ulang model tomat (v2) dengan data non-lab + set uji lapangan** (lihat `docs/05` dan `docs/08`), revisi naskah/pptx ke versi tomat saja, dan penulisan laporan.
 
 ## Kalau Ragu
 
