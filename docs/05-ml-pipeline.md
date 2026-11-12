@@ -55,7 +55,7 @@ Export model ke **TFLite** atau **ONNX** untuk inference ringan di FastAPI (Rail
 
 ---
 
-## Training ulang tomat (v2) — status: notebook siap, training belum dijalankan
+## Training ulang tomat (v2) — status: sudah dijalankan di Colab (2026-11-12), BELUM di-deploy
 
 Alasan: angka validasi 94,33% (MobileNetV2) hanya berlaku untuk foto lab. Dataset sekarang adalah augmentasi offline PlantVillage yang di-split *setelah* augmentasi, sehingga validasi kemungkinan berisi turunan daun yang sama dengan set latih (optimistis), dan set validasi juga dipakai untuk early stopping. **Menambah gambar PlantVillage tidak menaikkan akurasi lapangan** — masalahnya domain, bukan jumlah.
 
@@ -67,6 +67,31 @@ Rencana (detail & status di `08-status-dan-progres.md`):
 5. Pilih model berdasarkan akurasi **uji lapangan**; laporkan metrik lab dan lapangan terpisah (akurasi/P/R/F1, matriks kebingungan, selang Wilson).
 6. Ekspor `tomato_classifier.tflite` + `label_map.json` baru (naikkan `model_version`; pertahankan 10 label agar `disease_reference` tetap sinkron), deploy, E2E produksi.
 7. Opsional (mengubah kontrak, butuh persetujuan): ambang confidence "perlu verifikasi manual".
+
+### Hasil training v2 (dijalankan 2026-11-12 di Colab T4, notebook `agrivision_training_tomato_v2.ipynb`)
+
+Data: `lab_train` 12.997 / `lab_val` 1.519 / `lab_test` 3.639 (PlantVillage asli, split per daun) dan `field_train` 369 / `field_val` 130 / `field_test` 216 (PlantDoc tomat). Kelas Target Spot dan spider mites tidak punya data lapangan. Dua kandidat dilatih (basis beku ≤12 epoch + fine-tuning 30 lapisan ≤10 epoch).
+
+| Model | `lab_val` | `field_val` (n=130) |
+|---|---|---|
+| MobileNetV2 v2 | 72,75% | 39,23% |
+| EfficientNetB0 v2 (terpilih) | 85,52% | 49,23% |
+
+Uji akhir, set yang sama untuk kedua model (model v1 = `tomato_classifier.tflite` produksi saat ini):
+
+| | `lab_test` (n=3.639, split per daun) | `field_test` (n=216, PlantDoc) |
+|---|---|---|
+| **v1** (MobileNetV2, produksi) | 94,45% (*) | **25,93%** (CI95 20,5–32,2; F1 makro 16,97%) |
+| **v2** (EfficientNetB0) | 85,90% | **45,37%** (CI95 38,9–52,0; F1 makro 41,31%) |
+
+(*) Angka lab v1 **tidak bersih**: v1 dilatih pada augmentasi PlantVillage yang kemungkinan berasal dari gambar/daun yang sama dengan `lab_test`; hanya `field_test` yang benar-benar adil untuk membandingkan v1 dan v2 (v1 tidak pernah melihat PlantDoc; v2 hanya melihat `field_train`, bukan `field_test`).
+
+Temuan dan caveat:
+- **Akurasi lapangan v1 hanya ±26%** pada foto non-lab (angka 94,33% di naskah hanya berlaku untuk foto lab). v2 menaikkannya ke ±45%, tapi tetap rendah.
+- v2 kemungkinan **under-trained** (akurasi latih ±75–78% saat berhenti: augmentasi kuat, LR fine-tuning 1e-5, epoch terbatas). Ruang perbaikan masih ada (augmentasi lebih ringan, LR fine-tuning lebih besar, epoch lebih banyak, lebih banyak data lapangan); angka di atas belum merupakan batas atas v2.
+- `field_test` kecil (216) dan dari satu sumber (PlantDoc); selang kepercayaan lebar dan mengasumsikan gambar independen.
+- Model v2 **belum di-deploy**. TFLite v2: 8,15 MB (float16), kesepakatan argmax dengan Keras 100%; kuantisasi dinamis int8 (default v1) merusak EfficientNetB0 (hanya 92,7% sepakat, selisih probabilitas hingga 0,69).
+- Bug notebook yang ditemukan saat benar-benar dijalankan dan sudah diperbaiki: `load_dataset("mohanty/PlantVillage","color")` tidak bisa (dataset berbasis skrip → file mentah dibaca langsung), import `load_dataset` hilang, `GaussianNoise` Keras 3 hanya menerima stddev 0–1, augmentasi di `tf.data` (CPU) ±10× lebih lambat daripada di dalam model (GPU), dan `from_keras_model` + kuantisasi dinamis untuk TFLite.
 
 Notebook: `ml-service/agrivision_training_tomato_v2.ipynb` (dibuat 2026-11-12; tanpa API key; sintaks sudah dicek tapi **belum pernah dijalankan** di Colab). Dua kandidat: MobileNetV2 dan EfficientNetB0 (224px); model dipilih dari akurasi `field_val`, uji akhir sekali pada model terpilih, plus perbandingan dengan v1 pada set uji yang sama dan verifikasi TFLite vs Keras (≥97% argmax sama). Keluaran: `tomato_classifier.tflite`, `label_map.json` (kunci `tomato`, 10 label identik dengan v1), `metrics.json`, matriks kebingungan. Training dijalankan user di Colab; integrasi model ke ml-service dikerjakan setelahnya. Jangan deploy bila akurasi lapangan v2 tidak lebih baik dari v1.
 
