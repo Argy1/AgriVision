@@ -105,6 +105,38 @@ Notebook: `ml-service/agrivision_training_tomato_v2.ipynb` (dibuat 2026-11-12; t
 
 ---
 
+## Ablasi pra-pemrosesan citra pada MobileNetV2 (v3, dijalankan 2026-11-15/16 di Colab T4)
+
+Notebook: `ml-service/agrivision_experiment_preprocessing_v3.ipynb` (modul `app/ml/enhance.py`). Data = v2 (lab: PlantVillage split per daun, 12.997/1.519/3.639 gambar latih/val/uji; lapangan: PlantDoc 369/130/216). MobileNetV2 224px, dua tahap (kepala 8 epoch, lalu 60 lapisan atas dibuka dengan BatchNorm dibekukan, ≤15 epoch), augmentasi dan hiperparameter identik untuk semua varian; 7 varian × seed 42, lalu baseline + 2 varian terbaik (menurut `field_val`) × seed 1 dan 2.
+
+**Seed 42, semua varian (akurasi %):**
+
+| Varian | lab_test | field_test (PlantDoc, n=216) | field_val |
+|---|---|---|---|
+| none (baseline) | 95,41 | 50,00 | 46,15 |
+| clahe | 93,49 | 52,31 | 47,69 |
+| sog (Shades-of-Gray) | 95,71 | 50,46 | 48,46 |
+| unsharp | 94,37 | 54,63 | 49,23 |
+| bg (penekanan latar) | 95,58 | 46,76 | 45,38 |
+| sog_clahe | 95,58 | 45,83 | 48,46 |
+| bg_sog_clahe | 94,81 | 46,76 | 44,62 |
+
+**Tiga seed (rata-rata ± simpangan baku):**
+
+| Varian | lab_test acc | lab_test F1 makro | field_test acc | field_test F1 makro | field_val acc |
+|---|---|---|---|---|---|
+| none | 94,97 ± 0,31 | 93,26 ± 0,21 | 56,48 ± 4,58 | 55,75 ± 2,72 | 46,67 ± 0,73 |
+| sog | 95,49 ± 1,11 | 94,50 ± 1,08 | 51,70 ± 2,08 | 49,87 ± 2,60 | 43,85 ± 3,77 |
+| unsharp | 94,84 ± 0,54 | 93,38 ± 1,04 | 54,17 ± 1,73 | 53,52 ± 1,43 | 48,97 ± 0,98 |
+
+**Uji berpasangan terhadap baseline (seed 42, McNemar):** pada `field_test` semua selisih tidak signifikan (p 0,20–1,00; selisih −4,2 s.d. +4,6 poin, CI bootstrap mencakup 0). Pada `lab_test`, CLAHE (−1,92 poin, p < 0,001) dan unsharp (−1,04 poin, p = 0,016) justru sedikit lebih buruk; varian lain netral (selisih ≤ 0,6 poin).
+
+**Kesimpulan (hasil nol, dilaporkan apa adanya):** tidak ada varian pra-pemrosesan yang meningkatkan akurasi lapangan secara bermakna. Variansi antarseed baseline pada `field_test` (50,0–59,7%, simpangan baku 4,6 poin) lebih besar daripada semua selisih antarvarian, jadi perbandingan satu-seed tidak boleh ditafsirkan sebagai keunggulan. Akurasi lab baseline (±95%, split bersih per daun) jauh lebih tinggi daripada lapangan (±50–60%): kesenjangan domain tetap menjadi masalah utama dan tidak diselesaikan oleh enhancement.
+
+Baseline per kelas pada `lab_test` (seed 42; presisi/recall/F1 %): Bacterial_spot 99,0/91,1/94,9; Early_blight 86,3/90,7/88,4; Late_blight 97,8/95,5/96,6; Leaf_Mold 81,1/100/89,6; Septoria 89,3/91,4/90,3; Spider_mites 91,6/98,4/94,9; Target_Spot 96,0/91,7/93,8; TYLCV 99,9/98,2/99,0; ToMV 98,2/80,3/88,3; healthy 98,5/100/99,3.
+
+---
+
 ## Modul 2: Monitoring (Classical CV — Vegetation Index)
 
 Tidak pakai deep learning tambahan — pakai **Excess Green Index (ExG)** dan **VARI (Visible Atmospherically Resistant Index)**, dihitung langsung dari foto RGB yang sama dengan yang dipakai modul diagnosis.
