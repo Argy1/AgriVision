@@ -135,6 +135,24 @@ Notebook: `ml-service/agrivision_experiment_preprocessing_v3.ipynb` (modul `app/
 
 Baseline per kelas pada `lab_test` (seed 42; presisi/recall/F1 %): Bacterial_spot 99,0/91,1/94,9; Early_blight 86,3/90,7/88,4; Late_blight 97,8/95,5/96,6; Leaf_Mold 81,1/100/89,6; Septoria 89,3/91,4/90,3; Spider_mites 91,6/98,4/94,9; Target_Spot 96,0/91,7/93,8; TYLCV 99,9/98,2/99,0; ToMV 98,2/80,3/88,3; healthy 98,5/100/99,3.
 
+### Uji eksternal Tomato-Village (v3b, 2026-11-15) — PARSIAL, terhenti karena kuota GPU Colab
+
+Notebook: `ml-service/agrivision_experiment_external_v3b.ipynb`. Set uji = Tomato-Village varian-a (Gehlot dkk., 2023; foto kebun asli), hanya 3 kelas yang bisa dipetakan: Early_blight 496, Late_blight 904, healthy 216 (n = 1.616; near-duplicate terhadap data latih = 0). Model tetap 10 kelas, prediksi di luar 3 kelas dihitung salah. Tomato-Village tidak pernah dipakai untuk melatih atau memilih model. **Pembanding wajib: menebak "Late_blight" untuk semua gambar sudah 55,9%.**
+
+Runtime Colab terputus (batas penggunaan GPU) setelah 5 dari 9 model selesai; model tersimpan di `/content/models` ikut hilang, sehingga tidak ada uji McNemar, F1 makro, maupun recall per kelas untuk set eksternal. Varian `sog` dan `unsharp` seed 2 belum berjalan. Akurasi (%) dari log yang sempat terbaca:
+
+| Varian | Seed | lab_test | PlantDoc field_test | Tomato-Village |
+|---|---|---|---|---|
+| none | 42 | 96,48 | 53,70 | 40,72 |
+| none | 1 | 94,89 | 53,24 | 47,09 |
+| none | 2 | 96,81 | 56,94 | 35,71 |
+| unsharp | 42 | 93,79 | 57,41 | 50,00 |
+| unsharp | 1 | 94,17 | 51,85 | 40,97 |
+
+Rata-rata baseline (3 seed): lab 96,06; PlantDoc 54,63; Tomato-Village 41,17 ± 4,66. Unsharp (2 seed): lab 93,98; PlantDoc 54,63; Tomato-Village 45,49.
+
+Temuan yang aman dilaporkan: (1) di foto kebun asli, **model berada di bawah baseline mayoritas (55,9%)** untuk kelima model — kesenjangan lab→lapangan lebih parah daripada yang terlihat di PlantDoc; (2) variasi antarseed baseline di Tomato-Village (35,7–47,1%) jauh lebih besar daripada selisih baseline vs unsharp, jadi tidak ada klaim keunggulan varian; (3) seed 42 yang sama memberi hasil berbeda antara v3 dan v3b (baseline lab 95,41 vs 96,48; PlantDoc 50,00 vs 53,70) karena nondeterminisme GPU/pipeline — satu run tidak dapat diulang persis, sehingga hanya rata-rata multi-seed yang layak dilaporkan. Untuk menyelesaikan: jalankan ulang v3b setelah kuota GPU pulih (atau di platform lain), dengan keluaran Step 11–12 disimpan segera.
+
 ---
 
 ## Modul 2: Monitoring (Classical CV — Vegetation Index)
