@@ -153,6 +153,19 @@ Rata-rata baseline (3 seed): lab 96,06; PlantDoc 54,63; Tomato-Village 41,17 ± 
 
 Temuan yang aman dilaporkan: (1) di foto kebun asli, **model berada di bawah baseline mayoritas (55,9%)** untuk kelima model — kesenjangan lab→lapangan lebih parah daripada yang terlihat di PlantDoc; (2) variasi antarseed baseline di Tomato-Village (35,7–47,1%) jauh lebih besar daripada selisih baseline vs unsharp, jadi tidak ada klaim keunggulan varian; (3) seed 42 yang sama memberi hasil berbeda antara v3 dan v3b (baseline lab 95,41 vs 96,48; PlantDoc 50,00 vs 53,70) karena nondeterminisme GPU/pipeline — satu run tidak dapat diulang persis, sehingga hanya rata-rata multi-seed yang layak dilaporkan. Untuk menyelesaikan: jalankan ulang v3b setelah kuota GPU pulih (atau di platform lain), dengan keluaran Step 11–12 disimpan segera.
 
+### Ablasi komposisi data latih — protokol backbone beku (v5, runtime CPU, 2026-11-15) — Bagian 1 selesai
+
+Notebook: `ml-service/agrivision_experiment_v5_cpu_frozen.ipynb`. **Protokol berbeda dari v3/v3b/v4:** kuota GPU habis, sehingga MobileNetV2 (ImageNet) **dibekukan**, fitur diekstrak sekali (tanpa augmentasi, tanpa fine-tuning) dan hanya kepala linear (Dropout 0,3 + Dense softmax) yang dilatih (Adam 1e-3, ≤40 epoch × 200 langkah × batch 64, early stopping pada validasi gabungan sumber yang dipakai, class weight). **Akurasi mutlak tidak sebanding dengan v3** (lab 89–92% vs 95–97% pada fine-tuning); yang bermakna adalah selisih antar kondisi *dalam protokol yang sama*. Komposisi (porsi data lapangan dalam batch dijaga 25%): A = lab saja; B = lab 75% + PlantDoc 25%; C = lab 75% + Tomato-Village 25%; D = lab 75% + PlantDoc 12,5% + Tomato-Village 12,5%. Tomato-Village dibagi mengikuti split resmi (train/val/test) lalu near-duplicate (dHash ≤ 3) dibuang terhadap data lain dan antar-split: test 164→116, val 322→211, total 1.616→1.457 gambar — split resmi ternyata mengandung banyak gambar mirip. Tebakan mayoritas: `tv_test` 49,14% (n = 116), `tv_all` 54,63% (n = 1.457). `tv_all` hanya sah untuk A dan B (tidak dilatih dengan Tomato-Village). 5 seed per kondisi; rata-rata ± simpangan baku (populasi), akurasi %:
+
+| Komposisi | lab_test | PlantDoc field_test (n=216) | Tomato-Village test (n=116) | Tomato-Village semua (n=1.457) |
+|---|---|---|---|---|
+| A lab saja | 91,58 ± 0,38 | 28,52 ± 0,70 | 41,03 ± 2,01 | 47,89 ± 0,95 |
+| B lab + PlantDoc | 89,23 ± 0,58 | 43,52 ± 2,29 | 32,07 ± 2,75 | 38,20 ± 2,66 |
+| C lab + Tomato-Village | 90,81 ± 0,22 | 25,28 ± 0,63 | 89,31 ± 0,88 | (tidak sah) |
+| D lab + keduanya | 89,56 ± 0,45 | 42,50 ± 1,84 | 87,93 ± 2,38 | (tidak sah) |
+
+Pola (konsisten di kelima seed): (1) data **dari domain yang sama dengan set uji** menaikkan akurasi sumbernya sangat besar (PlantDoc 28,5 → 43,5 dengan PlantDoc di data latih; Tomato-Village 41 → 89 dengan Tomato-Village di data latih); (2) data lapangan **dari sumber lain tidak menolong dan dapat merugikan**: menambah PlantDoc menurunkan Tomato-Village (41,0 → 32,1 pada `tv_test`; 47,9 → 38,2 pada `tv_all`), menambah Tomato-Village tidak menaikkan PlantDoc (28,5 → 25,3); (3) menambah data lapangan menurunkan akurasi lab 1–2 poin; (4) tanpa data in-domain, model berada di bawah tebakan mayoritas pada Tomato-Village (A: 47,9% vs 54,6%). **Peringatan tafsir:** angka 88–89% pada `tv_test` untuk C/D adalah evaluasi dalam sumber yang sama dan kemungkinan terinflasi oleh kemiripan antar-foto Tomato-Village (dedupe hanya membuang kembaran dekat, bukan kemiripan adegan/tanaman); jangan dilaporkan sebagai akurasi lapangan umum, dan `tv_test` kecil (n = 116, ±9 poin pada tingkat kepercayaan 95%). Uji McNemar dan kesimpulan per kelas menunggu keluaran Step 15–16 notebook. **Bagian 2** (SE, CBAM, MobileNetV3-Large, EfficientNetB0 pada komposisi B) masih berjalan: kepala SE di CPU ≈ 10 menit per model; hasilnya dicatat setelah selesai.
+
 ---
 
 ## Modul 2: Monitoring (Classical CV — Vegetation Index)
