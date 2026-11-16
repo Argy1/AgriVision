@@ -203,7 +203,21 @@ Notebook: `ml-service/agrivision_experiment_v4_data_arch.ipynb` (commit 97f7963,
 
 Temuan: (1) **data dari domain yang sama dengan set uji menaikkan akurasi sumber itu sangat besar**, lebih besar daripada pada backbone beku (PlantDoc +30 poin vs +15; Tomato-Village dalam-sumber +66 poin vs +48); (2) **data lapangan dari sumber lain tidak menolong secara signifikan**: Tomato-Village tidak menaikkan PlantDoc (22,1% tetap) dan PlantDoc tidak menaikkan Tomato-Village secara signifikan di seed mana pun (31,0 → 34,8% pada `tv_test`; p ≥ 0,26); (3) **perbedaan dari v5**: penurunan akurasi Tomato-Village setelah menambah PlantDoc, yang terlihat pada backbone beku (41 → 32%), **tidak terulang pada fine-tuning** (arahnya justru sedikit naik dan tidak signifikan) — klaim "data lapangan sumber lain dapat merugikan" hanya berlaku pada protokol backbone beku dan tidak boleh digeneralisasi; (4) tanpa data in-domain, model fine-tuning lab-saja jauh di bawah tebakan mayoritas pada Tomato-Village (31,0% pada `tv_test` vs 49,1%; 41,0% pada seluruh set vs 54,6%) dan hanya 23,9% di PlantDoc (tebakan mayoritas 19,9%); (5) akurasi lab stabil di 94,6–96,0% untuk semua komposisi (D 1,3 poin lebih rendah dari A), jadi menambah data lapangan tidak mengorbankan akurasi lab pada fine-tuning. Variasi antarseed besar pada A (PlantDoc 21,8–27,3%; Tomato-Village 25,0–37,9%) sehingga satu seed tidak cukup. Angka Tomato-Village dalam-sumber untuk C/D tetap rentan terinflasi oleh kemiripan antar-foto (lihat v5).
 
-**Bagian 2 (arsitektur, fine-tuning)** sedang berjalan di v4b (SE seed 42 selesai: lab 95,80; PlantDoc 49,54; Tomato-Village test 33,62); hasil lengkapnya dicatat setelah selesai.
+**Bagian 2 (arsitektur, fine-tuning, komposisi B = lab + PlantDoc; 3 seed 42/1/2; rata-rata ± SD populasi, %)**. Selesai di v4b (`ml-service/results/v4b_results.csv`; seed 42 dan 1 MobileNetV2 dari `v4_partial_results.csv`). Akurasi sudah diverifikasi ulang dari prediksi per citra.
+
+| Arsitektur | lab_test | PlantDoc (n=216) | Tomato-Village test (n=116) | Tomato-Village semua (n=1.457) |
+|---|---|---|---|---|
+| MobileNetV2 (acuan) | 95,78 ± 1,24 | 53,86 ± 1,16 | 34,77 ± 3,33 | 41,57 ± 4,53 |
+| MobileNetV2 + SE | 95,63 ± 0,51 | 51,23 ± 1,78 | 38,51 ± 4,69 | 47,17 ± 3,48 |
+| MobileNetV2 + CBAM | 94,05 ± 0,82 | 50,77 ± 2,52 | 33,33 ± 4,00 | 42,39 ± 3,44 |
+| MobileNetV3-Large | 97,16 ± 0,50 | 51,85 ± 1,51 | 36,21 ± 3,92 | 43,22 ± 3,29 |
+| EfficientNetB0 | 97,63 ± 0,35 | 48,61 ± 2,73 | 41,09 ± 5,19 | 44,16 ± 4,10 |
+
+McNemar eksak per seed terhadap MobileNetV2 (tanpa koreksi perbandingan ganda; 5 dari 24 uji p < 0,05, dengan arah berbeda-beda):
+- PlantDoc: hanya CBAM seed 42 (14 vs 31, p = 0,016) dan EfficientNetB0 seed 1 (21 vs 37, p = 0,048) bermakna, keduanya **merugikan**; selebihnya p ≥ 0,088.
+- Tomato-Village test: SE seed 1 (15 vs 5, p = 0,041), MobileNetV3-Large seed 2 (25 vs 12, p = 0,047), dan EfficientNetB0 seed 1 (24 vs 10, p = 0,024) bermakna dan menguntungkan, tetapi pada seed lain untuk arsitektur yang sama p = 0,08–0,72 (tidak bermakna).
+
+**Kesimpulan Bagian 2 (fine-tuning):** kapasitas model hanya menaikkan akurasi lab (MobileNetV3-Large dan EfficientNetB0 ≈ +1,4 sampai +1,9 poin di atas MobileNetV2; CBAM ≈ −1,7 poin). Pada data lapangan, tidak ada arsitektur yang unggul secara konsisten: selisih rata-rata (PlantDoc −5,3 sampai −2,0 poin; Tomato-Village test −1,4 sampai +6,3 poin) berada dalam rentang SD antar-seed (hingga 5 poin) dan uji berpasangan per seed bertentangan arah. EfficientNetB0 bahkan terendah di PlantDoc (48,6%). Ini sejalan dengan hasil backbone beku (v5/v5b): penentu akurasi lapangan adalah kecocokan domain data latih, bukan arsitektur. Keterbatasan: set uji lapangan kecil (216 dan 116), tiga seed, dan nondeterminisme GPU (dua run seed sama bisa berbeda); karena itu hasil ini ditulis sebagai tidak ada bukti perbedaan, bukan bukti kesetaraan.
 
 ---
 
