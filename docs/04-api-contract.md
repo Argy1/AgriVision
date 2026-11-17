@@ -61,7 +61,7 @@ Dipanggil setelah foto berhasil diunggah ke Supabase Storage dan record `uploads
 ```
 
 **Error responses:**
-- `400` — `image_path` tidak ditemukan di Storage, `upload_id` tidak ditemukan, file bukan gambar valid, atau **foto tidak memuat daun yang dapat dikenali** (wilayah daun < 3% foto; `detail` berisi saran mengambil foto satu daun dari dekat).
+- `400` — `image_path` tidak ditemukan di Storage, `upload_id` tidak ditemukan, file bukan gambar valid, atau **foto tidak memuat daun yang dapat dikenali** (wilayah daun < 3% foto; `detail` berisi saran mengambil foto satu daun dari dekat), atau **model tidak cukup yakin** (keyakinan tertinggi < 50%, env `REJECT_CONFIDENCE`; `detail` menyebut keyakinannya dan meminta foto daun tomat satu daun dari dekat). Heuristik: foto non-tomat yang diprediksi dengan keyakinan tinggi tetap lolos; penolakan penuh butuh kelas "bukan tomat" pada model. Tidak ada perubahan field kontrak.
 - `422` — body tidak valid, termasuk `crop_type` selain `tomat` (divalidasi sebagai `Literal["tomat"]`).
 - `401` — token tidak valid/kedaluwarsa.
 - `403` — user bukan pemilik zona terkait dan bukan `admin_ppl`.

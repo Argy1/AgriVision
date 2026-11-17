@@ -89,7 +89,7 @@ def diagnose(
             detail="Gagal menghitung vegetation index / affected area",
         )
 
-    # --- 6b. Kelayakan foto (heuristik). Tanpa daun sama sekali -> tolak (400). ---
+    # --- 6b. Kelayakan foto (heuristik). Tanpa daun, atau keyakinan model < REJECT_CONFIDENCE -> tolak (400). ---
     masks = cv_result["masks"]
     quality = assess_photo(
         masks["green"],
@@ -101,7 +101,7 @@ def diagnose(
     if quality.rejected:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Foto tidak memuat daun yang dapat dikenali. Ambil foto satu daun dari dekat dengan latar polos.",
+            detail=quality.reject_detail(),
         )
 
     # --- 7. Lookup disease_reference ---

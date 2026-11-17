@@ -66,3 +66,22 @@ def test_foliage_filled_frame_gets_busy_scene_warning():
 def test_low_confidence_is_flagged():
     _, quality = _quality(_closeup_leaf(), confidence=0.4)
     assert any("ragu" in issue for issue in quality.issues)
+
+
+def test_confidence_below_reject_threshold_is_rejected():
+    _, quality = _quality(_closeup_leaf(), confidence=0.45)
+    assert quality.rejected
+    assert quality.reject_reason == "low_confidence"
+    assert "tidak cukup yakin" in quality.reject_detail()
+
+
+def test_confidence_between_reject_and_low_is_warned_not_rejected():
+    _, quality = _quality(_closeup_leaf(), confidence=0.55)
+    assert not quality.rejected
+    assert any("ragu" in issue for issue in quality.issues)
+
+
+def test_no_leaf_reason_and_message():
+    _, quality = _quality(np.full((300, 300, 3), 128, np.uint8), confidence=0.95)
+    assert quality.reject_reason == "no_leaf"
+    assert "tidak memuat daun" in quality.reject_detail()
