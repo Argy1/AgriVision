@@ -1,0 +1,50 @@
+{
+  "best_seed": 42,
+  "seeds": {
+    "42": {
+      "seed": 42,
+      "epochs": [
+        5,
+        12
+      ],
+      "val_acc_restored": 0.9134408831596375,
+      "minutes": 10.2,
+      "acc": {
+        "lab_test": 0.956,
+        "field_test": 0.5093,
+        "tv_test": 0.9397,
+        "tv_all": 0.9526
+      }
+    }
+  },
+  "tflite_mb": 4.536552,
+  "tflite_eval": {
+    "lab_test": {
+      "n": 3639,
+      "accuracy": 0.9576806815059082,
+      "macro_precision": 0.9490733423007167,
+      "macro_recall": 0.9427534534590383,
+      "macro_f1": 0.9427552853651703,
+      "weighted_f1": 0.9568181465847921,
+      "argmax_agreement_vs_keras": 0.9978015938444628
+    },
+    "field_test": {
+      "n": 216,
+      "accuracy": 0.5138888888888888,
+      "macro_precision": 0.5315326820464532,
+      "macro_recall": 0.5049822898765295,
+      "macro_f1": 0.489105737142979,
+      "weighted_f1": 0.4828461353152179,
+      "argmax_agreement_vs_keras": 0.9953703703703703
+    },
+    "tv_test": {
+      "n": 116,
+      "accuracy": 0.9396551724137931,
+      "macro_precision": 0.9406755525176577,
+      "macro_recall": 0.9434386539649697,
+      "macro_f1": 0.9419772950746402,
+      "weighted_f1": 0.9396755162241888,
+      "argmax_agreement_vs_keras": 1.0
+    }
+  }
+}

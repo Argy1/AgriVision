@@ -1,11 +1,12 @@
 {
   "tomato": {
-    "model_version": "v1",
+    "model_version": "v2",
     "img_size": [
       224,
       224
     ],
-    "source_dataset": "kaggle:vipoooool/new-plant-diseases-dataset",
+    "source_dataset": "huggingface:mohanty/PlantVillage (lab, split per daun) + PlantDoc (subset tomat) + Tomato-Village (3 kelas); komposisi batch 75/12.5/12.5",
+    "architecture": "MobileNetV2 (fine-tuning 2 tahap, float16 TFLite)",
     "classes": [
       {
         "index": 0,

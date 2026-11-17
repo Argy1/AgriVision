@@ -12,7 +12,7 @@ Ini adalah proyek **AgriVision**: tugas akhir mata kuliah Visual Komputer Cerdas
 | ML Service (FastAPI) | ✅ Live | https://agrivision-production.up.railway.app (Railway, root `ml-service/`) |
 | Web (Next.js 16) | ✅ Live | https://agrivision-blond-nine.vercel.app (Vercel, root `web/`) |
 | Mobile app (Flutter) | ✅ Terpasang di HP (APK release) | `app/` (belum di Play Store — tidak perlu untuk scope TA) |
-| Model ML (tomat saja) | ✅ Terlatih, ter-commit; training ulang (v2) direncanakan | `ml-service/models/tomato_classifier.tflite` |
+| Model ML (tomat saja) | ✅ v2 terpasang 2026-11-17 (MobileNetV2, lab+PlantDoc+Tomato-Village; lihat docs/08 Fase 8); v1 ada di riwayat git | `ml-service/models/tomato_classifier.tflite` |
 | Registrasi publik | ✅ Web + app | lihat bagian "Auth & Registrasi" |
 | Evaluasi akurasi lapangan + laporan | ⏳ BELUM (butuh data & tulisan user) | `docs/06-roadmap.md` minggu 13–14 |
 
@@ -112,7 +112,7 @@ Lihat `docs/09-operasional-dan-runbook.md` (perintah lengkap, env var, deploy, t
 
 ## Hal yang Masih Perlu Dikerjakan
 
-Daftar lengkap & terkini ada di `docs/08-status-dan-progres.md`. Ringkasnya: evaluasi akurasi lapangan vs lab, verifikasi isi `disease_reference` (hanya 2 dari 10 baris tomat `is_verified=true`), kalibrasi `health_score` (ExG min/max masih placeholder), uji app di berbagai HP, **training ulang model tomat (v2) dengan data non-lab + set uji lapangan** (lihat `docs/05` dan `docs/08`), revisi naskah/pptx ke versi tomat saja, dan penulisan laporan.
+Daftar lengkap & terkini ada di `docs/08-status-dan-progres.md`. Ringkasnya: evaluasi akurasi lapangan vs lab, verifikasi isi `disease_reference` (hanya 2 dari 10 baris tomat `is_verified=true`), kalibrasi `health_score` (ExG min/max masih placeholder), uji app di berbagai HP, **penolakan foto bukan-tomat / ambang confidence (v2 belum punya; foto cabai tetap diberi label penyakit tomat), foto lapangan berlabel untuk menilai v1 vs v2** (lihat `docs/08` Fase 8), revisi naskah/pptx ke versi tomat saja, dan penulisan laporan.
 
 ## Kalau Ragu
 
