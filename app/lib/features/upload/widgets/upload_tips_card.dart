@@ -18,6 +18,12 @@ class UploadTipsCard extends StatelessWidget {
           _TipRow(text: 'Pencahayaan cukup, hindari bayangan'),
           SizedBox(height: 8),
           _TipRow(text: 'Fokus pada bagian daun yang bermasalah'),
+          SizedBox(height: 12),
+          Text(
+            'Hanya untuk daun tomat. Tanaman lain (mis. cabai) tidak didukung dan hasilnya tidak bermakna. '
+            'Foto yang membuat model ragu (keyakinan di bawah 50%) akan ditolak.',
+            style: TextStyle(fontSize: 12, color: AppColors.tipText, height: 1.4),
+          ),
         ],
       ),
     );

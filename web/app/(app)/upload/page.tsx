@@ -40,6 +40,11 @@ export default async function UploadPage() {
               </div>
             ))}
           </div>
+          <p className="mt-4 font-sans text-[12.5px] leading-relaxed text-sage">
+            <span className="font-semibold text-ink">Hanya untuk daun tomat.</span> Tanaman lain
+            (mis. cabai) tidak didukung dan hasilnya tidak bermakna. Foto yang membuat model ragu
+            (keyakinan di bawah 50%) akan ditolak.
+          </p>
         </Card>
 
         <Card className="flex-1 p-5">
