@@ -1,6 +1,6 @@
 # Operasional & Runbook
 
-Panduan praktis: menjalankan lokal, men-deploy, memulihkan insiden, dan menguji. Tidak ada nilai rahasia di dokumen ini — kunci disimpan di `ml-service/.env` (gitignored), dashboard Vercel/Railway/Supabase.
+Panduan praktis untuk **produksi**: menjalankan lokal, men-deploy, memulihkan insiden, dan menguji. Untuk mencoba sendiri dengan project Supabase milik sendiri (termasuk Docker), lihat `10-panduan-setup-mandiri.md`; untuk dataset dan notebook, `11-dataset-dan-notebook.md`. Tidak ada nilai rahasia di dokumen ini — kunci disimpan di `ml-service/.env` (gitignored), dashboard Vercel/Railway/Supabase.
 
 ## 1. Identitas & lokasi (bukan rahasia)
 
@@ -24,6 +24,7 @@ Panduan praktis: menjalankan lokal, men-deploy, memulihkan insiden, dan menguji.
 | `STORAGE_BUCKET` | `plant-photos` |
 | `MODEL_DIR` | `models` |
 | `ALLOWED_ORIGINS` | origin yang boleh memanggil API, dipisah koma — isi domain Vercel di atas (jangan `*` di produksi) |
+| `REJECT_CONFIDENCE` | opsional (bawaan `0.50`): keyakinan tertinggi di bawah nilai ini → diagnosis ditolak (400) |
 
 **Web (Vercel Environment Variables / `web/.env.local`)** — semua `NEXT_PUBLIC_*` (di-inline saat build → perlu redeploy setelah diubah):
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_ML_API_URL`.
@@ -42,6 +43,9 @@ cd ml-service && python -m venv .venv && .venv/Scripts/activate   # (Windows)
 pip install -r requirements-dev.txt
 uvicorn app.main:app --port 8000                # butuh ml-service/.env
 pytest                                          # E2E: membuat user/zona sementara lalu membersihkan
+
+# Docker (web + ml-service, project Supabase sendiri): lihat docs/10-panduan-setup-mandiri.md
+#   cp .env.example .env && docker compose up --build
 
 # App
 cd app && flutter pub get
@@ -114,6 +118,6 @@ Hapus juga objek Storage uji. Pendaftaran publik via `/auth/v1/signup` menolak d
 
 ## 9. Keamanan
 
-- Jangan commit: `ml-service/.env`, `web/.env.local`, `ml-service/kaggle.json`, `ml-service/roboflow_key.txt`.
+- Jangan commit: `ml-service/.env`, `web/.env.local`, `.env` di root (untuk Docker Compose), `ml-service/kaggle.json`, `ml-service/roboflow_key.txt`.
 - Rotasi service role key: Supabase → Project Settings → API → regenerate; perbarui `ml-service/.env` dan variable Railway; tidak ada klien lain yang memakainya.
 - Anon key boleh publik, tetapi hanya aman karena semua tabel memakai RLS.

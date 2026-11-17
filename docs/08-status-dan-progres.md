@@ -1,6 +1,6 @@
 # Status & Progres Proyek (sumber kebenaran "sudah sampai mana")
 
-> Terakhir diperbarui: **2026-10-24**. Dokumen ini dibuat agar siapa pun (Claude Code, Claude Cowork, atau manusia) yang membuka proyek dengan konteks kosong bisa langsung paham: apa yang sudah jadi, bagaimana cara kerjanya, apa yang belum, dan keputusan apa yang sudah diambil. Perbarui dokumen ini setiap ada perubahan besar.
+> Terakhir diperbarui: **2026-11-17** (bagian 1–7 menggambarkan keadaan sistem sampai 2026-10-24; perubahan sesudahnya ada di bagian 10, Fase 1–9). Dokumen ini dibuat agar siapa pun (Claude Code, Claude Cowork, atau manusia) yang membuka proyek dengan konteks kosong bisa langsung paham: apa yang sudah jadi, bagaimana cara kerjanya, apa yang belum, dan keputusan apa yang sudah diambil. Perbarui dokumen ini setiap ada perubahan besar.
 
 ## 1. Ringkasan satu paragraf
 
@@ -14,8 +14,9 @@ AgriVision adalah sistem computer vision untuk diagnosis penyakit & pemantauan k
 | ML service | FastAPI + TensorFlow-CPU (TFLite) + OpenCV | `ml-service/` | Railway, project `AgriVision`, service `AgriVision`, domain `agrivision-production.up.railway.app` |
 | Web | Next.js 16, React, Tailwind v4, Supabase SSR, Recharts, zod, react-hook-form, Radix Dialog | `web/` | Vercel project `agrivision` (team `argy-fawwazs-projects`), domain `agrivision-blond-nine.vercel.app` |
 | Mobile app | Flutter 3.41 / Dart 3.11, Riverpod 3 (tanpa codegen), go_router, supabase_flutter, dio, fl_chart, image_picker, google_fonts | `app/` | APK release di-sideload ke HP via `adb` |
-| Model | MobileNetV2 (tomat, 10 kelas, 224px), TFLite (model cabai EfficientNetB4 dihapus) | `ml-service/models/` | ikut ter-deploy bersama ml-service |
-| Notebook training | Google Colab | `ml-service/agrivision_training.ipynb` | — |
+| Model | **v2 (sejak 2026-11-17)**: MobileNetV2 (tomat, 10 kelas, 224px), TFLite float16 4,5 MB; v1 ada di riwayat git (model cabai EfficientNetB4 dihapus) | `ml-service/models/` | ikut ter-deploy bersama ml-service |
+| Notebook training/eksperimen | Google Colab, 9 notebook (peta: `docs/11`); model produksi dari `agrivision_production_v6_tomato.ipynb` | `ml-service/*.ipynb` | — |
+| Setup mandiri | Docker Compose (web + ml-service), panduan, skrip uji model | `docker-compose.yml`, `docker/`, `docs/10`, `docs/11`, `ml-service/scripts/predict_local.py` | hanya lokal; produksi tidak memakainya |
 | Desain | token + 8 mockup | `design/` | — |
 
 Repo GitHub: `Argy1/AgriVision` (branch `main`, monorepo). Vercel & Railway melakukan auto-deploy dari push ke `main`.
@@ -78,9 +79,9 @@ Detail kontrak: `docs/04-api-contract.md`. Skema: `docs/03-database-schema.md` +
 ## 8. Yang BELUM selesai / perlu diperhatikan
 
 **Pekerjaan user (tidak bisa dibuat Claude):**
-1. **Uji foto lapangan nyata** (roadmap minggu 13). Semua uji Claude memakai gambar sintetis.
-2. **Evaluasi akurasi lab vs lapangan** (minggu 14): akurasi/precision/recall/F1 dilaporkan terpisah (lab = PlantVillage held-out; lapangan = PlantDoc atau foto sendiri) + diskusi gap. Baru ada confusion matrix lab di `ml-service/evaluation/`. *Claude bisa membuatkan skrip evaluasi satu-perintah jika diminta.*
-3. **Penulisan laporan** (bab hasil & pembahasan).
+1. **Foto lapangan milik sendiri yang BERLABEL** (roadmap minggu 13). 9 foto kebun yang ada tidak berlabel (5 di antaranya cabai), jadi tidak bisa menjadi tolok ukur; uji lapangan baru memakai PlantDoc dan Tomato-Village (lihat Fase 6–8).
+2. **Evaluasi akurasi lab vs lapangan** (minggu 14): sudah dikerjakan dengan data publik (PlantVillage split per daun vs PlantDoc vs Tomato-Village; angka dan uji McNemar di `docs/05`, mentah di `ml-service/results/`). Yang belum: evaluasi pada foto kebun sendiri berlabel dan penulisan ke laporan.
+3. **Penulisan laporan/naskah** (bab hasil & pembahasan; isian manual naskah di `Jurnal/Catatan revisi naskah v2.md`).
 4. **Verifikasi isi rekomendasi:** hanya 2 dari 10 baris tomat `disease_reference` berstatus `is_verified=true`. Dosis pestisida tampil langsung ke petani → verifikasi ke dosen pembimbing/sumber agronomi sebelum demo/laporan.
 5. **Rotasi service role key** Supabase (pernah ditempel di chat), lalu perbarui `ml-service/.env` + variable Railway.
 6. **Set `NEXT_PUBLIC_ML_API_URL` di Vercel** ke URL Railway terbaru dan redeploy (jika belum).
@@ -88,7 +89,7 @@ Detail kontrak: `docs/04-api-contract.md`. Skema: `docs/03-database-schema.md` +
 **Keterbatasan teknis yang diketahui:**
 - `health_score`: rentang ExG (`_EXG_MIN=-0.2`, `_EXG_MAX=0.6` di `ml-service/app/cv/vegetation_index.py`) masih **placeholder** — perlu dikalibrasi dengan foto sehat vs sakit nyata (roadmap minggu 5). Foto sintetis hijau murni menghasilkan 100.
 - `affected_area_pct` berbasis ambang warna HSV; pada daun sehat yang berbayang/berwarna tidak merata nilainya bisa > 0 sehingga `severity` tidak nol walau diagnosis "Sehat". Validasi dengan foto nyata; pertimbangkan memaksa severity `ringan`/`0%` bila label `*_healthy` dengan confidence tinggi.
-- Model tomat hanya dievaluasi pada foto lab; set validasi kemungkinan bocor (augmentasi offline sebelum split) dan dipakai juga untuk early stopping → 94,33% adalah batas atas. Training ulang v2 dengan data non-lab + set uji lapangan dijadwalkan (lihat bagian 10).
+- **Akurasi lapangan model tomat jauh di bawah lab** (model v2 produksi: lab 95,8%, PlantDoc 51,4%, Tomato-Village 94,0% dalam-sumber yang kemungkinan terinflasi; model hanya-lab ±24% di PlantDoc). Angka 94,33% milik model v1 hanya berlaku untuk foto lab dan optimistis (validasi bocor). Model tidak punya kelas "bukan tomat"; penolakan hanya heuristik keyakinan < 50%. Detail: `docs/05`, Fase 6–8.
 - Tanpa verifikasi email & tanpa CAPTCHA: rawan akun spam. Mitigasi cadangan: rate limit Supabase, Cloudflare Turnstile, atau menyalakan lagi Confirm email + SMTP sendiri (email bawaan Supabase hanya beberapa email/jam).
 - iOS belum pernah dibangun/diuji (tidak ada Mac).
 - Cakupan tes otomatis tipis (unit test fungsi murni di app; 1 tes E2E ml-service). Tidak ada tes integrasi web.
@@ -99,14 +100,15 @@ Detail kontrak: `docs/04-api-contract.md`. Skema: `docs/03-database-schema.md` +
 - Lint info di app: `use_null_aware_elements` (auth_repository), `anonKey` deprecated (main.dart) — kosmetik.
 - Peringatan LF/CRLF saat `git add` di Windows tidak berbahaya.
 
-## 9. Langkah berikutnya yang disarankan (urutan)
+## 9. Langkah berikutnya yang disarankan (urutan; diperbarui 2026-11-17)
 
-1. User mencoba app di HP dengan foto daun asli (daftar → zona → foto → hasil) dan mencatat bug.
-2. Kumpulkan foto lapangan berlabel → jalankan evaluasi lab vs lapangan → simpan angka & confusion matrix.
-3. Verifikasi `disease_reference` dengan pembimbing → set `is_verified=true`.
+1. Bangun ulang APK dan pasang ke HP supaya app menampilkan peringatan "Hanya untuk daun tomat" (web sudah live); coba alur daftar → zona → foto → hasil dengan foto daun tomat asli dan catat bug.
+2. Kumpulkan foto kebun **tomat** berlabel (tanya penyuluh/pakar untuk labelnya) → evaluasi model v2 pada foto itu; bandingkan dengan angka PlantDoc/Tomato-Village.
+3. Verifikasi `disease_reference` dengan pembimbing → set `is_verified=true` (kini 2 dari 10).
 4. Kalibrasi `health_score` dengan foto sehat vs sakit nyata.
-5. Tulis laporan; ambil screenshot dari web & app (bisa dibuat Claude via browser pane).
-6. Opsional: skrip evaluasi, tes integrasi, CAPTCHA, custom domain.
+5. Rotasi service role key Supabase; lengkapi isian manual naskah (`Jurnal/Catatan revisi naskah v2.md`) dan cek sitasi.
+6. Tulis laporan; ambil screenshot dari web & app (bisa dibuat Claude via browser pane).
+7. Opsional (butuh persetujuan karena mengubah kontrak): kelas ke-11 "bukan tomat" atau gerbang biner tomat/bukan-tomat untuk penolakan sungguhan; tes integrasi, CAPTCHA, custom domain.
 
 ## 10. Perubahan scope: fokus tomat saja (2026-11-12)
 
@@ -145,3 +147,9 @@ Arahan pembimbing: fitur deteksi cabai dihapus, fokus ke daun tomat. Keputusan u
 - **Temuan:** model tidak punya penolakan "bukan daun tomat"; foto cabai tetap mendapat label penyakit tomat. Perlu ambang confidence atau kelas "bukan tomat" (butuh persetujuan karena mengubah kontrak). Rollback v1: `git revert` commit pemasangan v2.
 - **Penolakan keyakinan rendah (2026-11-17, disetujui user):** `/api/diagnose` kini menolak (400) bila keyakinan tertinggi < 50% (`REJECT_CONFIDENCE`, `ml-service/app/cv/photo_quality.py`); tanpa perubahan field kontrak (web/app sudah menampilkan `detail`). Uji pada 164 foto Tomato-Village (tak dipakai training): 0 tertolak, akurasi 93,3%. Pada 9 foto milik user: menolak sebagian kecil saja (foto cabai berkeyakinan tinggi, mis. 99%, tetap lolos). Jadi ini penolakan "tidak yakin", bukan detektor non-tomat. Solusi penuh = kelas ke-11 "bukan tomat" (butuh retraining, mengubah label_map dan `disease_reference`).
 - **Naskah dan PPT direvisi ke hasil fine-tuning (2026-11-17, disetujui user):** `Jurnal/Naskah JATI AgriVision v2.docx` dan `AgriVision_Kelompok19_v2.pptx` (tidak di-commit) kini memakai fine-tuning untuk E1–E3 (Tabel 5: A 23,9 / B 53,9 / C 22,1 / D 49,4% di PlantDoc; Tomato-Village uji 31,0 / 34,8 / 97,4 / 89,4%; Tabel 6 arsitektur 3 seed; Gambar 3 baru). Klaim "sumber lain dapat merugikan" dihapus. Versi lama (backbone beku) diarsipkan dengan akhiran "(arsip, hasil backbone beku)". Sisa isian manual penulis tetap di `Jurnal/Catatan revisi naskah v2.md`.
+
+**Fase 9 — peringatan "hanya daun tomat" dan setup mandiri (2026-11-17):**
+- Web (`web/app/(app)/upload/page.tsx`) dan app (`app/lib/features/upload/widgets/upload_tips_card.dart`) menampilkan peringatan netral (tanpa warna severity) di kartu tips unggah: hanya daun tomat, tanaman lain tidak didukung, foto berkeyakinan < 50% ditolak (commit `64d0d35`). Web otomatis ter-deploy; **APK di HP belum dibangun ulang**.
+- Agar anggota kelompok bisa mencoba sendiri: `docker-compose.yml` + `docker/` (web dan ml-service; Dockerfile sengaja di luar `ml-service/` dan `web/` supaya Railway tidak beralih ke Dockerfile), `.env.example` di root, `ml-service/scripts/predict_local.py` (uji model tanpa Supabase), `database/migrations/005_storage_bucket_and_policies.sql` (bucket + kebijakan Storage untuk project baru), `docs/10-panduan-setup-mandiri.md`, `docs/11-dataset-dan-notebook.md`, serta pembaruan README dan `CLAUDE.md`. Build debug Flutter kini mengizinkan HTTP (`app/android/app/src/debug/AndroidManifest.xml`) agar bisa memanggil ml-service lokal; build release tetap HTTPS-only.
+- **Yang diverifikasi (2026-11-17):** image ml-service dan web berhasil dibangun dan berjalan (`/api/health` → v2, CORS dari `http://localhost:3000` diizinkan, healthcheck "healthy", `/login` web 200); `schema.sql` + `005` dijalankan di Postgres Supabase kosong (`supabase/postgres:17.6.1.003`), aman diulang; perilaku diuji (profil otomatis `petani` walau metadata `admin_ppl`, ubah role dari client ditolak, unggah ke folder sendiri lolos dan ke folder orang lain ditolak, baca hanya milik sendiri); 28 tes offline lulus pada salinan tanpa `.env`; `flutter build apk --debug` berhasil dan manifest hasil gabungan memuat `usesCleartextTraffic`.
+- **Belum diverifikasi:** alur penuh `docker compose up` terhadap project Supabase *sungguhan* milik orang lain (Auth/Storage cloud tidak bisa diuji di sini; SQL-nya sudah diuji pada Postgres lokal), serta aplikasi Flutter menembak ml-service lokal di emulator/HP. Isi `005` diturunkan dari kode dan aturan di docs/09, bukan disalin dari kebijakan produksi.

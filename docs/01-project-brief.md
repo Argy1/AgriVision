@@ -42,15 +42,16 @@ Petani tomat kesulitan mendeteksi penyakit tanaman secara dini karena keterbatas
 - **Petani:** mengunggah foto dari lapangan (mobile app, kamera-first), melihat hasil diagnosis & rekomendasi untuk zonanya sendiri. **Siapa pun bisa mendaftar sendiri** (web & app) dan otomatis menjadi petani — keputusan user agar sistem bisa dipakai banyak orang.
 
 ## Deliverable Akhir
-*(Status per 2026-10-24 — rincian di `08-status-dan-progres.md`)*
+*(Status per 2026-11-17 — rincian di `08-status-dan-progres.md`)*
 - ✅ Web app (Next.js) — dashboard + monitoring + analitik, live di Vercel.
 - ✅ Mobile app (Flutter) — kamera-first, hasil diagnosis, dashboard ringkas, panduan penyakit, notifikasi; APK terpasang di HP.
 - ✅ Backend ML inference (FastAPI di Railway).
 - ✅ Database & Auth (Supabase), termasuk registrasi publik.
-- ⏳ Laporan tugas akhir dengan evaluasi model (confusion matrix lab sudah ada; **akurasi lapangan & penulisan laporan belum**) dan studi kasus rekomendasi.
+- ⏳ Laporan tugas akhir dan naskah jurnal: evaluasi lab vs lapangan dengan data publik sudah ada (`05-ml-pipeline.md`); **foto kebun berlabel dan penulisan laporan belum**.
+- ✅ Panduan setup mandiri (lokal/Docker/Supabase sendiri), dataset dan notebook: `10-panduan-setup-mandiri.md`, `11-dataset-dan-notebook.md`.
 
 ## Keputusan Desain yang Sudah Diambil (ringkasan diskusi)
-- 2 komoditas (bukan lebih) — keputusan sadar demi kedalaman evaluasi, bukan keterbatasan teknis.
+- 1 komoditas (tomat saja; cabai dihapus 2026-11-12 atas arahan pembimbing) — keputusan sadar demi kedalaman evaluasi, bukan keterbatasan teknis.
 - 3 modul (diagnosis + monitoring + rekomendasi), robotic farming di-exclude.
 - Web (Next.js) dan mobile app (Flutter) dibangun terpisah, tapi berbagi satu backend (Supabase + FastAPI) sebagai kontrak API yang sama.
 - Jumlah layar **sengaja diperluas** di atas mockup awal (web 13 route, app 13 route) supaya modul diagnosis & monitoring termanfaatkan maksimal — atas permintaan user; jangan dikembalikan ke 4 layar.

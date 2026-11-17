@@ -2,7 +2,7 @@
 
 Ini adalah proyek **AgriVision**: tugas akhir mata kuliah Visual Komputer Cerdas milik Argy Fawwaz Akbar (TRPL, Sekolah Vokasi IPB). **Baca file ini dulu sebelum mengubah apa pun.** Untuk detail progres, daftar yang belum selesai, dan runbook operasional, lanjut ke `docs/08-status-dan-progres.md` dan `docs/09-operasional-dan-runbook.md`.
 
-## Status Saat Ini (diperbarui 2026-11-12)
+## Status Saat Ini (diperbarui 2026-11-17)
 
 **Seluruh sistem sudah dibangun, di-deploy, dan diuji end-to-end.** Ini BUKAN lagi proyek tahap perencanaan.
 
@@ -14,6 +14,7 @@ Ini adalah proyek **AgriVision**: tugas akhir mata kuliah Visual Komputer Cerdas
 | Mobile app (Flutter) | ✅ Terpasang di HP (APK release) | `app/` (belum di Play Store — tidak perlu untuk scope TA) |
 | Model ML (tomat saja) | ✅ v2 terpasang 2026-11-17 (MobileNetV2, lab+PlantDoc+Tomato-Village; lihat docs/08 Fase 8); v1 ada di riwayat git | `ml-service/models/tomato_classifier.tflite` |
 | Registrasi publik | ✅ Web + app | lihat bagian "Auth & Registrasi" |
+| Setup mandiri untuk anggota kelompok | ✅ Docker Compose (web + ml-service) diuji build+jalan, SQL instalasi baru diuji di Postgres Supabase, skrip uji model tanpa akun | `docker-compose.yml`, `docker/`, `docs/10-panduan-setup-mandiri.md`, `docs/11-dataset-dan-notebook.md`, `ml-service/scripts/predict_local.py` |
 | Evaluasi akurasi lapangan + laporan | ⏳ BELUM (butuh data & tulisan user) | `docs/06-roadmap.md` minggu 13–14 |
 
 Repo: https://github.com/Argy1/AgriVision (branch `main`; Vercel & Railway auto-deploy dari push ke `main`).
@@ -57,14 +58,19 @@ Rencana awal hanya 4 layar per platform sesuai mockup. User sengaja meminta lebi
 ```
 CLAUDE.md                ← file ini
 README.md                ← ringkasan + cara menjalankan
-docs/                    ← 01–07 desain & keputusan, 08 status/progres, 09 runbook
+docker-compose.yml       ← web + ml-service lokal (Dockerfile ada di docker/, BUKAN di ml-service/ atau web/)
+.env.example             ← variabel untuk docker compose (salin ke .env, di-gitignore)
+docs/                    ← 01–07 desain & keputusan, 08 status/progres, 09 runbook produksi,
+                           10 setup mandiri (lokal/Docker/Supabase sendiri), 11 dataset + notebook + melatih ulang
 design/                  ← design-system.md + screens/ (8 mockup HTML/PNG)
 database/
-  schema.sql             ← sumber kebenaran skema (harus selalu sinkron dengan produksi)
-  migrations/            ← migrasi tambahan yang dijalankan manual (003 = pengerasan registrasi publik)
-ml-service/              ← FastAPI + model TFLite + notebook training + tes E2E
+  schema.sql             ← sumber kebenaran skema (harus selalu sinkron dengan produksi; sudah memuat 003)
+  migrations/            ← 003 = pengerasan registrasi publik, 004 = hapus data cabai (sudah dijalankan),
+                           005 = bucket + kebijakan Storage untuk instalasi BARU (jangan dijalankan di produksi)
+ml-service/              ← FastAPI + model TFLite + 9 notebook training + hasil mentah + tes
   app/{routers,cv,ml}    ← endpoint, classical CV (ExG/VARI, segmentasi), inferensi
-  models/                ← tomato_classifier.tflite, label_map.json
+  models/                ← tomato_classifier.tflite (v2), label_map.json
+  results/, scripts/     ← hasil mentah eksperimen; predict_local.py (uji model tanpa Supabase)
 web/                     ← Next.js 16 (App Router, Tailwind v4, Supabase SSR)
 app/                     ← Flutter (Riverpod, go_router, supabase_flutter)
 ```
@@ -94,6 +100,8 @@ app/                     ← Flutter (Riverpod, go_router, supabase_flutter)
 **Infra**
 - Konektor MCP Supabase di sesi Claude kadang terikat ke akun/org lain (tidak melihat project AgriVision). Jika begitu, jalankan SQL lewat Supabase SQL Editor oleh user.
 - Supabase free tier bisa **pause** saat tidak aktif (gejala: 521/502 dari `*.supabase.co`) → Restore di dashboard.
+- **Jangan menaruh `Dockerfile` di `ml-service/` atau `web/`.** Railway otomatis memakai Dockerfile bila ada (menggantikan `Procfile`/`.python-version`) dan itu akan mengubah build produksi. Berkas Docker lokal sengaja di `docker/`. Berkas SQL `005_storage_bucket_and_policies.sql` hanya untuk project Supabase baru (di produksi kebijakan setara sudah ada lewat Dashboard).
+- Kunci/URL di `web/.env.example`, `ml-service/.env.example`, dan `app/run_web.bat` menunjuk project PRODUKSI; anggota kelompok yang mencoba sendiri harus membuat project Supabase sendiri (jangan berbagi service role key).
 - Railway: service pernah terhapus tidak sengaja (2026-10-23) dan dibuat ulang. Setelan wajib: root directory `ml-service`, healthcheck `/api/health`, env var di `docs/09-operasional-dan-runbook.md`. URL berubah tiap service dibuat ulang → update `NEXT_PUBLIC_ML_API_URL` (Vercel), `ML_API_URL` (build app), `ALLOWED_ORIGINS` (Railway).
 
 ## Cara Menjalankan Tiap Bagian
@@ -102,7 +110,9 @@ Lihat `docs/09-operasional-dan-runbook.md` (perintah lengkap, env var, deploy, t
 - Web: `cd web && npm install && npm run dev` (butuh `web/.env.local`, contoh di `web/.env.example`).
 - ML service: `cd ml-service && python -m venv .venv && pip install -r requirements-dev.txt && uvicorn app.main:app` (butuh `ml-service/.env`).
 - App: `cd app && flutter pub get && flutter run --dart-define=SUPABASE_URL=... --dart-define=SUPABASE_ANON_KEY=... --dart-define=ML_API_URL=...` (atau `app/run_web.bat` untuk Flutter web).
-- Tes: `flutter test` (app), `npm run lint && npm run build` (web), `pytest` (ml-service, butuh `.env` asli).
+- Docker (lokal): `cp .env.example .env` (isi kunci project Supabase SENDIRI) lalu `docker compose up --build` → web :3000, ml-service :8000. Panduan lengkap, termasuk membuat project Supabase sendiri: `docs/10-panduan-setup-mandiri.md`.
+- Uji model tanpa akun: `cd ml-service && python scripts/predict_local.py foto.jpg`.
+- Tes: `flutter test` (app), `npm run lint && npm run build` (web), `pytest tests/test_schemas.py tests/test_cv_quality.py tests/test_enhance.py` (ml-service, offline tanpa `.env`); `pytest tests/test_e2e_diagnose.py` butuh `.env` asli.
 
 ## Keamanan & Rahasia
 

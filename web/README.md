@@ -6,13 +6,15 @@ Dashboard & portal pengguna AgriVision: unggah foto daun, hasil diagnosis, monit
 
 ## Menjalankan
 
+Mencoba sendiri dengan project Supabase milik sendiri (jangan memakai kunci produksi), termasuk lewat Docker: `../docs/10-panduan-setup-mandiri.md`. Web lokal memanggil ml-service lokal di `http://localhost:8000` dan alamat web harus ada di `ALLOWED_ORIGINS` ml-service (CORS).
+
 ```bash
 cp .env.example .env.local   # isi NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, NEXT_PUBLIC_ML_API_URL
 npm install
 npm run dev                  # http://localhost:3000
 npm run lint && npm run build
 ```
-`NEXT_PUBLIC_*` di-inline saat build → setelah mengubah env di Vercel, redeploy.
+`NEXT_PUBLIC_*` di-inline saat build → setelah mengubah env di Vercel (atau di `.env` untuk Docker: `docker compose up --build`), build ulang/redeploy.
 
 ## Struktur
 

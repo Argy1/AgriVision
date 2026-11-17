@@ -1,0 +1,50 @@
+# Menjalankan AgriVision (web + ml-service) di komputer sendiri dengan Docker.
+# Panduan lengkap: docs/10-panduan-setup-mandiri.md
+#
+#   cp .env.example .env        # isi nilai dari project Supabase MILIK ANDA
+#   docker compose up --build   # web http://localhost:3000 , ml-service http://localhost:8000
+#
+# Database/Auth/Storage tetap Supabase (cloud, gratis) -- tidak ada container Postgres di sini.
+# Aplikasi Flutter tidak dijalankan lewat Docker (lihat app/README.md).
+
+services:
+  ml-service:
+    build:
+      context: ./ml-service
+      dockerfile: ../docker/ml-service.Dockerfile
+    environment:
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
+      STORAGE_BUCKET: ${STORAGE_BUCKET:-plant-photos}
+      MODEL_DIR: models
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000}
+      REJECT_CONFIDENCE: ${REJECT_CONFIDENCE:-0.50}
+    # Gagal cepat dengan pesan jelas bila .env belum diisi.
+    command:
+      - sh
+      - -c
+      - |
+        if [ -z "$$SUPABASE_URL" ] || [ -z "$$SUPABASE_SERVICE_ROLE_KEY" ]; then
+          echo "SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY kosong. Salin .env.example ke .env lalu isi." >&2
+          exit 1
+        fi
+        exec uvicorn app.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./web
+      dockerfile: ../docker/web.Dockerfile
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${SUPABASE_URL:-}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-}
+        # Dibuka dari BROWSER, jadi harus localhost (bukan nama service Docker).
+        NEXT_PUBLIC_ML_API_URL: ${NEXT_PUBLIC_ML_API_URL:-http://localhost:8000}
+    ports:
+      - "3000:3000"
+    depends_on:
+      ml-service:
+        condition: service_started
+    restart: unless-stopped

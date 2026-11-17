@@ -4,4 +4,8 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Hanya build DEBUG: izinkan HTTP biasa supaya app bisa memanggil ml-service lokal
+         (mis. http://10.0.2.2:8000 dari emulator). Build release tetap HTTPS-only.
+         Lihat docs/10-panduan-setup-mandiri.md bagian 6. -->
+    <application android:usesCleartextTraffic="true" />
 </manifest>

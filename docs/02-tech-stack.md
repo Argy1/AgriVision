@@ -8,7 +8,7 @@
 | Mobile App | Flutter 3.41 (Dart 3.11) + Riverpod 3 (tanpa codegen) + go_router + `supabase_flutter` + dio + fl_chart + image_picker + google_fonts | Native feel, akses kamera matang, package resmi Supabase |
 | Database / Auth / Storage | Supabase (Postgres) | Auth, Storage, Postgres dalam satu paket terintegrasi; RLS built-in |
 | ML Inference | FastAPI (Python) di Railway | Menjalankan model CNN (deteksi penyakit) + hitung ExG/VARI (classical CV) |
-| Model | MobileNetV2 / EfficientNetB4 (transfer learning), TFLite/ONNX untuk inference ringan | Standar de-facto untuk klasifikasi penyakit daun (lihat `07-referensi.md`) |
+| Model | MobileNetV2 (fine-tuning 2 tahap), TFLite float16 untuk inference ringan; EfficientNetB4 (cabai) sudah dihapus | Standar de-facto untuk klasifikasi penyakit daun (lihat `07-referensi.md`); perbandingan arsitektur di `05-ml-pipeline.md` |
 
 ## Kenapa dipisah Supabase vs Railway (bukan salah satu saja)
 
@@ -67,6 +67,9 @@ MODEL_DIR=models               # tomato_classifier.tflite, label_map.json
 ALLOWED_ORIGINS=               # origin web, dipisah koma (jangan * di produksi)
 ```
 (Daftar lengkap + cara pakai: `09-operasional-dan-runbook.md`.)
+
+## Menjalankan sendiri (lokal / Docker)
+`docker-compose.yml` di root menjalankan web (:3000) dan ml-service (:8000) dari `docker/*.Dockerfile`; database/auth/storage tetap Supabase (project sendiri). Dockerfile sengaja tidak ada di `ml-service/` atau `web/` supaya Railway/Vercel tidak berubah. Panduan: `10-panduan-setup-mandiri.md`.
 
 ## Deployment (aktual)
 - Web → Vercel (project `agrivision`, root `web`, auto-deploy dari `main`)

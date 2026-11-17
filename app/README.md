@@ -4,6 +4,8 @@ Aplikasi pendamping petani: kamera-first untuk memotret daun, hasil diagnosis + 
 
 ## Menjalankan
 
+Mencoba sendiri dengan backend sendiri: `../docs/10-panduan-setup-mandiri.md` (bagian 6 berisi tabel `ML_API_URL` untuk emulator, HP, dan Flutter web). Aplikasi tidak dijalankan lewat Docker.
+
 ```bash
 flutter pub get
 flutter run -d <device> \
@@ -12,7 +14,9 @@ flutter run -d <device> \
   --dart-define=ML_API_URL=https://agrivision-production.up.railway.app
 flutter analyze && flutter test
 ```
-Preview cepat di browser: `run_web.bat` (Flutter web di http://localhost:8081, hanya untuk uji tampilan; kamera/galeri native tidak teruji di sana).
+Preview cepat di browser: `run_web.bat` (Flutter web di http://localhost:8081, hanya untuk uji tampilan; kamera/galeri native tidak teruji di sana). **`run_web.bat` berisi URL dan anon key project produksi**; ganti dengan nilai project sendiri bila mencoba mandiri.
+
+Build **debug** mengizinkan HTTP biasa (`android/app/src/debug/AndroidManifest.xml`) sehingga emulator bisa memakai `ML_API_URL=http://10.0.2.2:8000`; build **release** hanya HTTPS.
 
 ## Pasang ke HP Android
 

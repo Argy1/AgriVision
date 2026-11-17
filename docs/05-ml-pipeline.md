@@ -1,17 +1,19 @@
 # ML Pipeline — Diagnosis & Monitoring
 
-## Status implementasi (aktual, 2026-11-12)
+## Status implementasi (aktual, 2026-11-17)
 
-- **Model terlatih & ter-deploy:** `ml-service/models/tomato_classifier.tflite` (MobileNetV2, 224px, 10 kelas) dan `label_map.json` (urutan kelas + `model_version` + `img_size`). **Fokus tomat saja** sejak 2026-11-12: model cabai (`chili_classifier.tflite`, EfficientNetB4 380px 6 kelas) dan seluruh kodenya dihapus. File ter-commit di git, dimuat sekali saat startup (`ml-service/app/ml/model_loader.py`, thread-lock per model), sehingga redeploy tidak membutuhkan training ulang. Training dilakukan di Google Colab (`ml-service/agrivision_training.ipynb`); hasil diekspor ke TFLite.
+- **Model produksi = v2** (dipasang 2026-11-17): `ml-service/models/tomato_classifier.tflite` (MobileNetV2, 224px, 10 kelas, TFLite float16 4,5 MB) dan `label_map.json` (urutan kelas + `model_version` "v2" + `img_size`). Dilatih oleh `ml-service/agrivision_production_v6_tomato.ipynb` pada komposisi D (75% PlantVillage + 12,5% PlantDoc + 12,5% Tomato-Village per batch), fine-tuning dua tahap (kepala ≤8 epoch Adam 1e-3; 60 lapisan atas dibuka dengan BatchNorm dibekukan ≤15 epoch Adam 1e-4), seed 42, `preprocess_input` MobileNetV2 di dalam graf (masukan mentah 0–255). Metrik TFLite pada set uji: `lab_test` (n=3.639) 95,77%, PlantDoc (n=216) 51,39%, Tomato-Village uji (n=116; dalam-sumber, kemungkinan terinflasi) 93,97%; kesepakatan argmax dengan Keras ≥ 99,5% (`ml-service/results/metrics_v6_prod_v2.json`). Dua run seed 42 memberi hasil berbeda (nondeterminisme); run dengan akurasi validasi lebih tinggi (91,3%) yang dipasang. **Fokus tomat saja** sejak 2026-11-12: model cabai dan seluruh kodenya dihapus. Model v1 (MobileNetV2, hanya data Kaggle PlantVillage) ada di riwayat git. File dimuat sekali saat startup (`ml-service/app/ml/model_loader.py`, thread-lock per model); redeploy tidak membutuhkan training ulang. Peta semua notebook, sumber dataset, dan cara melatih ulang/memasang model: [`11-dataset-dan-notebook.md`](11-dataset-dan-notebook.md). *(Nama "v2" dipakai dua kali: model produksi v2 di atas vs notebook `agrivision_training_tomato_v2.ipynb` pada bagian "Training ulang tomat (v2)" di bawah, yang tidak dipasang.)*
 - **Pipeline inferensi** (`ml-service/app/`): `imaging.py` (decode/resize) → `ml/inference.py` (klasifikasi) → `cv/segmentation.py` (mask daun = hijau ∪ lesi) → `cv/affected_area.py` (lesi via HSV, ambang saturasi/value ≥ 60 agar tidak salah deteksi latar coklat) → `cv/severity.py` (aturan di bawah) → `cv/vegetation_index.py` (ExG/VARI) → lookup `disease_reference` → insert ke Supabase (`routers/diagnose.py`).
-- **Evaluasi yang sudah ada:** confusion matrix lab di `ml-service/evaluation/confusion_matrix_tomat.png`.
-- **BELUM:** evaluasi pada data lapangan (PlantDoc / foto sendiri), metrik precision/recall/F1 terpisah lab vs lapangan, dan kalibrasi `health_score` dengan foto sehat vs sakit nyata. Lihat `08-status-dan-progres.md` bagian 8.
+- **Evaluasi yang sudah ada:** evaluasi lab vs lapangan lengkap (PlantVillage split per daun, PlantDoc, Tomato-Village; akurasi/P/R/F1, McNemar, 3–5 seed) di bagian-bagian di bawah (training v2, ablasi pra-pemrosesan v3/v3b, komposisi data dan arsitektur v4/v4b/v5/v5b); hasil mentah di `ml-service/results/`. Confusion matrix lab model v1 di `ml-service/evaluation/confusion_matrix_tomat.png`.
+- **BELUM:** evaluasi pada foto kebun **sendiri berlabel** (9 foto yang ada tidak berlabel dan 5 di antaranya cabai), kelas/gerbang "bukan tomat" (penolakan saat ini hanya heuristik keyakinan < 50%, lihat `photo_quality.py`), dan kalibrasi `health_score` dengan foto sehat vs sakit nyata. Lihat `08-status-dan-progres.md`.
 - **Catatan kualitas yang diketahui:** (1) `_EXG_MIN=-0.2` / `_EXG_MAX=0.6` di `cv/vegetation_index.py` adalah placeholder kalibrasi. (2) `affected_area_pct` berbasis ambang warna: pada daun sehat yang berbayang nilainya bisa > 0 sehingga `severity` bukan nol meski diagnosis "Sehat" — validasi dengan foto nyata. (3) VARI dijaga dari penyebut mendekati nol (piksel dengan |G+R−B| < 1e-3 dianggap 0, hasil di-clip ke [−1, 1]).
-- **Pengujian yang sudah dilakukan:** E2E `/api/diagnose` di produksi untuk tomat dengan gambar sintetis (status 200, CORS benar, trigger `zone_health_daily` terisi). Belum dengan foto lapangan nyata.
+- **Pengujian yang sudah dilakukan:** E2E `/api/diagnose` di produksi untuk tomat dengan gambar sintetis (status 200, CORS benar, trigger `zone_health_daily` terisi); `/api/health` produksi melaporkan `model_version` v2; 28 tes offline (`tests/test_schemas.py`, `test_cv_quality.py`, `test_enhance.py`) + 1 tes E2E. Foto kebun nyata hanya dicoba tanpa label (lihat Fase 8 di `08-status-dan-progres.md`).
 
 ## Modul 1: Diagnosis (Deep Learning)
 
-### Dataset (terverifikasi — lihat `ml-service/agrivision_training.ipynb`)
+### Dataset (terverifikasi — lihat `ml-service/agrivision_training.ipynb`, notebook v1 yang kini usang)
+
+> **Catatan 2026-11-17:** bagian ini menjelaskan dataset **model v1** (Kaggle "New Plant Diseases", augmentasi PlantVillage). Model produksi v2 memakai PlantVillage asli (split per daun) + PlantDoc + Tomato-Village; sumber, lisensi, dan cara mengunduhnya ada di [`11-dataset-dan-notebook.md`](11-dataset-dan-notebook.md).
 
 **Tomat — PlantVillage (via Kaggle "New Plant Diseases Dataset", Chohan et al.)**
 Sudah di-split train/valid, 10 kelas persis (jangan diubah nama foldernya, notebook melakukan assertion terhadap daftar ini):
@@ -63,7 +65,7 @@ Export model ke **TFLite** atau **ONNX** untuk inference ringan di FastAPI (Rail
 
 ---
 
-## Training ulang tomat (v2) — status: sudah dijalankan di Colab (2026-11-12), BELUM di-deploy
+## Training ulang tomat (notebook `…_tomato_v2`, 2026-11-12) — dijalankan, TIDAK di-deploy (digantikan model produksi v2 dari notebook v6, lihat status di atas)
 
 Alasan: angka validasi 94,33% (MobileNetV2) hanya berlaku untuk foto lab. Dataset sekarang adalah augmentasi offline PlantVillage yang di-split *setelah* augmentasi, sehingga validasi kemungkinan berisi turunan daun yang sama dengan set latih (optimistis), dan set validasi juga dipakai untuk early stopping. **Menambah gambar PlantVillage tidak menaikkan akurasi lapangan** — masalahnya domain, bukan jumlah.
 
