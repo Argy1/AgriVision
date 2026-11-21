@@ -39,18 +39,28 @@ export async function diagnose(params: {
   cropType: Enums<"crop_type">;
   accessToken: string;
 }): Promise<DiagnoseResponse> {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_ML_API_URL}/api/diagnose`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${params.accessToken}`,
-    },
-    body: JSON.stringify({
-      upload_id: params.uploadId,
-      image_path: params.imagePath,
-      crop_type: params.cropType,
-    }),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${process.env.NEXT_PUBLIC_ML_API_URL}/api/diagnose`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${params.accessToken}`,
+      },
+      body: JSON.stringify({
+        upload_id: params.uploadId,
+        image_path: params.imagePath,
+        crop_type: params.cropType,
+      }),
+    });
+  } catch {
+    // fetch hanya melempar bila permintaan tidak sampai/ditolak browser (jaringan putus,
+    // alamat salah, atau CORS) -- bukan jawaban error dari server. Status 0 = tidak ada jawaban.
+    throw new MlServiceError(
+      0,
+      "Tidak dapat menghubungi layanan diagnosis. Periksa koneksi internet, lalu coba lagi. Bila tetap gagal, hubungi admin.",
+    );
+  }
 
   if (!response.ok) {
     const body = await response.json().catch(() => null);

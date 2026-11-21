@@ -90,6 +90,7 @@ update public.profiles set role = 'admin_ppl' where id = '<uuid user>';
 3. Set variable: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `STORAGE_BUCKET=plant-photos`, `MODEL_DIR=models`, `ALLOWED_ORIGINS=<domain Vercel, koma>`.
 4. Generate domain Railway. **URL baru** → perbarui `NEXT_PUBLIC_ML_API_URL` di Vercel (redeploy), `ML_API_URL` pada build app (build ulang APK), `web/.env.example`, `app/run_web.bat`, dan `docs/` yang menyebut URL.
 5. Verifikasi: `GET <url>/api/health` → `{"status":"ok","model_loaded":true,...}`, lalu tes E2E (bagian 8). Model tidak hilang — file `.tflite` ter-commit di git.
+   - **Jangan lupa langkah 4.** Insiden 2026-11-21: `NEXT_PUBLIC_ML_API_URL` di Vercel masih menunjuk URL lama setelah service dibuat ulang (23 Okt), sehingga web gagal mendiagnosis. Gejala: web menampilkan "Tidak dapat menghubungi layanan diagnosis" (dulu pesan umum "Gagal menjalankan diagnosis."), sedangkan log Railway tidak mencatat satu pun `POST /api/diagnose` (permintaan diblokir browser karena respons 404 Railway tanpa header CORS). App Android tidak terdampak karena alamat dibaca saat build APK. Cek cepat: `curl <NEXT_PUBLIC_ML_API_URL>/api/health` harus 200.
    - Catatan: respons `{"detail":"Not Found"}` di `/` itu normal (API tidak punya halaman root).
 
 **Supabase tidak merespons (521/502 dari `*.supabase.co`)** — kemungkinan project ter-*pause* (free tier). Dashboard → Restore project, tunggu beberapa menit. Data dan bucket tetap ada.
