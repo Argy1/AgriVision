@@ -189,7 +189,7 @@ export function Dropzone({ zone }: { zone: Tables<"zones"> | null }) {
 
   if (stage.name === "error") {
     return (
-      <div className="flex h-60 flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-rust bg-dropzone-bg px-8 text-center">
+      <div className="flex min-h-60 flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-rust bg-dropzone-bg px-5 py-6 text-center sm:px-8">
         <span className="font-sans text-[14px] text-rust-text">{stage.message}</span>
         <button
           type="button"
@@ -216,7 +216,7 @@ export function Dropzone({ zone }: { zone: Tables<"zones"> | null }) {
         if (file) runUploadFlow(file);
       }}
       onClick={() => inputRef.current?.click()}
-      className={`flex h-60 cursor-pointer flex-col items-center justify-center gap-2.5 rounded-lg border-2 border-dashed bg-dropzone-bg transition-colors ${
+      className={`flex min-h-60 cursor-pointer flex-col items-center justify-center gap-2.5 rounded-lg px-4 py-6 text-center border-2 border-dashed bg-dropzone-bg transition-colors ${
         dragOver ? "border-moss" : "border-panel-body"
       }`}
     >
@@ -233,8 +233,9 @@ export function Dropzone({ zone }: { zone: Tables<"zones"> | null }) {
       <div className="flex h-14 w-14 items-center justify-center rounded-full bg-moss-tint">
         <CameraIcon size={26} className="text-moss" />
       </div>
-      <span className="font-sans text-[16px] font-semibold text-ink">
-        Seret foto ke sini atau klik untuk memilih file
+      <span className="font-sans text-[15px] font-semibold text-ink sm:text-[16px]">
+        <span className="hidden sm:inline">Seret foto ke sini atau klik untuk memilih file</span>
+        <span className="sm:hidden">Ketuk untuk memilih atau memotret foto daun</span>
       </span>
       <span className="font-sans text-[13px] text-sage">Format JPG, PNG — maksimum 10MB</span>
       <span className="mt-1.5 rounded-sm border border-moss px-5 py-2 font-sans text-[13.5px] font-semibold text-moss">

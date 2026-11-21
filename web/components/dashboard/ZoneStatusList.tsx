@@ -29,7 +29,7 @@ export function ZoneStatusList({ rows }: { rows: ZoneStatusRow[] }) {
               row.status ? ZONE_STATUS_DOT_CLASSES[row.status] : "bg-sage"
             }`}
           />
-          <span className="flex-1 font-sans text-[13.5px] text-ink">
+          <span className="min-w-0 flex-1 break-words font-sans text-[13.5px] text-ink">
             {row.zone.name}
           </span>
           <ChevronRightIcon size={14} className="text-muted-2" />

@@ -4,7 +4,7 @@ import type { InputHTMLAttributes, LabelHTMLAttributes, TextareaHTMLAttributes }
 import { cn } from "@/lib/cn";
 
 export const inputClasses =
-  "w-full rounded-sm border border-input-border bg-input-bg px-3.5 py-3 font-sans text-[14.5px] text-ink focus:border-moss disabled:opacity-60";
+  "w-full rounded-sm border border-input-border bg-input-bg px-3.5 py-3 font-sans text-[16px] text-ink sm:text-[14.5px] focus:border-moss disabled:opacity-60";
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
   function Input({ className, ...props }, ref) {

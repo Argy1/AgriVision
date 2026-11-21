@@ -20,9 +20,9 @@ export function UploadPageClient({ initialZones }: { initialZones: Tables<"zones
 
   return (
     <>
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="font-display text-[27px] font-semibold text-ink">Unggah Foto Tanaman</h1>
+          <h1 className="font-display text-[24px] sm:text-[27px] font-semibold text-ink">Unggah Foto Tanaman</h1>
           <p className="mt-1.5 font-sans text-[14px] text-sage">
             Ambil atau unggah foto daun untuk mulai diagnosis
           </p>

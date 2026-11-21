@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { DiseaseFrequencyChart } from "@/components/analytics/DiseaseFrequencyChart";
 import { SeverityTrendChart } from "@/components/analytics/SeverityTrendChart";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { Card, CardTitle } from "@/components/ui/Card";
 import { getAverageConfidence, getDiseaseFrequency, getSeverityTrendByWeek } from "@/lib/data/analytics";
 
@@ -15,7 +16,7 @@ export default async function AnalitikPage() {
   ]);
 
   return (
-    <div className="flex h-screen flex-col gap-5 overflow-y-auto p-9 pb-16">
+    <PageContainer>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-[27px] font-semibold text-ink">Analitik</h1>
@@ -25,7 +26,7 @@ export default async function AnalitikPage() {
         </div>
       </div>
 
-      <Card className="w-fit p-4.5">
+      <Card className="w-full p-4.5 sm:w-fit">
         <div className="font-display text-[26px] font-semibold text-ink">
           {avgConfidence != null ? `${Math.round(avgConfidence * 100)}%` : "—"}
         </div>
@@ -35,8 +36,8 @@ export default async function AnalitikPage() {
         </div>
       </Card>
 
-      <div className="flex gap-5">
-        <Card className="flex-1 p-5.5">
+      <div className="grid gap-5 md:grid-cols-2">
+        <Card className="min-w-0 p-4 sm:p-5.5">
           <CardTitle className="mb-1">Distribusi Penyakit</CardTitle>
           <p className="mb-3 font-sans text-[12.5px] text-sage">
             Penyakit paling sering terdeteksi (8 minggu terakhir)
@@ -44,12 +45,12 @@ export default async function AnalitikPage() {
           <DiseaseFrequencyChart data={diseaseFrequency} />
         </Card>
 
-        <Card className="flex-1 p-5.5">
+        <Card className="min-w-0 p-4 sm:p-5.5">
           <CardTitle className="mb-1">Tren Tingkat Keparahan</CardTitle>
           <p className="mb-3 font-sans text-[12.5px] text-sage">Jumlah diagnosis per minggu</p>
           <SeverityTrendChart data={severityTrend} />
         </Card>
       </div>
-    </div>
+    </PageContainer>
   );
 }

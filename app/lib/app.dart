@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/theme/app_theme.dart';
+import 'core/theme/color_tokens.dart';
 import 'providers/auth_providers.dart';
 import 'providers/dashboard_providers.dart';
 import 'providers/history_providers.dart';
@@ -40,6 +41,27 @@ class AgriVisionApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.build(),
       routerConfig: router,
+      // Di tablet/layar lebar isi dibatasi ke satu kolom bergaya ponsel di tengah
+      // (kartu & tombol tidak melar sampai ke tepi layar). Skala font sistem juga
+      // dibatasi supaya teks besar tidak merusak susunan.
+      builder: (context, child) {
+        final mq = MediaQuery.of(context);
+        return MediaQuery(
+          data: mq.copyWith(
+            textScaler: mq.textScaler.clamp(maxScaleFactor: 1.3),
+          ),
+          child: ColoredBox(
+            color: AppColors.parchment,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 640),
+                child: child,
+              ),
+            ),
+          ),
+        );
+      },
       locale: const Locale('id', 'ID'),
       supportedLocales: const [Locale('id', 'ID'), Locale('en', 'US')],
       localizationsDelegates: const [

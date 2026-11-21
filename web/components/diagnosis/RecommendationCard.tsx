@@ -12,7 +12,7 @@ export function RecommendationCard({
   warningNote: string | null;
 }) {
   return (
-    <div className="rounded-md border-l-4 border-rust bg-rust-soft px-6 py-5">
+    <div className="rounded-md border-l-4 border-rust bg-rust-soft px-4 py-4 sm:px-6 sm:py-5">
       <div className="mb-3 flex items-center gap-2.5">
         <DropletIcon size={18} className="text-rust" />
         <h3 className="font-sans text-[16px] font-semibold text-ink">Rekomendasi Penanganan</h3>

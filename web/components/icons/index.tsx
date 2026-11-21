@@ -230,3 +230,33 @@ export function SearchIcon({ size, ...props }: IconProps) {
     </svg>
   );
 }
+
+export function MenuIcon({ size, ...props }: IconProps) {
+  return (
+    <svg
+      {...base(size, props)}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4 7h16M4 12h16M4 17h16" />
+    </svg>
+  );
+}
+
+export function CloseIcon({ size, ...props }: IconProps) {
+  return (
+    <svg
+      {...base(size, props)}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M6 6l12 12M18 6L6 18" />
+    </svg>
+  );
+}

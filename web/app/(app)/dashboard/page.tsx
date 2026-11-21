@@ -5,6 +5,7 @@ import { RecentActivityList } from "@/components/dashboard/RecentActivityList";
 import { StatTile } from "@/components/dashboard/StatTile";
 import { ZoneStatusList } from "@/components/dashboard/ZoneStatusList";
 import { CameraIcon, GridIcon, LeafLogoIcon, WarningTriangleIcon } from "@/components/icons";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { Card, CardTitle } from "@/components/ui/Card";
 import { getProfile } from "@/lib/data/auth";
 import { getDashboardStats, getRecentActivity } from "@/lib/data/dashboard";
@@ -41,17 +42,17 @@ export default async function DashboardPage() {
   const trendSeries = buildDailyAverageSeries(healthHistory, 30);
 
   return (
-    <div className="flex h-screen flex-col gap-5 overflow-y-auto p-9 pb-16">
+    <PageContainer>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-[26px] font-semibold text-ink">
+          <h1 className="font-display text-[22px] sm:text-[26px] font-semibold text-ink">
             {greeting()}, {firstName(profile.full_name)}
           </h1>
           <p className="mt-1 font-sans text-[13.5px] text-sage">{formatLongDate(new Date())}</p>
         </div>
       </div>
 
-      <div className="flex gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
         <StatTile icon={<GridIcon size={19} className="text-moss" />} value={stats.zoneCount} label="Zona dipantau" />
         <StatTile
           icon={<CameraIcon size={19} className="text-ink" />}
@@ -72,13 +73,13 @@ export default async function DashboardPage() {
         />
       </div>
 
-      <div className="flex min-h-0 flex-1 gap-5">
-        <Card className="w-[620px] shrink-0 p-5.5">
+      <div className="grid gap-5 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+        <Card className="min-w-0 p-4 sm:p-5.5">
           <CardTitle className="mb-4">Tren kesehatan tanaman — 30 hari terakhir</CardTitle>
           <HealthTrendChart data={trendSeries} />
         </Card>
 
-        <Card className="flex-1 p-5.5">
+        <Card className="min-w-0 p-4 sm:p-5.5">
           <CardTitle className="mb-3.5">Status zona</CardTitle>
           <ZoneStatusList
             rows={zoneHealth.map((z) => ({ zone: z.zone, status: z.health?.status ?? null }))}
@@ -98,6 +99,6 @@ export default async function DashboardPage() {
           }))}
         />
       </Card>
-    </div>
+    </PageContainer>
   );
 }

@@ -20,7 +20,7 @@ export function ZoneSelector({
   const selected = zones.find((z) => z.id === selectedZoneId);
 
   return (
-    <div className="relative">
+    <div className="relative self-start">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -33,7 +33,7 @@ export function ZoneSelector({
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 z-20 mt-2 w-64 rounded-md border border-border-soft bg-paper py-2 shadow-lg">
+          <div className="absolute left-0 z-20 mt-2 w-64 max-w-[calc(100vw-2rem)] sm:left-auto sm:right-0 rounded-md border border-border-soft bg-paper py-2 shadow-lg">
             {zones.length === 0 && (
               <p className="px-4 py-2 font-sans text-[13px] text-sage">Belum ada zona.</p>
             )}

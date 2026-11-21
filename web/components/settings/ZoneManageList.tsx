@@ -34,14 +34,14 @@ export function ZoneManageList({ initialZones }: { initialZones: Tables<"zones">
       {zones.map((zone) => (
         <div
           key={zone.id}
-          className="flex items-center gap-3 rounded-sm border border-border-soft px-4 py-3"
+          className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-sm border border-border-soft px-4 py-3"
         >
           {editingId === zone.id ? (
             <>
               <Input
                 value={draftName}
                 onChange={(e) => setDraftName(e.target.value)}
-                className="flex-1"
+                className="min-w-[160px] flex-1"
               />
               <Button variant="outline" onClick={() => saveEdit(zone.id)} className="w-fit px-4 py-2 text-[13px]">
                 Simpan
@@ -56,7 +56,7 @@ export function ZoneManageList({ initialZones }: { initialZones: Tables<"zones">
             </>
           ) : (
             <>
-              <span className="flex-1 font-sans text-[13.5px] text-ink">
+              <span className="min-w-0 flex-1 break-words font-sans text-[13.5px] text-ink">
                 {zone.name}
               </span>
               <button

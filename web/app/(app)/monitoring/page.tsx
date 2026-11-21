@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { MultiZoneTrendChart } from "@/components/charts/MultiZoneTrendChart";
 import { TimeRangeToggle } from "@/components/monitoring/TimeRangeToggle";
 import { ZoneHealthRanking } from "@/components/monitoring/ZoneHealthRanking";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { Card, CardTitle } from "@/components/ui/Card";
 import { getLatestZoneHealth, buildPerZoneSeries, computeTrendDelta, getZoneHealthHistory } from "@/lib/data/zone-health";
 
@@ -47,8 +48,8 @@ export default async function MonitoringPage({
     .sort((a, b) => (a.currentScore ?? 100) - (b.currentScore ?? 100));
 
   return (
-    <div className="flex h-screen flex-col gap-5 overflow-y-auto p-9 pb-16">
-      <div className="flex items-center justify-between">
+    <PageContainer>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-[27px] font-semibold text-ink">
             Monitoring Kesehatan Tanaman
@@ -62,20 +63,20 @@ export default async function MonitoringPage({
         </Suspense>
       </div>
 
-      <Card className="p-5.5">
+      <Card className="p-4 sm:p-5.5">
         <CardTitle className="mb-4">
           Perbandingan tren kesehatan — {days} hari terakhir
         </CardTitle>
         <MultiZoneTrendChart series={chartSeries} />
       </Card>
 
-      <Card className="p-5.5">
+      <Card className="p-4 sm:p-5.5">
         <CardTitle className="mb-2">Ranking zona berdasarkan kesehatan</CardTitle>
         <p className="mb-3 font-sans text-[12.5px] text-sage">
           Diurutkan dari skor kesehatan terendah — zona yang paling butuh perhatian di atas.
         </p>
         <ZoneHealthRanking rows={rankingRows} />
       </Card>
-    </div>
+    </PageContainer>
   );
 }

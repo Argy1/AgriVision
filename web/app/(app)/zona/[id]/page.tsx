@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { HealthTrendChart } from "@/components/charts/HealthTrendChart";
 import { ZoneStatusPill } from "@/components/severity/SeverityBadge";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { Card, CardTitle } from "@/components/ui/Card";
 import { HistoryTable } from "@/components/history/HistoryTable";
 import { getDiagnosesHistory, getZoneDiseaseFrequency } from "@/lib/data/history";
@@ -29,8 +30,8 @@ export default async function ZonaDetailPage({ params }: { params: Promise<{ id:
   const totalDiagnoses = diseaseFrequency.reduce((sum, d) => sum + d.count, 0);
 
   return (
-    <div className="flex h-screen flex-col gap-5 overflow-y-auto p-9 pb-16">
-      <div className="flex items-start justify-between">
+    <PageContainer>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex items-center gap-2.5">
             <h1 className="font-display text-[27px] font-semibold text-ink">Zona {zone.name}</h1>
@@ -41,14 +42,14 @@ export default async function ZonaDetailPage({ params }: { params: Promise<{ id:
         </div>
         <Link
           href={`/upload?zone=${zone.id}`}
-          className="rounded-sm bg-moss px-5 py-2.5 font-sans text-[13.5px] font-semibold text-white"
+          className="w-fit shrink-0 rounded-sm bg-moss px-5 py-2.5 font-sans text-[13.5px] font-semibold text-white"
         >
           Unggah Foto untuk Zona Ini
         </Link>
       </div>
 
-      <div className="flex gap-4">
-        <Card className="flex-1 p-4.5">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+        <Card className="min-w-0 p-4.5">
           <div className="font-display text-[24px] font-semibold text-ink">
             {latest?.avg_health_score != null ? Math.round(latest.avg_health_score) : "—"}
             <span className="text-[13px] font-normal text-sage">/100</span>
@@ -71,13 +72,13 @@ export default async function ZonaDetailPage({ params }: { params: Promise<{ id:
         </Card>
       </div>
 
-      <Card className="p-5.5">
+      <Card className="p-4 sm:p-5.5">
         <CardTitle className="mb-4">Tren kesehatan — {DISPLAY_DAYS} hari terakhir</CardTitle>
         <HealthTrendChart data={trendSeries} />
       </Card>
 
-      <div className="flex gap-5">
-        <Card className="w-[340px] shrink-0 p-5">
+      <div className="grid gap-5 xl:grid-cols-[340px_minmax(0,1fr)]">
+        <Card className="min-w-0 p-4 sm:p-5">
           <CardTitle className="mb-3">Frekuensi Penyakit</CardTitle>
           {diseaseFrequency.length === 0 ? (
             <p className="font-sans text-[13.5px] text-sage">Belum ada data.</p>
@@ -93,11 +94,11 @@ export default async function ZonaDetailPage({ params }: { params: Promise<{ id:
           )}
         </Card>
 
-        <Card className="flex-1 p-5">
+        <Card className="min-w-0 p-4 sm:p-5">
           <CardTitle className="mb-3">Riwayat Diagnosis Zona Ini</CardTitle>
           <HistoryTable rows={diagnosesHistory.rows} showZoneColumn={false} />
         </Card>
       </div>
-    </div>
+    </PageContainer>
   );
 }

@@ -4,6 +4,7 @@ import { Suspense } from "react";
 
 import { CheckCircleIcon } from "@/components/icons";
 import { LeafGlyph } from "@/components/leaf-illustration/LeafGlyph";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { Card, CardTitle } from "@/components/ui/Card";
 import { getRecentDiagnoses } from "@/lib/data/diagnoses";
 import { getZones } from "@/lib/data/zones";
@@ -24,13 +25,13 @@ export default async function UploadPage() {
   const [zones, recentDiagnoses] = await Promise.all([getZones(), getRecentDiagnoses(3)]);
 
   return (
-    <div className="flex h-screen flex-col gap-6 overflow-y-auto p-10 pb-16">
+    <PageContainer>
       <Suspense fallback={null}>
         <UploadPageClient initialZones={zones} />
       </Suspense>
 
-      <div className="flex min-h-0 flex-1 gap-5">
-        <Card className="w-[460px] shrink-0 p-5">
+      <div className="grid gap-5 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+        <Card className="min-w-0 p-4 sm:p-5">
           <CardTitle className="mb-3.5">Tips foto yang baik</CardTitle>
           <div className="flex flex-col gap-3">
             {TIPS.map((tip) => (
@@ -47,7 +48,7 @@ export default async function UploadPage() {
           </p>
         </Card>
 
-        <Card className="flex-1 p-5">
+        <Card className="min-w-0 p-4 sm:p-5">
           <CardTitle className="mb-3.5">Riwayat terbaru</CardTitle>
           {recentDiagnoses.length === 0 ? (
             <p className="font-sans text-[13.5px] text-sage">Belum ada riwayat diagnosis.</p>
@@ -60,7 +61,7 @@ export default async function UploadPage() {
                   className="flex items-center gap-3"
                 >
                   <LeafGlyph severity={d.severity} />
-                  <div className="flex-1">
+                  <div className="min-w-0 flex-1">
                     <div className="font-sans text-[13.5px] font-medium text-ink">
                       Zona {d.uploads.zones.name}
                     </div>
@@ -83,6 +84,6 @@ export default async function UploadPage() {
           )}
         </Card>
       </div>
-    </div>
+    </PageContainer>
   );
 }

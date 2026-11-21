@@ -3,7 +3,7 @@ import { LeafLogoIcon } from "@/components/icons";
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-white">
-      <div className="relative hidden w-[560px] shrink-0 flex-col justify-between overflow-hidden bg-ink p-14 md:flex">
+      <div className="relative hidden w-[420px] shrink-0 flex-col justify-between overflow-hidden bg-ink p-10 lg:flex xl:w-[560px] xl:p-14">
         <svg
           viewBox="0 0 200 220"
           width="300"
@@ -27,7 +27,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </div>
 
         <div className="relative">
-          <h1 className="whitespace-pre-line font-display text-[42px] font-semibold leading-[1.16] text-panel-headline">
+          <h1 className="whitespace-pre-line font-display text-[34px] xl:text-[42px] font-semibold leading-[1.16] text-panel-headline">
             {"Diagnosis dini,\npanen lebih baik."}
           </h1>
           <p className="mt-4.5 max-w-[380px] font-sans text-[15.5px] leading-[1.65] text-panel-body">
@@ -41,7 +41,13 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </p>
       </div>
 
-      <div className="flex flex-1 flex-col justify-center px-8 py-12 sm:px-16 md:px-[88px]">
+      <div className="flex min-w-0 flex-1 flex-col justify-center px-5 py-8 sm:px-12 sm:py-12 lg:px-12 xl:px-[88px]">
+        <div className="mx-auto mb-8 flex w-full max-w-[420px] items-center gap-2.5 lg:hidden">
+          <div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-ink">
+            <LeafLogoIcon size={18} className="text-parchment" />
+          </div>
+          <span className="font-sans text-[19px] font-semibold tracking-[0.2px] text-ink">AgriVision</span>
+        </div>
         <div className="mx-auto w-full max-w-[420px]">{children}</div>
       </div>
     </div>

@@ -21,13 +21,19 @@ export function RecentActivityList({ rows }: { rows: ActivityRow[] }) {
   return (
     <div className="flex flex-col gap-1">
       {rows.map((row) => (
-        <Link key={row.id} href={`/diagnosis/${row.id}`} className="flex items-center gap-3 py-1.5">
+        <Link
+          key={row.id}
+          href={`/diagnosis/${row.id}`}
+          className="flex flex-wrap items-center gap-x-3 gap-y-1.5 py-2 sm:flex-nowrap sm:py-1.5"
+        >
           <LeafGlyph severity={row.severity} width={26} height={29} />
-          <span className="flex-1 font-sans text-[13.5px] text-ink">
+          <span className="min-w-0 flex-[1_1_calc(100%-3rem)] font-sans text-[13.5px] text-ink sm:flex-1">
             {row.disease_name} terdeteksi di Zona {row.zoneName}
           </span>
-          <span className="font-sans text-[12.5px] text-sage">{formatTimeAgo(row.created_at)}</span>
-          <SeverityPill severity={row.severity} />
+          <div className="flex items-center gap-3 pl-[38px] sm:pl-0">
+            <span className="font-sans text-[12.5px] text-sage">{formatTimeAgo(row.created_at)}</span>
+            <SeverityPill severity={row.severity} />
+          </div>
         </Link>
       ))}
     </div>

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 
 import { BackArrowIcon } from "@/components/icons";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { LeafIllustration } from "@/components/leaf-illustration/LeafIllustration";
 import { ConfidencePill, SeverityPill } from "@/components/severity/SeverityBadge";
 import { SeverityMeter } from "@/components/severity/SeverityMeter";
@@ -22,7 +23,7 @@ export default async function DiagnosisPage({ params }: { params: Promise<{ id: 
   const daysSinceFirst = firstOccurrence ? daysSince(firstOccurrence.created_at) : null;
 
   return (
-    <div className="flex h-screen flex-col gap-4.5 overflow-y-auto p-9 pb-16">
+    <PageContainer className="gap-4.5">
       <div className="flex items-center gap-2.5">
         <Link
           href="/upload"
@@ -38,8 +39,8 @@ export default async function DiagnosisPage({ params }: { params: Promise<{ id: 
         </div>
       </div>
 
-      <div className="flex gap-8 rounded-xl border border-border-soft bg-paper p-7">
-        <div className="flex w-[260px] shrink-0 flex-col items-center gap-2.5">
+      <div className="flex flex-col gap-5 rounded-xl border border-border-soft bg-paper p-4 sm:gap-8 sm:p-7 md:flex-row">
+        <div className="flex w-full shrink-0 flex-col items-center gap-2.5 md:w-[260px]">
           <div className="flex h-60 w-60 items-center justify-center overflow-hidden rounded-lg bg-leaf-panel-bg">
             <LeafIllustration severity={diagnosis.severity} affectedAreaPct={diagnosis.affected_area_pct} />
           </div>
@@ -49,19 +50,19 @@ export default async function DiagnosisPage({ params }: { params: Promise<{ id: 
         <div className="flex min-w-0 flex-1 flex-col gap-3.5">
           <div>
             <span className="font-sans text-[13px] font-medium text-sage">Diagnosis</span>
-            <h2 className="mt-1 font-display text-[29px] font-semibold text-ink">
+            <h2 className="mt-1 font-display text-[24px] sm:text-[29px] font-semibold text-ink">
               {diagnosis.disease_name}
             </h2>
           </div>
 
-          <div className="flex gap-2.5">
+          <div className="flex flex-wrap gap-2.5">
             <ConfidencePill confidence={diagnosis.confidence} />
             <SeverityPill severity={diagnosis.severity} />
           </div>
 
           <SeverityMeter severity={diagnosis.severity} />
 
-          <div className="mt-1 flex gap-7">
+          <div className="mt-1 flex flex-wrap gap-x-7 gap-y-3">
             <div>
               <div className="font-display text-[24px] font-semibold text-ink">
                 {diagnosis.affected_area_pct}%
@@ -105,6 +106,6 @@ export default async function DiagnosisPage({ params }: { params: Promise<{ id: 
         zoneName={zone.name}
         severities={zoneHistory.map((h) => h.severity).reverse()}
       />
-    </div>
+    </PageContainer>
   );
 }

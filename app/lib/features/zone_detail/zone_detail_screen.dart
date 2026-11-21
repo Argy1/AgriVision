@@ -40,7 +40,9 @@ class ZoneDetailScreen extends ConsumerWidget {
                 Row(
                   children: [
                     InkWell(
-                      onTap: () => context.canPop() ? context.pop() : context.go(RoutePaths.beranda),
+                      onTap: () => context.canPop()
+                          ? context.pop()
+                          : context.go(RoutePaths.beranda),
                       borderRadius: BorderRadius.circular(8),
                       child: Container(
                         width: 30,
@@ -57,11 +59,15 @@ class ZoneDetailScreen extends ConsumerWidget {
                     Expanded(
                       child: Text(
                         detail.zone.displayLabel,
-                        style: GoogleFonts.fraunces(fontSize: 19, fontWeight: FontWeight.w600),
+                        style: GoogleFonts.fraunces(
+                          fontSize: 19,
+                          fontWeight: FontWeight.w600,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    if (latest?.status != null) ZoneStatusPill(status: latest!.status),
+                    if (latest?.status != null)
+                      ZoneStatusPill(status: latest!.status),
                   ],
                 ),
                 if (detail.zone.locationNote != null) ...[
@@ -70,7 +76,10 @@ class ZoneDetailScreen extends ConsumerWidget {
                     padding: const EdgeInsets.only(left: 40),
                     child: Text(
                       detail.zone.locationNote!,
-                      style: const TextStyle(fontSize: 12, color: AppColors.sage),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.sage,
+                      ),
                     ),
                   ),
                 ],
@@ -87,7 +96,8 @@ class ZoneDetailScreen extends ConsumerWidget {
                     const SizedBox(width: 10),
                     Expanded(
                       child: StatTile(
-                        value: '${detail.recentDiagnoses.length}+',
+                        value:
+                            '${detail.diseaseFrequency.fold<int>(0, (sum, e) => sum + e.count)}',
                         label: 'total diagnosis',
                         icon: AppIcons.camera,
                       ),
@@ -98,7 +108,9 @@ class ZoneDetailScreen extends ConsumerWidget {
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
-                    onPressed: () => context.push('${RoutePaths.unggah}?zone=${detail.zone.id}'),
+                    onPressed: () => context.push(
+                      '${RoutePaths.unggah}?zone=${detail.zone.id}',
+                    ),
                     icon: const Icon(AppIcons.camera, size: 16),
                     label: const Text('Unggah Foto untuk Zona Ini'),
                   ),
@@ -108,12 +120,17 @@ class ZoneDetailScreen extends ConsumerWidget {
                 const SizedBox(height: 14),
                 DiseaseFrequencyBreakdown(entries: detail.diseaseFrequency),
                 const SizedBox(height: 16),
-                const Text('Riwayat Diagnosis', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
+                const Text(
+                  'Riwayat Diagnosis',
+                  style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 4),
                 if (detail.recentDiagnoses.isEmpty)
                   const EmptyState(message: 'Belum ada diagnosis di zona ini.')
                 else
-                  ...detail.recentDiagnoses.map((d) => HistoryListTile(item: d)),
+                  ...detail.recentDiagnoses.map(
+                    (d) => HistoryListTile(item: d),
+                  ),
               ],
             );
           },

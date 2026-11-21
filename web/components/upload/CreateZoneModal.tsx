@@ -65,7 +65,7 @@ export function CreateZoneModal({
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-40 bg-ink/40" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border-soft bg-paper p-6 shadow-lg">
+        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-[420px] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-border-soft bg-paper p-5 shadow-lg sm:p-6">
           <Dialog.Title className="font-display text-[20px] font-semibold text-ink">
             Tambah Zona Baru
           </Dialog.Title>
