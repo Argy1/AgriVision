@@ -68,7 +68,15 @@ export function Dropzone({ zone }: { zone: Tables<"zones"> | null }) {
       router.push(`/diagnosis/${result.diagnosis.id}`);
     } catch (err) {
       const message = err instanceof MlServiceError ? err.message : "Gagal menjalankan diagnosis.";
-      setStage({ name: "error", message, retry: () => runDiagnose(uploadId, path, cropType) });
+      // 4xx = server menolak foto/permintaan ini (mis. keyakinan < 50%, tanpa daun): kirim
+      // ulang foto yang sama pasti ditolak lagi, jadi "Coba lagi" kembali ke pilih foto.
+      // Gagal jaringan (status 0) atau 5xx tetap mengulang diagnosis untuk upload yang sama.
+      const rejected = err instanceof MlServiceError && err.status >= 400 && err.status < 500;
+      setStage({
+        name: "error",
+        message,
+        retry: rejected ? () => setStage({ name: "idle" }) : () => runDiagnose(uploadId, path, cropType),
+      });
     }
   }
 

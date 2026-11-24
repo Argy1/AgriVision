@@ -61,7 +61,12 @@ export function MultiZoneTrendChart({ series }: { series: ZoneSeries[] }) {
         <LineChart data={chartData} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
           <YAxis domain={[0, 100]} hide />
           <Tooltip
-            labelFormatter={(label) => format(parseDateOnly(String(label)), "d MMM", { locale: idLocale })}
+            // Tanpa XAxis, `label` berisi indeks titik (0..n-1), bukan tanggal -- ambil
+            // tanggal dari data titik yang disorot, seperti CustomTooltip di HealthTrendChart.
+            labelFormatter={(_, payload) => {
+              const date = payload?.[0]?.payload?.date;
+              return date ? format(parseDateOnly(String(date)), "d MMM", { locale: idLocale }) : "";
+            }}
             formatter={(value, name) => {
               const key = String(name);
               const zone = shown.find((s) => s.zoneId === key);
