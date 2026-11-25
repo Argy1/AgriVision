@@ -104,16 +104,19 @@ export function buildDailyAverageSeries(
     byDate.set(row.date, list);
   }
 
-  const series: { date: string; value: number | null }[] = [];
+  // `measured` = hari itu benar-benar ada pemeriksaan; grafik hanya menggambar titik di
+  // hari ber-`measured` (value tetap diisi nilai terakhir untuk pemakai lain).
+  const series: { date: string; value: number | null; measured: boolean }[] = [];
   let lastKnown: number | null = null;
 
   for (let i = days - 1; i >= 0; i--) {
     const key = toJakartaDateString(jakartaDateMinusDays(i));
     const values = byDate.get(key);
-    if (values && values.length > 0) {
+    const measured = !!values && values.length > 0;
+    if (measured) {
       lastKnown = values.reduce((a, b) => a + b, 0) / values.length;
     }
-    series.push({ date: key, value: lastKnown });
+    series.push({ date: key, value: lastKnown, measured });
   }
 
   return series;
@@ -142,8 +145,9 @@ export function buildPerZoneSeries(
     const dateMap = byZoneDate.get(zoneId) ?? new Map();
     let lastKnown: number | null = null;
     const points = dateKeys.map((date) => {
-      if (dateMap.has(date)) lastKnown = dateMap.get(date)!;
-      return { date, value: lastKnown };
+      const measured = dateMap.has(date);
+      if (measured) lastKnown = dateMap.get(date)!;
+      return { date, value: lastKnown, measured };
     });
     return { zoneId, points };
   });

@@ -2,8 +2,7 @@
 
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
-import { Line, LineChart, ResponsiveContainer, Tooltip, YAxis } from "recharts";
-import type { DotItemDotProps } from "recharts";
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import { parseDateOnly } from "@/lib/format";
 
@@ -19,7 +18,14 @@ const MAX_ZONES_ON_CHART = ZONE_CHART_COLORS.length;
 export interface ZoneSeries {
   zoneId: string;
   zoneName: string;
-  points: { date: string; value: number | null }[];
+  /** measured=false: `value` hanya nilai terakhir yang dibawa maju -> tidak digambar. */
+  points: { date: string; value: number | null; measured?: boolean }[];
+}
+
+const AXIS_TICK = { fontSize: 11.5, fill: "#8B9280" }; // sage
+
+function formatDay(date: string) {
+  return format(parseDateOnly(date), "d MMM", { locale: idLocale });
 }
 
 export function MultiZoneTrendChart({ series }: { series: ZoneSeries[] }) {
@@ -38,7 +44,9 @@ export function MultiZoneTrendChart({ series }: { series: ZoneSeries[] }) {
   const chartData = dates.map((date, i) => {
     const row: Record<string, string | number | null> = { date };
     shown.forEach((s) => {
-      row[s.zoneId] = s.points[i]?.value ?? null;
+      const p = s.points[i];
+      // Hanya hari yang benar-benar ada pemeriksaan; garis menyambung titik-titik itu.
+      row[s.zoneId] = p && p.measured !== false ? p.value : null;
     });
     return row;
   });
@@ -57,16 +65,34 @@ export function MultiZoneTrendChart({ series }: { series: ZoneSeries[] }) {
         ))}
       </div>
 
-      <ResponsiveContainer width="100%" height={220}>
-        <LineChart data={chartData} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
-          <YAxis domain={[0, 100]} hide />
+      <ResponsiveContainer width="100%" height={240}>
+        <LineChart data={chartData} margin={{ top: 10, right: 12, left: 0, bottom: 0 }}>
+          <CartesianGrid vertical={false} stroke="#EEEADC" />
+          <XAxis
+            dataKey="date"
+            tickFormatter={(v) => formatDay(String(v))}
+            tick={AXIS_TICK}
+            axisLine={false}
+            tickLine={false}
+            minTickGap={28}
+            interval="preserveStartEnd"
+          />
+          <YAxis
+            domain={[0, 100]}
+            ticks={[0, 25, 50, 75, 100]}
+            width={34}
+            tick={AXIS_TICK}
+            axisLine={false}
+            tickLine={false}
+          />
           <Tooltip
-            // Tanpa XAxis, `label` berisi indeks titik (0..n-1), bukan tanggal -- ambil
-            // tanggal dari data titik yang disorot, seperti CustomTooltip di HealthTrendChart.
+            // Tanggal diambil dari data titik yang disorot (bukan `label`), supaya
+            // tooltip tidak bergantung pada konfigurasi sumbu X.
             labelFormatter={(_, payload) => {
               const date = payload?.[0]?.payload?.date;
-              return date ? format(parseDateOnly(String(date)), "d MMM", { locale: idLocale }) : "";
+              return date ? formatDay(String(date)) : "";
             }}
+            cursor={{ stroke: "#DED9C7" }}
             formatter={(value, name) => {
               const key = String(name);
               const zone = shown.find((s) => s.zoneId === key);
@@ -74,32 +100,21 @@ export function MultiZoneTrendChart({ series }: { series: ZoneSeries[] }) {
             }}
             contentStyle={{ fontSize: 12.5, borderRadius: 8, borderColor: "#E3DFCF" }}
           />
-          {shown.map((s, i) => {
-            // Sama seperti HealthTrendChart: tandai titik TERAKHIR yang punya
-            // nilai nyata per zona, supaya garis dengan cuma 1 titik data tetap
-            // terlihat (dot={false} + connectNulls tanpa ini render kosong).
-            const lastRealIndex = s.points.reduce(
-              (acc, p, idx) => (p.value != null ? idx : acc),
-              -1,
-            );
-            function renderDot(props: DotItemDotProps) {
-              if (props.index !== lastRealIndex || props.cx == null || props.cy == null) {
-                return <g key={props.index} />;
-              }
-              return <circle key={props.index} cx={props.cx} cy={props.cy} r={4} fill={ZONE_CHART_COLORS[i]} />;
-            }
-            return (
-              <Line
-                key={s.zoneId}
-                type="monotone"
-                dataKey={s.zoneId}
-                stroke={ZONE_CHART_COLORS[i]}
-                strokeWidth={2}
-                dot={renderDot}
-                connectNulls
-              />
-            );
-          })}
+          {shown.map((s, i) => (
+            // Titik di setiap hari pemeriksaan (cincin putih memisahkan titik yang
+            // bertumpuk antar-zona), garis menyambung hari-hari itu.
+            <Line
+              key={s.zoneId}
+              type="monotone"
+              dataKey={s.zoneId}
+              stroke={ZONE_CHART_COLORS[i]}
+              strokeWidth={2}
+              dot={{ r: 4, fill: ZONE_CHART_COLORS[i], stroke: "#FFFFFF", strokeWidth: 2 }}
+              activeDot={{ r: 6, fill: ZONE_CHART_COLORS[i], stroke: "#FFFFFF", strokeWidth: 2 }}
+              connectNulls
+              isAnimationActive={false}
+            />
+          ))}
         </LineChart>
       </ResponsiveContainer>
 
