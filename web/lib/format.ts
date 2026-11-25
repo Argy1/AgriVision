@@ -1,12 +1,21 @@
-import { format, isToday, isYesterday } from "date-fns";
+import { format, isSameDay, subDays } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
+
+/** Date yang jam & tanggal LOKAL-nya sama dengan jam dinding Asia/Jakarta, di zona
+ * waktu server mana pun. Fungsi format di bawah sering jalan di server component;
+ * di Vercel server memakai UTC, jadi tanpa ini jam tampil mundur 7 jam dan tanggal
+ * bisa mundur sehari. Hanya untuk ditampilkan -- jangan disimpan/dikirim balik. */
+export function inJakarta(date: Date): Date {
+  return new Date(date.toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
+}
 
 /** "Hari ini, 07:40" / "Kemarin, 16:05" / "12 Sep, 08:12" -- persis gaya di mockup. */
 export function formatRelativeDateTime(iso: string) {
-  const date = new Date(iso);
+  const date = inJakarta(new Date(iso));
+  const today = inJakarta(new Date());
   const time = format(date, "HH:mm");
-  if (isToday(date)) return `Hari ini, ${time}`;
-  if (isYesterday(date)) return `Kemarin, ${time}`;
+  if (isSameDay(date, today)) return `Hari ini, ${time}`;
+  if (isSameDay(date, subDays(today, 1))) return `Kemarin, ${time}`;
   return format(date, "d MMM, HH:mm", { locale: idLocale });
 }
 
@@ -24,7 +33,7 @@ export function formatTimeAgo(iso: string) {
 
 /** "Selasa, 22 September 2026" -- header dashboard. */
 export function formatLongDate(date: Date) {
-  return format(date, "EEEE, d MMMM yyyy", { locale: idLocale });
+  return format(inJakarta(date), "EEEE, d MMMM yyyy", { locale: idLocale });
 }
 
 /** Parse "YYYY-MM-DD" sebagai tengah malam waktu LOKAL, bukan UTC -- `new

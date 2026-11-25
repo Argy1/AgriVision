@@ -12,11 +12,14 @@ export interface TrendPoint {
   value: number | null;
 }
 
-function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) {
+// Tanpa XAxis, `label` dari Recharts berisi indeks titik (0..n-1), bukan tanggal --
+// tanggal diambil dari data titik yang disorot (payload[0].payload.date).
+function CustomTooltip({ active, payload }: { active?: boolean; payload?: Array<{ value: number; payload?: TrendPoint }> }) {
   if (!active || !payload?.length || payload[0].value == null) return null;
+  const date = payload[0].payload?.date;
   return (
     <div className="rounded-sm border border-border-soft bg-paper px-3 py-1.5 font-sans text-[12.5px] shadow-sm">
-      <div className="text-sage">{label && format(parseDateOnly(label), "d MMM", { locale: idLocale })}</div>
+      <div className="text-sage">{date && format(parseDateOnly(date), "d MMM", { locale: idLocale })}</div>
       <div className="font-semibold text-moss-deep">{Math.round(payload[0].value)}/100</div>
     </div>
   );

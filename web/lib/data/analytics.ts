@@ -2,6 +2,7 @@ import "server-only";
 
 import { format, startOfWeek } from "date-fns";
 
+import { inJakarta } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
 import type { Enums } from "@/types/database.types";
 
@@ -44,9 +45,9 @@ export async function getSeverityTrendByWeek() {
 
   const byWeek = new Map<string, { ringan: number; sedang: number; parah: number }>();
   for (const row of rows) {
-    // format() pakai getter tanggal LOKAL (bukan toISOString() yang ke UTC),
-    // supaya baris di dekat tengah malam tidak salah masuk ke minggu sebelah.
-    const weekStart = format(startOfWeek(new Date(row.created_at), { weekStartsOn: 1 }), "yyyy-MM-dd");
+    // Minggu dihitung dalam waktu Jakarta (inJakarta), bukan zona server: di Vercel
+    // server = UTC, sehingga diagnosis Senin 00:00-07:00 WIB salah masuk minggu sebelumnya.
+    const weekStart = format(startOfWeek(inJakarta(new Date(row.created_at)), { weekStartsOn: 1 }), "yyyy-MM-dd");
     if (!byWeek.has(weekStart)) byWeek.set(weekStart, { ringan: 0, sedang: 0, parah: 0 });
     byWeek.get(weekStart)![row.severity as Enums<"severity_level">] += 1;
   }
