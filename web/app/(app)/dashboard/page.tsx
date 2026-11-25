@@ -10,7 +10,7 @@ import { Card, CardTitle } from "@/components/ui/Card";
 import { getProfile } from "@/lib/data/auth";
 import { getDashboardStats, getRecentActivity } from "@/lib/data/dashboard";
 import { buildDailyAverageSeries, getLatestZoneHealth, getZoneHealthHistory } from "@/lib/data/zone-health";
-import { formatLongDate } from "@/lib/format";
+import { formatLongDate, inJakarta } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Dashboard — AgriVision" };
 
@@ -19,7 +19,7 @@ function firstName(fullName: string) {
 }
 
 function greeting() {
-  const hour = new Date().getHours();
+  const hour = inJakarta(new Date()).getHours(); // jam WIB, bukan jam server (Vercel = UTC)
   if (hour < 11) return "Selamat pagi";
   if (hour < 15) return "Selamat siang";
   if (hour < 19) return "Selamat sore";
