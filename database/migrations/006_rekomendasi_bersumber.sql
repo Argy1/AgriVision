@@ -56,10 +56,10 @@ update disease_reference set
 where disease_label = 'tomato_spider_mites_two_spotted_spider_mite';
 
 update disease_reference set
-  recommendation_text = 'Musnahkan sisa tanaman segera setelah panen, hindari pupuk nitrogen berlebih, dan amati gejala dengan teliti karena mirip bercak bakteri dan early blight. Belum ada varietas tahan, sehingga fungisida pencegahan adalah cara utama; gilir bahan aktif karena jamur ini mudah menjadi tahan (resistensi terhadap fungisida golongan strobilurin sudah banyak dilaporkan).',
+  recommendation_text = 'Gunakan bibit sehat, rotasi dengan tanaman bukan terung-terungan, dan bersihkan gulma (terutama terung-terungan), tanaman liar, serta sisa tanaman yang bisa menjadi sumber penyakit. Periksa juga bagian dalam tajuk tanaman, karena infeksi sering mulai dari dalam dan gejalanya mirip bercak bakteri atau early blight. Belum ada varietas tahan, sehingga fungisida pencegahan rutin adalah cara utama; bahan aktif yang efektif di uji lapang antara lain klorotalonil, mankozeb, difenokonazol, siprodinil, dan pirimetanil.',
   dosage = 'Sesuai label produk',
-  application_schedule = 'Pencegahan sesuai label; gilir bahan aktif',
-  warning_note = 'Jangan mengandalkan satu jenis fungisida saja.',
+  application_schedule = 'Pencegahan rutin sesuai label; gilir bahan aktif dengan kode FRAC berbeda',
+  warning_note = 'Azoksistrobin (golongan strobilurin) sudah dilaporkan kurang efektif — jangan mengandalkan satu jenis fungisida saja.',
   is_verified = false, updated_at = now()
 where disease_label = 'tomato_target_spot';
 
