@@ -1,0 +1,11 @@
+kelompok,n_foto,benar_pct,ci95_bawah,ci95_atas
+Tomat (semua sumber) — diterima,3019,98.2,97.7,98.7
+Tomat PlantDoc — diterima,141,77.3,69.7,83.4
+Tomat selain PlantDoc — diterima,2878,99.3,98.9,99.5
+Bukan tomat (semua) — ditolak,3052,96.8,96.1,97.4
+Cabai — ditolak,803,91.9,89.8,93.6
+Paprika — ditolak,271,98.5,96.3,99.4
+Kentang — ditolak,280,93.6,90.1,95.9
+Terong — ditolak,196,100.0,98.1,100.0
+Benda umum — ditolak,200,100.0,98.1,100.0
+Tekstur — ditolak,116,95.7,90.3,98.1

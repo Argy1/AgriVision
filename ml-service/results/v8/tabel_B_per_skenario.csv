@@ -1,0 +1,12 @@
+Kelas,Skenario 1: lab saja,Skenario 2: gabungan,Tambahan dari
+Bacterial spot,1.484 / 216 / 427,1.558 / 226 / 448,PlantDoc
+Early blight,700 / 100 / 200,1.011 / 144 / 289,PlantDoc + Tomato-Village
+Late blight,1.333 / 191 / 385,1.881 / 270 / 542,PlantDoc + Tomato-Village
+Leaf mold,664 / 96 / 192,727 / 105 / 210,PlantDoc
+Septoria,1.238 / 177 / 356,1.338 / 191 / 384,PlantDoc
+Spider mites,1.172 / 168 / 336,1.172 / 168 / 336,tetap (tidak ada data lain)
+Target spot,983 / 140 / 281,983 / 140 / 281,tetap (tidak ada data lain)
+TYLCV,3.747 / 538 / 1.072,3.798 / 545 / 1.086,PlantDoc
+ToMV,261 / 37 / 75,298 / 42 / 86,PlantDoc
+Healthy,1.113 / 159 / 319,1.307 / 186 / 375,PlantDoc + Tomato-Village
+Total,12.695 / 1.822 / 3.643,14.073 / 2.017 / 4.037,

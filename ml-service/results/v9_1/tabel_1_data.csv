@@ -1,0 +1,43 @@
+Kelompok,Jenis,Sumber,Latih / validasi / uji,Total
+TOMAT,Tomat,HF:tomato-map,550 / 78 / 157,785
+TOMAT,Tomat,PlantDoc,494 / 71 / 141,706
+TOMAT,Tomat,PlantVillage,4045 / 578 / 1158,5781
+TOMAT,Tomat,Roboflow:penyakit-daun-tomat-2m7bx,670 / 96 / 191,957
+TOMAT,Tomat,Roboflow:tomato-disease-nlts5,87 / 12 / 25,124
+TOMAT,Tomat,Roboflow:tomato-leaf-disease-rxcft,1001 / 143 / 286,1430
+TOMAT,Tomat,Roboflow:tomato_leaf-mqpqw,1040 / 148 / 297,1485
+TOMAT,Tomat,Tomato-Village,2674 / 382 / 764,3820
+bukan tomat,Anggur,PlantDoc,93 / 13 / 26,132
+bukan tomat,Anggur,PlantVillage,277 / 43 / 80,400
+bukan tomat,Apel,PlantDoc,189 / 27 / 54,270
+bukan tomat,Apel,PlantVillage,273 / 46 / 81,400
+bukan tomat,Benda umum,HF:imagenette2-320,700 / 100 / 200,1000
+bukan tomat,Blueberry,PlantDoc,80 / 11 / 23,114
+bukan tomat,Blueberry,PlantVillage,281 / 41 / 80,402
+bukan tomat,Cabai,HF:COLD_chili,372 / 53 / 106,531
+bukan tomat,Cabai,Roboflow:chili-leaf-disease,296 / 42 / 84,422
+bukan tomat,Cabai,Roboflow:chili-leaves-disease-classification,1573 / 225 / 449,2247
+bukan tomat,Cabai,Roboflow:chili-plant-disease-v4,573 / 82 / 164,819
+bukan tomat,Ceri,PlantDoc,40 / 6 / 11,57
+bukan tomat,Ceri,PlantVillage,281 / 52 / 83,416
+bukan tomat,Jagung,PlantDoc,255 / 36 / 73,364
+bukan tomat,Jagung,PlantVillage,279 / 41 / 80,400
+bukan tomat,Jeruk,PlantVillage,278 / 41 / 81,400
+bukan tomat,Kedelai,PlantDoc,46 / 6 / 13,65
+bukan tomat,Kedelai,PlantVillage,278 / 43 / 86,407
+bukan tomat,Kentang,PlantDoc,139 / 20 / 40,199
+bukan tomat,Kentang,PlantVillage,840 / 120 / 240,1200
+bukan tomat,Labu,PlantDoc,89 / 13 / 26,128
+bukan tomat,Labu,PlantVillage,280 / 40 / 80,400
+bukan tomat,Paprika,PlantDoc,89 / 13 / 26,128
+bukan tomat,Paprika,PlantVillage,829 / 127 / 245,1201
+bukan tomat,Persik,PlantDoc,78 / 11 / 22,111
+bukan tomat,Persik,PlantVillage,273 / 42 / 86,401
+bukan tomat,Raspberry,PlantDoc,82 / 12 / 24,118
+bukan tomat,Raspberry,PlantVillage,246 / 48 / 77,371
+bukan tomat,Stroberi,PlantDoc,67 / 10 / 19,96
+bukan tomat,Stroberi,PlantVillage,278 / 42 / 81,401
+bukan tomat,Tekstur,HF:dtd,404 / 58 / 116,578
+bukan tomat,Terong,HF:eggplant,686 / 98 / 196,980
+TOTAL TOMAT,,,10561 / 1508 / 3019,15088
+TOTAL bukan tomat,,,10544 / 1562 / 3052,15158

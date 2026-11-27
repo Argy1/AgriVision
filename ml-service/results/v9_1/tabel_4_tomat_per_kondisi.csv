@@ -1,0 +1,32 @@
+Sumber,Kondisi/kelas,n uji,Diterima (%)
+HF:tomato-map,tanaman utuh,157,100.0
+PlantDoc,Tomato Early blight leaf,15,100.0
+PlantDoc,Tomato Septoria leaf spot,31,93.5
+PlantDoc,Tomato leaf,13,84.6
+PlantDoc,Tomato leaf bacterial spot,20,70.0
+PlantDoc,Tomato leaf late blight,22,95.5
+PlantDoc,Tomato leaf mosaic virus,9,100.0
+PlantDoc,Tomato leaf yellow virus,12,100.0
+PlantDoc,Tomato mold leaf,19,100.0
+PlantVillage,Bacterial_spot,87,100.0
+PlantVillage,Early_blight,164,98.8
+PlantVillage,Late_blight,120,100.0
+PlantVillage,Leaf_Mold,140,100.0
+PlantVillage,Septoria_leaf_spot,90,100.0
+PlantVillage,Spider_mites Two-spotted_spider_mite,120,100.0
+PlantVillage,Target_Spot,112,100.0
+PlantVillage,Tomato_Yellow_Leaf_Curl_Virus,126,100.0
+PlantVillage,Tomato_mosaic_virus,66,100.0
+PlantVillage,healthy,133,100.0
+Roboflow:penyakit-daun-tomat-2m7bx,images,191,100.0
+Roboflow:tomato-disease-nlts5,images,25,100.0
+Roboflow:tomato-leaf-disease-rxcft,images,286,100.0
+Roboflow:tomato_leaf-mqpqw,images,297,100.0
+Tomato-Village,Early_blight,60,100.0
+Tomato-Village,Healthy,37,100.0
+Tomato-Village,Late_blight,127,100.0
+Tomato-Village,Leaf Miner,201,100.0
+Tomato-Village,Magnesium Deficiency,140,100.0
+Tomato-Village,Nitrogen Deficiency,58,100.0
+Tomato-Village,Pottassium Deficiency,13,100.0
+Tomato-Village,Spotted Wilt Virus,128,100.0

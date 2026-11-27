@@ -1,0 +1,41 @@
+{
+  "threshold": 0.04,
+  "auc_uji": 0.997362596955846,
+  "tomat_diterima_uji": 0.9956939383901954,
+  "bukan_ditolak_uji": 0.8640235910878112,
+  "akurasi_uji": 0.9295009059463021,
+  "n_uji": 6071,
+  "train": {
+    "epochs": [
+      5,
+      10
+    ],
+    "best_val_auc": 0.9962388277053833,
+    "minutes": 15.0,
+    "bobot": "seimbang per sumber (1/sqrt n)"
+  },
+  "fingerprint": "41a5c1b2307c4c7b040e04c84a7ea010530ba599",
+  "threshold_multicrop": 0.45,
+  "multicrop_tomat_diterima_uji": 0.9956939383901954,
+  "multicrop_bukan_ditolak_uji": 0.7165792922673656,
+  "tflite_agreement": 0.9996705649810574,
+  "tflite_mb": 4.506368,
+  "sumber": {
+    "PlantVillage": "Hughes & Salath\u00e9 (2015), huggingface.co/datasets/mohanty/PlantVillage, CC BY-SA 3.0",
+    "PlantDoc": "Singh dkk. (2020), huggingface.co/datasets/Project-AgML/plant_doc_classification, CC BY-SA 4.0",
+    "Tomato-Village": "Gehlot, Saxena & Gandhi (2023), github.com/mamta-joshi-gehlot/Tomato-Village (riset, wajib sitasi)",
+    "HF:tomato-map": "huggingface.co/datasets/Voxel51/tomato-map, CC BY 4.0",
+    "Roboflow:tomato-leaf-disease-rxcft": "universe.roboflow.com/universitas-atma-jaya/tomato-leaf-disease-rxcft (versi 6)",
+    "Roboflow:penyakit-daun-tomat-2m7bx": "universe.roboflow.com/tomato-disease-wf1fz/penyakit-daun-tomat-2m7bx (versi 2)",
+    "Roboflow:tomato-disease-nlts5": "universe.roboflow.com/arjuno-satmoko-mhs-unsoed-ac-id/tomato-disease-nlts5 (versi 1)",
+    "Roboflow:tomato_leaf-mqpqw": "universe.roboflow.com/ta-moni/tomato_leaf-mqpqw (versi 1)",
+    "Roboflow:chili-leaves-disease-classification": "universe.roboflow.com/chili-leaves-disease-classification/chili-leaves-disease-classification (versi 2)",
+    "Roboflow:chili-plant-disease-v4": "universe.roboflow.com/tanaman-cabai/chili-plant-disease-v4 (versi 2)",
+    "Roboflow:chili-leaf-disease": "universe.roboflow.com/syiah-kuala-university-8vtha/chili-leaf-disease (versi 1)",
+    "Kaggle:dhenyd/chili-plant-disease": "kaggle.com/datasets/dhenyd/chili-plant-disease",
+    "HF:COLD_chili": "Aishwarya & Reddy (2024), huggingface.co/datasets/Project-AgML/COLD_chili_leaf_disease_classification, CC BY 4.0",
+    "HF:eggplant": "huggingface.co/datasets/Project-AgML/eggplant_disease_classification (Data in Brief), CC BY 4.0",
+    "HF:imagenette2-320": "huggingface.co/datasets/johnowhitaker/imagenette2-320",
+    "HF:dtd": "huggingface.co/datasets/tanganke/dtd"
+  }
+}

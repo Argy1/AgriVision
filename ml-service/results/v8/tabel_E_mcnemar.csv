@@ -1,0 +1,13 @@
+Seed,Data uji,Benar hanya di S1,Benar hanya di S2,p,"Signifikan (p<0,05)"
+42,Uji lab (PlantVillage),73,111,"0,006",ya
+42,Uji PlantDoc,20,29,"0,253",tidak
+42,Uji Tomato-Village,4,129,2.36e-33,ya
+42,Uji gabungan (semua),97,269,8.00e-20,ya
+1,Uji lab (PlantVillage),130,62,1.04e-06,ya
+1,Uji PlantDoc,9,40,9.26e-06,ya
+1,Uji Tomato-Village,7,116,1.42e-26,ya
+1,Uji gabungan (semua),146,218,1.90e-04,ya
+2,Uji lab (PlantVillage),106,133,"0,092",tidak
+2,Uji PlantDoc,9,36,6.57e-05,ya
+2,Uji Tomato-Village,4,140,1.59e-36,ya
+2,Uji gabungan (semua),119,309,1.49e-20,ya

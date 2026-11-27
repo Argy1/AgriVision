@@ -1,0 +1,91 @@
+kelas,sumber,bagian,jumlah
+Bacterial spot,PlantVillage (lab),latih,1484
+Bacterial spot,PlantVillage (lab),validasi,216
+Bacterial spot,PlantVillage (lab),uji,427
+Bacterial spot,PlantDoc,latih,74
+Bacterial spot,PlantDoc,validasi,10
+Bacterial spot,PlantDoc,uji,21
+Bacterial spot,Tomato-Village,latih,0
+Bacterial spot,Tomato-Village,validasi,0
+Bacterial spot,Tomato-Village,uji,0
+Early blight,PlantVillage (lab),latih,700
+Early blight,PlantVillage (lab),validasi,100
+Early blight,PlantVillage (lab),uji,200
+Early blight,PlantDoc,latih,57
+Early blight,PlantDoc,validasi,8
+Early blight,PlantDoc,uji,16
+Early blight,Tomato-Village,latih,254
+Early blight,Tomato-Village,validasi,36
+Early blight,Tomato-Village,uji,73
+Late blight,PlantVillage (lab),latih,1333
+Late blight,PlantVillage (lab),validasi,191
+Late blight,PlantVillage (lab),uji,385
+Late blight,PlantDoc,latih,74
+Late blight,PlantDoc,validasi,11
+Late blight,PlantDoc,uji,21
+Late blight,Tomato-Village,latih,474
+Late blight,Tomato-Village,validasi,68
+Late blight,Tomato-Village,uji,136
+Leaf mold,PlantVillage (lab),latih,664
+Leaf mold,PlantVillage (lab),validasi,96
+Leaf mold,PlantVillage (lab),uji,192
+Leaf mold,PlantDoc,latih,63
+Leaf mold,PlantDoc,validasi,9
+Leaf mold,PlantDoc,uji,18
+Leaf mold,Tomato-Village,latih,0
+Leaf mold,Tomato-Village,validasi,0
+Leaf mold,Tomato-Village,uji,0
+Septoria,PlantVillage (lab),latih,1238
+Septoria,PlantVillage (lab),validasi,177
+Septoria,PlantVillage (lab),uji,356
+Septoria,PlantDoc,latih,100
+Septoria,PlantDoc,validasi,14
+Septoria,PlantDoc,uji,28
+Septoria,Tomato-Village,latih,0
+Septoria,Tomato-Village,validasi,0
+Septoria,Tomato-Village,uji,0
+Spider mites,PlantVillage (lab),latih,1172
+Spider mites,PlantVillage (lab),validasi,168
+Spider mites,PlantVillage (lab),uji,336
+Spider mites,PlantDoc,latih,0
+Spider mites,PlantDoc,validasi,0
+Spider mites,PlantDoc,uji,0
+Spider mites,Tomato-Village,latih,0
+Spider mites,Tomato-Village,validasi,0
+Spider mites,Tomato-Village,uji,0
+Target spot,PlantVillage (lab),latih,983
+Target spot,PlantVillage (lab),validasi,140
+Target spot,PlantVillage (lab),uji,281
+Target spot,PlantDoc,latih,0
+Target spot,PlantDoc,validasi,0
+Target spot,PlantDoc,uji,0
+Target spot,Tomato-Village,latih,0
+Target spot,Tomato-Village,validasi,0
+Target spot,Tomato-Village,uji,0
+TYLCV,PlantVillage (lab),latih,3747
+TYLCV,PlantVillage (lab),validasi,538
+TYLCV,PlantVillage (lab),uji,1072
+TYLCV,PlantDoc,latih,51
+TYLCV,PlantDoc,validasi,7
+TYLCV,PlantDoc,uji,14
+TYLCV,Tomato-Village,latih,0
+TYLCV,Tomato-Village,validasi,0
+TYLCV,Tomato-Village,uji,0
+ToMV,PlantVillage (lab),latih,261
+ToMV,PlantVillage (lab),validasi,37
+ToMV,PlantVillage (lab),uji,75
+ToMV,PlantDoc,latih,37
+ToMV,PlantDoc,validasi,5
+ToMV,PlantDoc,uji,11
+ToMV,Tomato-Village,latih,0
+ToMV,Tomato-Village,validasi,0
+ToMV,Tomato-Village,uji,0
+Healthy,PlantVillage (lab),latih,1113
+Healthy,PlantVillage (lab),validasi,159
+Healthy,PlantVillage (lab),uji,319
+Healthy,PlantDoc,latih,44
+Healthy,PlantDoc,validasi,6
+Healthy,PlantDoc,uji,13
+Healthy,Tomato-Village,latih,150
+Healthy,Tomato-Village,validasi,21
+Healthy,Tomato-Village,uji,43

@@ -1,0 +1,43 @@
+Kelompok,Jenis,Sumber,n uji,Benar (%),Arti
+TOMAT,Tomat,HF:tomato-map,157,100.0,diterima
+TOMAT,Tomat,PlantDoc,141,92.2,diterima
+TOMAT,Tomat,PlantVillage,1158,99.8,diterima
+TOMAT,Tomat,Roboflow:penyakit-daun-tomat-2m7bx,191,100.0,diterima
+TOMAT,Tomat,Roboflow:tomato-disease-nlts5,25,100.0,diterima
+TOMAT,Tomat,Roboflow:tomato-leaf-disease-rxcft,286,100.0,diterima
+TOMAT,Tomat,Roboflow:tomato_leaf-mqpqw,297,100.0,diterima
+TOMAT,Tomat,Tomato-Village,764,100.0,diterima
+bukan tomat,Anggur,PlantDoc,26,84.6,ditolak
+bukan tomat,Anggur,PlantVillage,80,100.0,ditolak
+bukan tomat,Apel,PlantDoc,54,79.6,ditolak
+bukan tomat,Apel,PlantVillage,81,100.0,ditolak
+bukan tomat,Benda umum,HF:imagenette2-320,200,96.5,ditolak
+bukan tomat,Blueberry,PlantDoc,23,95.7,ditolak
+bukan tomat,Blueberry,PlantVillage,80,100.0,ditolak
+bukan tomat,Cabai,HF:COLD_chili,106,92.5,ditolak
+bukan tomat,Cabai,Roboflow:chili-leaf-disease,84,47.6,ditolak
+bukan tomat,Cabai,Roboflow:chili-leaves-disease-classification,449,64.8,ditolak
+bukan tomat,Cabai,Roboflow:chili-plant-disease-v4,164,50.6,ditolak
+bukan tomat,Ceri,PlantDoc,11,90.9,ditolak
+bukan tomat,Ceri,PlantVillage,83,98.8,ditolak
+bukan tomat,Jagung,PlantDoc,73,91.8,ditolak
+bukan tomat,Jagung,PlantVillage,80,100.0,ditolak
+bukan tomat,Jeruk,PlantVillage,81,98.8,ditolak
+bukan tomat,Kedelai,PlantDoc,13,100.0,ditolak
+bukan tomat,Kedelai,PlantVillage,86,97.7,ditolak
+bukan tomat,Kentang,PlantDoc,40,40.0,ditolak
+bukan tomat,Kentang,PlantVillage,240,92.5,ditolak
+bukan tomat,Labu,PlantDoc,26,84.6,ditolak
+bukan tomat,Labu,PlantVillage,80,100.0,ditolak
+bukan tomat,Paprika,PlantDoc,26,65.4,ditolak
+bukan tomat,Paprika,PlantVillage,245,97.1,ditolak
+bukan tomat,Persik,PlantDoc,22,86.4,ditolak
+bukan tomat,Persik,PlantVillage,86,98.8,ditolak
+bukan tomat,Raspberry,PlantDoc,24,83.3,ditolak
+bukan tomat,Raspberry,PlantVillage,77,100.0,ditolak
+bukan tomat,Stroberi,PlantDoc,19,100.0,ditolak
+bukan tomat,Stroberi,PlantVillage,81,98.8,ditolak
+bukan tomat,Tekstur,HF:dtd,116,84.5,ditolak
+bukan tomat,Terong,HF:eggplant,196,99.5,ditolak
+TOTAL TOMAT,,,3019,99.6,diterima
+TOTAL bukan tomat,,,3052,86.4,ditolak

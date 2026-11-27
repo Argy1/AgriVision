@@ -1,0 +1,9 @@
+aturan,kriteria,ambang,tomat diterima,tomat PlantDoc diterima,tomat sumber terendah,bukan tomat ditolak,Cabai ditolak,Paprika ditolak,Kentang ditolak,Terong ditolak,Benda umum ditolak,Tekstur ditolak
+utuh,"K1: total tomat >=98%, tiap sumber >=90%",0.19,99.0,86.5,86.5,93.0,81.1,97.4,91.1,100.0,99.5,91.4
+utuh,"K2: total tomat >=97%, tiap sumber >=85%",0.23,98.9,84.4,84.4,93.8,83.4,97.4,92.1,100.0,99.5,91.4
+max,"K1: total tomat >=98%, tiap sumber >=90%",0.72,98.9,87.2,87.2,82.0,73.8,88.9,66.1,90.8,94.0,91.4
+max,"K2: total tomat >=97%, tiap sumber >=85%",0.85,98.2,77.3,77.3,87.1,83.3,93.4,71.4,93.4,97.0,94.8
+top2,"K1: total tomat >=98%, tiap sumber >=90%",0.64,99.0,88.7,88.7,87.7,80.0,93.7,73.6,95.9,97.5,91.4
+top2,"K2: total tomat >=97%, tiap sumber >=85%",0.7,98.7,83.0,83.0,89.7,84.3,94.8,76.1,96.9,98.5,93.1
+top3,"K1: total tomat >=98%, tiap sumber >=90%",0.58,99.0,87.9,87.9,90.2,84.1,95.6,77.1,98.5,98.5,91.4
+top3,"K2: total tomat >=97%, tiap sumber >=85%",0.66,98.6,83.0,83.0,92.3,86.9,96.7,81.8,99.5,99.0,94.0
