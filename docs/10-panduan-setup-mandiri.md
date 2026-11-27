@@ -31,6 +31,8 @@ python scripts/predict_local.py folder_foto/ --json     # satu objek JSON per ba
 
 Keluaran per foto: label penyakit, keyakinan model, severity, luas terdampak (%), ExG/VARI, serta penolakan/peringatan kelayakan foto. Skrip ini menjalankan pipeline yang sama dengan `/api/diagnose` (`app/ml`, `app/cv`) tetapi tidak menyimpan apa pun dan tidak memberi rekomendasi (rekomendasi butuh tabel `disease_reference` di Supabase). Model yang dipakai: `ml-service/models/tomato_classifier.tflite` (model produksi v2).
 
+Untuk menghitung akurasi di foto kebun sendiri (foto disusun per folder label: `sehat/`, `early_blight/`, …, `tomat_lain/`, `bukan_cabai/`): `python scripts/uji_foto_sendiri.py folder_foto/`.
+
 Hanya daun **tomat**. Skrip juga menjalankan penyaring daun tomat (kolom `tomat …%`): foto di bawah ambang (0,45) dilaporkan DITOLAK; penyaring tidak sempurna (data uji: cabai 91,9% ditolak). Keyakinan penyakit < 30% ditolak, 30–60% diberi peringatan "model ragu" (lihat `04-api-contract.md`).
 
 ## 3. Menyiapkan project Supabase sendiri

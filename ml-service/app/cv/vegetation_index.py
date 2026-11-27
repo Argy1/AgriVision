@@ -2,12 +2,16 @@ import numpy as np
 
 from app.cv.segmentation import compute_exg
 
-# Kalibrasi awal rentang ExG mentah -> health_score 0-100.
-# PLACEHOLDER: sesuai 05-ml-pipeline.md, ini wajib divalidasi manual terhadap foto sehat
-# vs sakit (roadmap minggu 5, 06-roadmap.md) dan disesuaikan berdasarkan distribusi nilai
-# ExG riil dari data training/lapangan sebelum dipakai untuk laporan akhir.
-_EXG_MIN = -0.2
-_EXG_MAX = 0.6
+# health_score 0-100 = VARI rata-rata piksel daun, dipetakan linear dari _VARI_MIN (0) ke
+# _VARI_MAX (100). Dikalibrasi 2026-11-28 dengan foto kebun berlabel Tomato-Village
+# (scripts/kalibrasi_cv.py; batas dari train+val, dicek di test):
+#   _VARI_MIN = persentil 5 VARI daun sakit, _VARI_MAX = persentil 90 VARI daun sehat.
+# VARI dipilih karena memisahkan sehat vs sakit jauh lebih baik daripada ExG (AUC 0,947 vs 0,799).
+# Hasil di data uji (median): sehat 88, early blight 72, late blight 29 (dulu dengan ExG
+# -0,2..0,6: 64 / 63 / 46). Data kalibrasi hanya 3 kelas dari satu sumber (India) -> perlu
+# dicek ulang dengan foto kebun sendiri. exg_score tetap dihitung dan dikirim seperti biasa.
+_VARI_MIN = -0.13
+_VARI_MAX = 0.22
 
 
 def _compute_vari(image_rgb_float01: np.ndarray) -> np.ndarray:
@@ -29,7 +33,7 @@ def _compute_vari(image_rgb_float01: np.ndarray) -> np.ndarray:
 
 def compute_vegetation_index(image_rgb_float01: np.ndarray, leaf_mask: np.ndarray) -> dict:
     """Hitung ExG/VARI rata-rata hanya pada piksel tanaman (leaf_mask), lalu normalisasi
-    ExG ke health_score 0-100.
+    VARI ke health_score 0-100 (lihat kalibrasi di atas).
     """
     if not leaf_mask.any():
         # Tidak ada piksel tanaman terdeteksi (foto gagal/background dominan) -> fallback netral.
@@ -41,7 +45,7 @@ def compute_vegetation_index(image_rgb_float01: np.ndarray, leaf_mask: np.ndarra
     mean_exg = float(exg[leaf_mask].mean())
     mean_vari = float(vari[leaf_mask].mean())
 
-    normalized = (mean_exg - _EXG_MIN) / (_EXG_MAX - _EXG_MIN) * 100
+    normalized = (mean_vari - _VARI_MIN) / (_VARI_MAX - _VARI_MIN) * 100
     health_score = float(np.clip(normalized, 0, 100))
 
     return {

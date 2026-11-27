@@ -40,6 +40,21 @@ def test_healthy_closeup_leaf_has_near_zero_affected_area():
     assert result["affected_area_pct"] < 1.0
 
 
+def test_health_score_orders_green_above_spotted_above_brown():
+    # Skor kesehatan (VARI terkalibrasi): daun hijau > daun berbercak > daun hampir cokelat.
+    # Warna daun mendekati foto asli (VARI ±0,16), bukan hijau murni yang selalu mentok di 100.
+    def leaf(spot_radius):
+        img = np.full((400, 400, 3), 200, np.uint8)
+        cv2.ellipse(img, (200, 200), (150, 110), 20, 0, 360, (95, 120, 60), -1)
+        if spot_radius:
+            cv2.circle(img, (200, 200), spot_radius, (130, 85, 35), -1)
+        return _quality(img)[0]["vegetation_index"]["health_score"]
+
+    green, spotted, brown = leaf(0), leaf(45), leaf(100)
+    assert green > spotted > brown
+    assert green >= 75
+
+
 def test_hand_next_to_leaf_is_not_counted_as_lesion():
     img = _closeup_leaf(spots=False)
     # "tangan": blok kulit besar menempel tepi bawah, di luar daun
