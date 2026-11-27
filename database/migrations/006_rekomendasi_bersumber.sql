@@ -1,4 +1,5 @@
--- 006: Rekomendasi penanganan bersumber (DRAF 2026-11-28) — BELUM DIJALANKAN.
+-- 006: Rekomendasi penanganan bersumber — SUDAH DITERAPKAN ke produksi 2026-11-28 (lewat
+-- ml-service/scripts/terapkan_rekomendasi.py; cadangan: ml-service/results/disease_reference_backup_2026-11-28.json).
 -- Sumber per baris: docs/12-sumber-rekomendasi.md. Jalankan di Supabase SQL Editor hanya
 -- setelah disetujui; lalu salin isinya ke seed disease_reference di database/schema.sql.
 -- Hanya UPDATE kolom teks + is_verified; disease_label (kunci) tidak berubah, jadi model,

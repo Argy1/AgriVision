@@ -1,0 +1,122 @@
+[
+  {
+    "disease_label": "tomato_bacterial_spot",
+    "disease_name": "Bacterial Spot (Bercak Bakteri)",
+    "crop_type": "tomat",
+    "description": "Disebabkan bakteri Xanthomonas spp., ditandai bercak kecil kehitaman bertepi kuning yang dapat menyebabkan daun rontok.",
+    "recommendation_text": "Gunakan bakterisida berbahan tembaga, hindari penyiraman dari atas yang membasahi daun.",
+    "dosage": "2-3 g/L air (sesuai label produk tembaga)",
+    "application_schedule": "Semprotkan setiap 7 hari saat kondisi lembap, hentikan bila gejala mereda",
+    "warning_note": null,
+    "is_verified": false,
+    "updated_at": "2026-09-22T19:00:36.880018+00:00"
+  },
+  {
+    "disease_label": "tomato_early_blight",
+    "disease_name": "Early Blight (Bercak Daun Awal)",
+    "crop_type": "tomat",
+    "description": "Disebabkan jamur Alternaria solani, ditandai bercak coklat konsentris pada daun tua.",
+    "recommendation_text": "Gunakan fungisida berbahan aktif klorotalonil. Pangkas dan musnahkan daun yang terinfeksi berat.",
+    "dosage": "2 g/L air",
+    "application_schedule": "Semprotkan setiap 7-10 hari hingga gejala mereda",
+    "warning_note": "Menyebar cepat pada kondisi lembap — segera pantau zona sekitar.",
+    "is_verified": true,
+    "updated_at": "2026-09-22T19:00:36.880018+00:00"
+  },
+  {
+    "disease_label": "tomato_healthy",
+    "disease_name": "Sehat",
+    "crop_type": "tomat",
+    "description": "Tidak ada gejala penyakit terdeteksi.",
+    "recommendation_text": "Lanjutkan perawatan rutin.",
+    "dosage": null,
+    "application_schedule": null,
+    "warning_note": null,
+    "is_verified": true,
+    "updated_at": "2026-09-22T19:00:36.880018+00:00"
+  },
+  {
+    "disease_label": "tomato_late_blight",
+    "disease_name": "Late Blight (Busuk Daun)",
+    "crop_type": "tomat",
+    "description": "Disebabkan oomycete Phytophthora infestans, menyebar sangat cepat pada kondisi lembap dan dingin, ditandai lesi coklat-kehitaman basah dengan lapisan putih di bawah daun.",
+    "recommendation_text": "Gunakan fungisida berbahan aktif mankozeb/metalaksil, cabut dan musnahkan tanaman terinfeksi berat segera.",
+    "dosage": "Sesuai label produk (kontak umumnya 2 g/L air)",
+    "application_schedule": "Semprotkan setiap 5-7 hari selama cuaca lembap/hujan, evaluasi harian karena penyebaran cepat",
+    "warning_note": "Penyakit sangat destruktif dan cepat menyebar — segera isolasi tanaman yang terinfeksi.",
+    "is_verified": false,
+    "updated_at": "2026-09-22T19:00:36.880018+00:00"
+  },
+  {
+    "disease_label": "tomato_leaf_mold",
+    "disease_name": "Leaf Mold (Kapang Daun)",
+    "crop_type": "tomat",
+    "description": "Disebabkan jamur Passalora fulva (Cladosporium fulvum), umum pada kondisi lembap/rumah lindung — bercak kuning pucat di permukaan atas daun dengan lapisan kapang zaitun-keabuan di bawahnya.",
+    "recommendation_text": "Perbaiki sirkulasi udara/kurangi kelembapan rumah kaca, gunakan fungisida sesuai anjuran.",
+    "dosage": "2 g/L air (sesuai label produk)",
+    "application_schedule": "Semprotkan setiap 7-10 hari hingga gejala mereda",
+    "warning_note": null,
+    "is_verified": false,
+    "updated_at": "2026-09-22T19:00:36.880018+00:00"
+  },
+  {
+    "disease_label": "tomato_septoria_leaf_spot",
+    "disease_name": "Septoria Leaf Spot (Bercak Septoria)",
+    "crop_type": "tomat",
+    "description": "Disebabkan jamur Septoria lycopersici, ditandai bercak kecil bulat dengan tepi gelap dan pusat abu-abu/coklat muda, dimulai dari daun bagian bawah.",
+    "recommendation_text": "Pangkas daun bawah yang terinfeksi, gunakan fungisida berbahan klorotalonil/tembaga.",
+    "dosage": "2 g/L air (sesuai label produk)",
+    "application_schedule": "Semprotkan setiap 7-10 hari hingga gejala mereda",
+    "warning_note": null,
+    "is_verified": false,
+    "updated_at": "2026-09-22T19:00:36.880018+00:00"
+  },
+  {
+    "disease_label": "tomato_spider_mites_two_spotted_spider_mite",
+    "disease_name": "Tungau Laba-laba (Two-Spotted Spider Mite)",
+    "crop_type": "tomat",
+    "description": "Disebabkan hama tungau Tetranychus urticae (bukan jamur/bakteri) — gejala bintik kuning/putih halus pada daun disertai jaring halus, daun mengering dan menguning pada serangan berat.",
+    "recommendation_text": "Gunakan akarisida sesuai anjuran, tingkatkan kelembapan (tungau menyukai kondisi kering).",
+    "dosage": "Sesuai label produk akarisida",
+    "application_schedule": "Semprotkan setiap 7 hari, evaluasi ulang populasi tungau setelah 2 minggu",
+    "warning_note": "Ini serangan hama, bukan penyakit jamur/bakteri — fungisida biasa tidak efektif.",
+    "is_verified": false,
+    "updated_at": "2026-09-22T19:00:36.880018+00:00"
+  },
+  {
+    "disease_label": "tomato_target_spot",
+    "disease_name": "Target Spot (Bercak Target)",
+    "crop_type": "tomat",
+    "description": "Disebabkan jamur Corynespora cassiicola, ditandai lesi coklat dengan cincin konsentris menyerupai target pada daun, batang, dan buah.",
+    "recommendation_text": "Gunakan fungisida sesuai anjuran, perbaiki sirkulasi udara antar tanaman.",
+    "dosage": "2 g/L air (sesuai label produk)",
+    "application_schedule": "Semprotkan setiap 7-10 hari hingga gejala mereda",
+    "warning_note": null,
+    "is_verified": false,
+    "updated_at": "2026-09-22T19:00:36.880018+00:00"
+  },
+  {
+    "disease_label": "tomato_tomato_mosaic_virus",
+    "disease_name": "Mosaic Virus (Virus Mosaik)",
+    "crop_type": "tomat",
+    "description": "Penyakit virus (ToMV) ditandai pola belang hijau tua-muda (mosaik) pada daun, daun mengeriput, pertumbuhan terhambat. Menular lewat kontak alat/tangan, bukan vektor serangga.",
+    "recommendation_text": "Cabut dan musnahkan tanaman terinfeksi, sterilisasi alat kerja, hindari menangani tanaman sehat setelah tanaman sakit.",
+    "dosage": null,
+    "application_schedule": null,
+    "warning_note": "Virus tidak dapat disembuhkan dan sangat mudah menular lewat kontak/alat kerja.",
+    "is_verified": false,
+    "updated_at": "2026-09-22T19:00:36.880018+00:00"
+  },
+  {
+    "disease_label": "tomato_tomato_yellow_leaf_curl_virus",
+    "disease_name": "Yellow Leaf Curl Virus (Virus Keriting Kuning)",
+    "crop_type": "tomat",
+    "description": "Penyakit virus (TYLCV) yang ditularkan oleh kutu kebul (whitefly), ditandai daun menguning dan menggulung ke atas, pertumbuhan kerdil.",
+    "recommendation_text": "Kendalikan populasi kutu kebul dengan insektisida sistemik, cabut tanaman terinfeksi berat.",
+    "dosage": "Sesuai label insektisida sistemik",
+    "application_schedule": "Semprotkan setiap 5-7 hari selama populasi kutu kebul masih tinggi",
+    "warning_note": "Virus tidak dapat disembuhkan — fokus pencegahan penyebaran vektor ke tanaman sehat.",
+    "is_verified": false,
+    "updated_at": "2026-09-22T19:00:36.880018+00:00"
+  }
+]

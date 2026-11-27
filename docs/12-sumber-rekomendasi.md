@@ -1,6 +1,6 @@
 # Sumber Rekomendasi Penanganan (tabel `disease_reference`)
 
-**Status: DRAF 2026-11-28 — belum diterapkan ke database, belum diverifikasi ahli.** File SQL siap pakai: `database/migrations/006_rekomendasi_bersumber.sql` (jalankan di Supabase SQL Editor hanya setelah disetujui). Setelah diterapkan, salin isinya ke bagian seed `database/schema.sql`.
+**Status: DITERAPKAN ke database produksi 2026-11-28 (disetujui user), belum diverifikasi ahli.** Diterapkan dengan `ml-service/scripts/terapkan_rekomendasi.py` (isi = `database/migrations/006_rekomendasi_bersumber.sql`); cadangan isi lama: `ml-service/results/disease_reference_backup_2026-11-28.json` (kembalikan dengan `--rollback`). Seed di `database/schema.sql` sudah disamakan dengan produksi.
 
 ## Prinsip
 
