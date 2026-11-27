@@ -24,7 +24,9 @@ Panduan praktis untuk **produksi**: menjalankan lokal, men-deploy, memulihkan in
 | `STORAGE_BUCKET` | `plant-photos` |
 | `MODEL_DIR` | `models` |
 | `ALLOWED_ORIGINS` | origin yang boleh memanggil API, dipisah koma — isi domain Vercel di atas (jangan `*` di produksi) |
-| `REJECT_CONFIDENCE` | opsional (bawaan `0.50`): keyakinan tertinggi di bawah nilai ini → diagnosis ditolak (400) |
+| `REJECT_CONFIDENCE` | opsional (bawaan `0.30`): keyakinan penyakit tertinggi di bawah nilai ini → diagnosis ditolak (400); 30–60% tetap didiagnosis dengan peringatan "model ragu" |
+| `GATE_THRESHOLD` | opsional: menimpa ambang penyaring daun tomat (bawaan dari `ml-service/models/gate_config.json` = `0.45`) |
+| `GATE_MULTICROP` | opsional: `1` menyalakan multi-crop pada penyaring (foto utuh + 6 potongan, ambang `threshold_multicrop`); bawaan mati karena tidak lebih baik di data uji |
 
 **Web (Vercel Environment Variables / `web/.env.local`)** — semua `NEXT_PUBLIC_*` (di-inline saat build → perlu redeploy setelah diubah):
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_ML_API_URL`.

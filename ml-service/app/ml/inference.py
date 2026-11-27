@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 import numpy as np
 from PIL import Image
 
@@ -16,13 +18,20 @@ def _resize_for_model(image_rgb_uint8: np.ndarray, target_size: tuple[int, int])
     return np.expand_dims(array, axis=0)  # (1, H, W, 3)
 
 
-def classify(crop_type: str, image_rgb_uint8: np.ndarray) -> dict:
-    """Jalankan model CNN sesuai crop_type -> disease_label, confidence, model_version."""
+def classify(crop_type: str, image_rgb_uint8: np.ndarray, crops: Sequence[np.ndarray] = ()) -> dict:
+    """Jalankan model CNN sesuai crop_type -> disease_label, confidence, model_version.
+
+    `crops`: potongan foto yang sudah lolos penyaring daun tomat (app/ml/gate.py, multi-crop).
+    Bila diisi, probabilitas kelas dirata-ratakan atas potongan-potongan itu (bukan foto utuh),
+    supaya buah/tangan/mulsa di sisa foto tidak ikut membingungkan diagnosis. Kosong = foto utuh.
+    """
     crop_key = get_crop_key(crop_type)
     width, height = get_img_size(crop_type)
-    batched_input = _resize_for_model(image_rgb_uint8, (width, height))
-
-    probabilities = model_registry.predict(crop_key, batched_input)
+    views = list(crops) or [image_rgb_uint8]
+    probabilities = np.mean(
+        [model_registry.predict(crop_key, _resize_for_model(np.ascontiguousarray(v), (width, height))) for v in views],
+        axis=0,
+    )
     class_index = int(np.argmax(probabilities))
     confidence = float(probabilities[class_index])
     class_info = get_class_by_index(crop_type, class_index)

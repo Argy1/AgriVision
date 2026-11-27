@@ -31,7 +31,7 @@ python scripts/predict_local.py folder_foto/ --json     # satu objek JSON per ba
 
 Keluaran per foto: label penyakit, keyakinan model, severity, luas terdampak (%), ExG/VARI, serta penolakan/peringatan kelayakan foto. Skrip ini menjalankan pipeline yang sama dengan `/api/diagnose` (`app/ml`, `app/cv`) tetapi tidak menyimpan apa pun dan tidak memberi rekomendasi (rekomendasi butuh tabel `disease_reference` di Supabase). Model yang dipakai: `ml-service/models/tomato_classifier.tflite` (model produksi v2).
 
-Hanya daun **tomat**. Foto tanaman lain tetap akan diberi label penyakit tomat; penolakan hanya terjadi bila keyakinan tertinggi < 50% (lihat `04-api-contract.md`).
+Hanya daun **tomat**. Skrip juga menjalankan penyaring daun tomat (kolom `tomat …%`): foto di bawah ambang (0,45) dilaporkan DITOLAK; penyaring tidak sempurna (data uji: cabai 91,9% ditolak). Keyakinan penyakit < 30% ditolak, 30–60% diberi peringatan "model ragu" (lihat `04-api-contract.md`).
 
 ## 3. Menyiapkan project Supabase sendiri
 
@@ -63,7 +63,7 @@ Build pertama memakan waktu beberapa menit (TensorFlow dan `npm ci`). Setelah it
 
 | Layanan | Alamat | Cek |
 |---|---|---|
-| ml-service | http://localhost:8000 | `http://localhost:8000/api/health` → `{"status":"ok","model_loaded":true,"model_version":"v2"}` |
+| ml-service | http://localhost:8000 | `http://localhost:8000/api/health` → `{"status":"ok","model_loaded":true,"model_version":"v8"}` |
 | web | http://localhost:3000 | daftar akun → onboarding (buat zona) → Unggah foto |
 
 Perintah berguna: `docker compose logs -f ml-service`, `docker compose down`, `docker compose up --build ml-service` (hanya backend, mis. untuk menguji app Flutter).
@@ -139,8 +139,9 @@ Memasang APK release ke HP: lihat `09-operasional-dan-runbook.md` bagian 4 (di W
 | Mengubah `.env` tetapi web masih memakai nilai lama | `NEXT_PUBLIC_*` di-inline saat build: `docker compose up --build` (atau restart `npm run dev`) |
 | `pip install` gagal di TensorFlow | gunakan Python 3.11 (bukan 3.13/3.14) |
 | Build Docker pertama lama / besar | image ml-service dan web masing-masing ±2 GB (TensorFlow-CPU, node_modules); setelah itu build ulang cepat karena lapisan di-cache. Healthcheck container baru "healthy" ±20-30 detik setelah start |
-| Diagnosis ditolak "Model tidak cukup yakin..." | perilaku yang disengaja: keyakinan < 50%; gunakan foto satu daun tomat dari dekat |
-| Foto cabai/tanaman lain tetap diberi label penyakit tomat | keterbatasan yang diketahui (model tidak punya kelas "bukan tomat") |
+| Ditolak "Foto ini tidak dikenali sebagai daun tomat…" | penyaring v9.1; potong foto ke satu daun tomat (langkah potong di web/app) atau foto dari dekat |
+| Ditolak "Model belum cukup yakin menentukan penyakit…" | keyakinan < 30%; foto satu daun dari dekat yang memenuhi layar |
+| Foto cabai/tanaman lain kadang tetap lolos | penyaring tidak sempurna (data uji v9.1: cabai 91,9%, kentang 93,6% ditolak) |
 | Flutter debug di emulator tidak bisa menghubungi `http://10.0.2.2:8000` | pastikan ml-service jalan di host dan app memakai build **debug** |
 
 ## 8. Yang tidak ada di repositori (dan alasannya)

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/errors/app_exception.dart';
 import '../../../core/theme/color_tokens.dart';
 import '../../../providers/upload_flow_controller.dart';
 import '../../../shared/widgets/icons.dart';
@@ -73,6 +74,10 @@ class UploadProgressOverlay extends StatelessWidget {
           ],
         );
       case UploadFlowFailed(:final step, :final error):
+        // Foto DITOLAK layanan diagnosis (4xx: bukan daun tomat, tidak ada daun, model ragu).
+        // Mengirim ulang foto yang sama pasti ditolak lagi, jadi tawarkan pilih foto lain
+        // (reset) -- cermin perilaku web (`Dropzone.tsx`).
+        final rejected = error is ApiException && error.statusCode >= 400 && error.statusCode < 500;
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -90,14 +95,17 @@ class UploadProgressOverlay extends StatelessWidget {
               style: const TextStyle(fontSize: 12, color: AppColors.sage),
             ),
             const SizedBox(height: 16),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextButton(onPressed: onCancel, child: const Text('Batalkan')),
-                const SizedBox(width: 8),
-                ElevatedButton(onPressed: onRetry, child: const Text('Coba Lagi')),
-              ],
-            ),
+            if (rejected)
+              ElevatedButton(onPressed: onCancel, child: const Text('Pilih Foto Lain'))
+            else
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextButton(onPressed: onCancel, child: const Text('Batalkan')),
+                  const SizedBox(width: 8),
+                  ElevatedButton(onPressed: onRetry, child: const Text('Coba Lagi')),
+                ],
+              ),
           ],
         );
       case UploadFlowIdle():

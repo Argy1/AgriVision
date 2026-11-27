@@ -26,7 +26,8 @@ except ImportError:
         Interpreter = _tf.lite.Interpreter
 
 _MODEL_FILENAMES = {
-    "tomato": "tomato_classifier.tflite",
+    "tomato": "tomato_classifier.tflite",  # diagnosis 10 kelas (label_map.json)
+    "gate": "tomato_gate.tflite",  # penyaring daun tomat vs bukan (gate_config.json), lihat app/ml/gate.py
 }
 
 

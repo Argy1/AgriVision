@@ -1,11 +1,11 @@
 {
   "tomato": {
-    "model_version": "v2",
+    "model_version": "v8",
     "img_size": [
       224,
       224
     ],
-    "source_dataset": "huggingface:mohanty/PlantVillage (lab, split per daun) + PlantDoc (subset tomat) + Tomato-Village (3 kelas); komposisi batch 75/12.5/12.5",
+    "source_dataset": "huggingface:mohanty/PlantVillage (lab) + PlantDoc (subset tomat) + Tomato-Village (3 kelas); digabung per kelas tanpa pengaturan porsi, pembagian 70/10/20 per kelas per dataset (notebook v8, skenario gabungan, seed 2)",
     "architecture": "MobileNetV2 (fine-tuning 2 tahap, float16 TFLite)",
     "classes": [
       {

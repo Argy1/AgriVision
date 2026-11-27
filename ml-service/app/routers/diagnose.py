@@ -7,6 +7,7 @@ from app.auth import get_current_user_id
 from app.cv.analyzer import analyze_image
 from app.cv.photo_quality import assess_photo
 from app.imaging import decode_image
+from app.ml.gate import check_tomato
 from app.ml.inference import classify
 from app.ml.labels import get_crop_key
 from app.schemas import (
@@ -70,9 +71,21 @@ def diagnose(
             status_code=status.HTTP_400_BAD_REQUEST, detail="File di image_path bukan gambar valid"
         )
 
+    # --- 1b. Penyaring daun tomat (model v9.1). Bukan daun tomat -> tolak (400), tidak disimpan. ---
+    try:
+        gate = check_tomato(image_rgb)
+    except Exception:
+        logger.exception("Model penyaring daun tomat gagal")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Gagal menjalankan model inference"
+        )
+    if not gate.is_tomato:
+        logger.info("Foto ditolak penyaring: p_tomat=%.3f < %.2f (%s)", gate.p_tomat, gate.threshold, payload.image_path)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=gate.reject_detail())
+
     # --- 2-3. Preprocess + jalankan model CNN -> disease_label, confidence ---
     try:
-        classification = classify(payload.crop_type, image_rgb)
+        classification = classify(payload.crop_type, image_rgb, crops=gate.accepted_crops)
     except Exception:
         logger.exception("Inference model gagal untuk crop_type=%s", payload.crop_type)
         raise HTTPException(
@@ -89,7 +102,8 @@ def diagnose(
             detail="Gagal menghitung vegetation index / affected area",
         )
 
-    # --- 6b. Kelayakan foto (heuristik). Tanpa daun, atau keyakinan model < REJECT_CONFIDENCE -> tolak (400). ---
+    # --- 6b. Kelayakan foto (heuristik). Tanpa daun, atau keyakinan penyakit < REJECT_CONFIDENCE (30%) -> tolak (400).
+    # Keyakinan 30-60% tetap didiagnosis dengan peringatan "model ragu" di warning_note. ---
     masks = cv_result["masks"]
     quality = assess_photo(
         masks["green"],

@@ -2,6 +2,7 @@
 
 import cv2
 import numpy as np
+import pytest
 
 from app.cv.analyzer import analyze_image
 from app.cv.photo_quality import assess_photo
@@ -69,14 +70,18 @@ def test_low_confidence_is_flagged():
 
 
 def test_confidence_below_reject_threshold_is_rejected():
-    _, quality = _quality(_closeup_leaf(), confidence=0.45)
+    _, quality = _quality(_closeup_leaf(), confidence=0.25)
     assert quality.rejected
     assert quality.reject_reason == "low_confidence"
-    assert "tidak cukup yakin" in quality.reject_detail()
+    # Pesan soal penyakit, bukan soal "daun tomat" (itu tugas penyaring app/ml/gate.py).
+    assert "belum cukup yakin menentukan penyakit" in quality.reject_detail()
+    assert "daun tomat" not in quality.reject_detail()
 
 
-def test_confidence_between_reject_and_low_is_warned_not_rejected():
-    _, quality = _quality(_closeup_leaf(), confidence=0.55)
+@pytest.mark.parametrize("confidence", [0.35, 0.45, 0.55])
+def test_confidence_between_reject_and_low_is_warned_not_rejected(confidence):
+    # Sejak penyaring daun tomat ada, keyakinan 30-60% tetap didiagnosis + peringatan "ragu".
+    _, quality = _quality(_closeup_leaf(), confidence=confidence)
     assert not quality.rejected
     assert any("ragu" in issue for issue in quality.issues)
 

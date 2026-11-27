@@ -17,12 +17,13 @@ MIN_LEAF_PRESENCE = 0.03  # di bawah ini: tidak ada daun yang bisa dikenali -> t
 LOW_LEAF_COVERAGE = 0.15  # di bawah ini: daun terlalu kecil/jauh
 NONLEAF_WARN_FRACTION = 0.08  # >= 8% foto adalah tangan/ajir/buah
 LOW_CONFIDENCE = 0.60  # keyakinan model di bawah ini dianggap ragu
-# Di bawah ini hasil tidak ditampilkan (400): dengan 10 kelas, keyakinan tertinggi < 50% berarti
-# model tidak punya jawaban yang layak, mis. foto bukan daun tomat atau terlalu jauh dari domain
-# latih. Heuristik: pada 164 foto uji Tomato-Village tidak ada yang tertolak (akurasi 93,3%), tapi
-# foto non-tomat yang diprediksi yakin (mis. cabai dengan keyakinan 99%) TIDAK tertangkap.
-# Penolakan penuh butuh kelas "bukan tomat" pada model. Dapat diubah lewat env REJECT_CONFIDENCE.
-REJECT_CONFIDENCE = float(os.getenv("REJECT_CONFIDENCE", "0.50"))
+# Di bawah ini hasil diagnosis tidak ditampilkan (400): keyakinan penyakit tertinggi < 30% berarti
+# model nyaris menebak (acak = 10%). Dulu 50% dan dipakai juga untuk menyaring foto bukan-tomat;
+# sejak penyaring daun tomat (app/ml/gate.py, model v9.1) mengambil tugas itu, ambang diturunkan
+# (keputusan user 2026-11-28) supaya daun tomat dari kebun yang membuat model ragu tetap
+# didiagnosis -- dengan peringatan "model ragu" (LOW_CONFIDENCE) dan saran verifikasi ke PPL.
+# Dapat diubah lewat env REJECT_CONFIDENCE (0 = tidak pernah menolak karena keyakinan).
+REJECT_CONFIDENCE = float(os.getenv("REJECT_CONFIDENCE", "0.30"))
 BUSY_SCENE_FRACTION = 0.70  # >= 70% foto terisi dedaunan/objek berwarna daun (bukan close-up satu daun)
 
 
@@ -50,8 +51,8 @@ class PhotoQuality:
             return "Foto tidak memuat daun yang dapat dikenali. Ambil foto satu daun dari dekat dengan latar polos."
         if self.reject_reason == "low_confidence":
             return (
-                f"Model tidak cukup yakin foto ini daun tomat (keyakinan tertinggi {self.confidence * 100:.0f}%). "
-                "Pastikan yang difoto daun tomat, satu daun dari dekat dengan latar polos, lalu coba lagi."
+                f"Model belum cukup yakin menentukan penyakit daun ini (keyakinan tertinggi {self.confidence * 100:.0f}%). "
+                "Ambil foto satu daun dari dekat (±15-20 cm) yang memenuhi layar, lalu coba lagi."
             )
         return None
 

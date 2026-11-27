@@ -2,7 +2,7 @@
 
 Ini adalah proyek **AgriVision**: tugas akhir mata kuliah Visual Komputer Cerdas milik Argy Fawwaz Akbar (TRPL, Sekolah Vokasi IPB). **Baca file ini dulu sebelum mengubah apa pun.** Untuk detail progres, daftar yang belum selesai, dan runbook operasional, lanjut ke `docs/08-status-dan-progres.md` dan `docs/09-operasional-dan-runbook.md`.
 
-## Status Saat Ini (diperbarui 2026-11-17)
+## Status Saat Ini (diperbarui 2026-11-28)
 
 **Seluruh sistem sudah dibangun, di-deploy, dan diuji end-to-end.** Ini BUKAN lagi proyek tahap perencanaan.
 
@@ -12,7 +12,7 @@ Ini adalah proyek **AgriVision**: tugas akhir mata kuliah Visual Komputer Cerdas
 | ML Service (FastAPI) | ✅ Live | https://agrivision-production.up.railway.app (Railway, root `ml-service/`) |
 | Web (Next.js 16) | ✅ Live | https://agrivision-blond-nine.vercel.app (Vercel, root `web/`) |
 | Mobile app (Flutter) | ✅ Terpasang di HP (APK release) | `app/` (belum di Play Store — tidak perlu untuk scope TA) |
-| Model ML (tomat saja) | ✅ v2 terpasang 2026-11-17 (MobileNetV2, lab+PlantDoc+Tomato-Village; lihat docs/08 Fase 8); v1 ada di riwayat git | `ml-service/models/tomato_classifier.tflite` |
+| Model ML (tomat saja) | ✅ **Diagnosis v8 + penyaring daun tomat v9.1** (2026-11-28, branch `fitur/model-v8-penyaring-v9`, menunggu merge): MobileNetV2 10 kelas (notebook v8, skenario gabungan) + MobileNetV2 biner tomat/bukan (notebook v9.1, ambang 0,45); v2/v1 di riwayat git. Lihat docs/08 Fase 11 | `ml-service/models/` |
 | Registrasi publik | ✅ Web + app | lihat bagian "Auth & Registrasi" |
 | Setup mandiri untuk anggota kelompok | ✅ Docker Compose (web + ml-service) diuji build+jalan, SQL instalasi baru diuji di Postgres Supabase, skrip uji model tanpa akun | `docker-compose.yml`, `docker/`, `docs/10-panduan-setup-mandiri.md`, `docs/11-dataset-dan-notebook.md`, `ml-service/scripts/predict_local.py` |
 | Evaluasi akurasi lapangan + laporan | ⏳ BELUM (butuh data & tulisan user) | `docs/06-roadmap.md` minggu 13–14 |
@@ -69,7 +69,7 @@ database/
                            005 = bucket + kebijakan Storage untuk instalasi BARU (jangan dijalankan di produksi)
 ml-service/              ← FastAPI + model TFLite + 9 notebook training + hasil mentah + tes
   app/{routers,cv,ml}    ← endpoint, classical CV (ExG/VARI, segmentasi), inferensi
-  models/                ← tomato_classifier.tflite (v2), label_map.json
+  models/                ← tomato_classifier.tflite (v8), label_map.json, tomato_gate.tflite (penyaring v9.1), gate_config.json
   results/, scripts/     ← hasil mentah eksperimen; predict_local.py (uji model tanpa Supabase)
 web/                     ← Next.js 16 (App Router, Tailwind v4, Supabase SSR)
 app/                     ← Flutter (Riverpod, go_router, supabase_flutter)

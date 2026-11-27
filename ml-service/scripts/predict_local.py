@@ -28,6 +28,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from app.cv.analyzer import analyze_image  # noqa: E402
 from app.cv.photo_quality import assess_photo  # noqa: E402
 from app.imaging import decode_image  # noqa: E402
+from app.ml.gate import check_tomato  # noqa: E402
 from app.ml.inference import classify  # noqa: E402
 from app.ml.model_loader import model_registry  # noqa: E402
 
@@ -49,7 +50,8 @@ def collect(paths: list[str]) -> list[Path]:
 
 def analyze_file(path: Path) -> dict:
     image = decode_image(path.read_bytes())
-    classification = classify("tomat", image)
+    gate = check_tomato(image)
+    classification = classify("tomat", image, crops=gate.accepted_crops)
     cv_result = analyze_image(image)
     masks = cv_result["masks"]
     quality = assess_photo(
@@ -59,8 +61,13 @@ def analyze_file(path: Path) -> dict:
         cv_result["scene_fraction"],
         classification["confidence"],
     )
+    # Urutan sama dengan /api/diagnose: penyaring daun tomat dulu, baru kelayakan foto.
+    rejected = (not gate.is_tomato) or quality.rejected
+    reject_reason = gate.reject_detail() if not gate.is_tomato else (quality.reject_detail() if quality.rejected else None)
     return {
         "file": str(path),
+        "p_tomat": gate.p_tomat,
+        "gate_threshold": gate.threshold,
         "disease_label": classification["disease_label"],
         "confidence": classification["confidence"],
         "model_version": classification["model_version"],
@@ -68,8 +75,8 @@ def analyze_file(path: Path) -> dict:
         "affected_area_pct": cv_result["affected_area_pct"],
         "vegetation_index": cv_result["vegetation_index"],
         # Pada /api/diagnose foto yang ditolak tidak disimpan; di sini tetap ditampilkan.
-        "rejected": quality.rejected,
-        "reject_reason": quality.reject_detail() if quality.rejected else None,
+        "rejected": rejected,
+        "reject_reason": reject_reason,
         "warning": quality.warning_text(),
     }
 
@@ -97,7 +104,7 @@ def main() -> int:
             continue
         flag = "DITOLAK" if result["rejected"] else "ok"
         print(
-            f"{path.name:40.40s} {result['disease_label']:45s} "
+            f"{path.name:40.40s} tomat {result['p_tomat'] * 100:5.1f}%  {result['disease_label']:45s} "
             f"yakin {result['confidence'] * 100:5.1f}%  {result['severity']:7s} "
             f"terdampak {result['affected_area_pct']:5.1f}%  [{flag}]"
         )

@@ -39,7 +39,7 @@ app/auth.py            — validasi bearer token user via Supabase
 app/ml/                — label_map, model_loader (TFLite, lock per model), inference, enhance (pra-pemrosesan untuk eksperimen)
 app/cv/                — segmentation, leaf_region, affected_area, severity, vegetation_index (ExG/VARI), photo_quality (penolakan/peringatan), analyzer
 app/supabase_client.py — klien service role (insert + baca Storage)
-models/                — tomato_classifier.tflite (v2) + label_map.json (ter-commit; Railway dan Docker memakainya langsung)
+models/                — tomato_classifier.tflite (diagnosis v8) + label_map.json + tomato_gate.tflite (penyaring v9.1) + gate_config.json (ter-commit; Railway dan Docker memakainya langsung)
 *.ipynb                — 9 notebook training/eksperimen (Colab); peta lengkapnya di ../docs/11-dataset-dan-notebook.md
 results/               — hasil mentah eksperimen (CSV) + metrics_v6_prod_v2.json (model produksi)
 evaluation/            — confusion matrix lab (model v1)
@@ -56,7 +56,9 @@ tests/                 — unit test offline + 1 tes E2E
 | `STORAGE_BUCKET` | bawaan `plant-photos` |
 | `MODEL_DIR` | bawaan `models` |
 | `ALLOWED_ORIGINS` | origin yang boleh memanggil API (CORS), dipisah koma; `*` hanya untuk uji lokal |
-| `REJECT_CONFIDENCE` | opsional, bawaan `0.50`: foto dengan keyakinan tertinggi di bawah ini ditolak (400) |
+| `REJECT_CONFIDENCE` | opsional, bawaan `0.30`: keyakinan penyakit tertinggi di bawah ini → ditolak (400); 30–60% didiagnosis dengan peringatan |
+| `GATE_THRESHOLD` | opsional: ambang penyaring daun tomat (bawaan `models/gate_config.json`, 0.45) |
+| `GATE_MULTICROP` | opsional: `1` = penyaring juga menilai 6 potongan foto (bawaan mati) |
 
 ## Deploy (Railway)
 
@@ -65,5 +67,5 @@ Root directory **`ml-service`**, start via `Procfile`, Python 3.11 (`.python-ver
 ## Catatan
 
 - `agrivision_models.zip`, `kaggle.json`, `roboflow_key.txt`: artefak lokal lama yang di-gitignore; kunci tidak boleh di-commit.
-- Model v2 tidak punya kelas "bukan tomat"; penolakan hanya heuristik keyakinan < 50% (lihat `../docs/05-ml-pipeline.md`).
+- Foto bukan daun tomat ditolak oleh **penyaring v9.1** (`app/ml/gate.py`, `models/tomato_gate.tflite` + `gate_config.json`) sebelum diagnosis; data uji: tomat 98,2% diterima, cabai 91,9% ditolak (tidak sempurna). Lihat `../docs/05-ml-pipeline.md` dan `../docs/08-status-dan-progres.md` Fase 11.
 - Kalibrasi `_EXG_MIN/_EXG_MAX` di `app/cv/vegetation_index.py` masih placeholder.

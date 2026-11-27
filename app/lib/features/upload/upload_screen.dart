@@ -18,6 +18,7 @@ import '../../shared/widgets/avatar_initials_chip.dart';
 import '../../shared/widgets/icons.dart';
 import '../../shared/widgets/severity_chip.dart';
 import '../../shared/widgets/state_views.dart';
+import 'crop_photo_screen.dart';
 import 'widgets/camera_dropzone.dart';
 import 'widgets/upload_progress_overlay.dart';
 import 'widgets/upload_tips_card.dart';
@@ -53,10 +54,20 @@ class _UploadScreenState extends ConsumerState<UploadScreen> {
     final ext = xfile.name.split('.').last;
     final contentType = ext.toLowerCase() == 'png' ? 'image/png' : 'image/jpeg';
 
+    // Langkah potong: pengguna memilih bagian daun (atau foto utuh) sebelum diunggah.
+    if (!mounted) return;
+    final photo = await Navigator.of(context).push<CroppedPhoto>(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => CropPhotoScreen(bytes: bytes, contentType: contentType, ext: ext),
+      ),
+    );
+    if (photo == null) return; // batal
+
     await ref.read(uploadFlowControllerProvider.notifier).startUpload(
-          bytes: bytes,
-          contentType: contentType,
-          ext: ext,
+          bytes: photo.bytes,
+          contentType: photo.contentType,
+          ext: photo.ext,
           zoneId: zone.id,
           cropType: zone.cropType.toJson(),
         );

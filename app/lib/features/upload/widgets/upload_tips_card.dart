@@ -20,8 +20,9 @@ class UploadTipsCard extends StatelessWidget {
           _TipRow(text: 'Fokus pada bagian daun yang bermasalah'),
           SizedBox(height: 12),
           Text(
-            'Hanya untuk daun tomat. Tanaman lain (mis. cabai) tidak didukung dan hasilnya tidak bermakna. '
-            'Foto yang membuat model ragu (keyakinan di bawah 50%) akan ditolak.',
+            'Hanya untuk daun tomat. Foto yang tidak dikenali sebagai daun tomat (mis. cabai) akan ditolak. '
+            'Bila model ragu, hasil tetap ditampilkan dengan peringatan — verifikasi ke penyuluh (PPL). '
+            'Setelah memilih foto, geser kotak ke satu daun supaya buah, tangan, atau mulsa tidak ikut dinilai.',
             style: TextStyle(fontSize: 12, color: AppColors.tipText, height: 1.4),
           ),
         ],

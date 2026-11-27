@@ -1,0 +1,26 @@
+{
+  "model_version": "v9.1",
+  "img_size": [
+    224,
+    224
+  ],
+  "threshold": 0.45,
+  "threshold_rule": "Dipilih ulang di data validasi dari skor notebook v9.1 (scripts/colab_v91_analisis_aturan.py, 2026-11-27): ambang tertinggi dengan total tomat diterima >= 98% dan setiap sumber tomat selain PlantDoc >= 97%. PlantDoc dikecualikan dari syarat per sumber karena memuat foto berlabel tomat yang sebenarnya bukan tomat; aturan notebook (setiap sumber >= 98%) memaksa ambang 0,04 sehingga cabai hanya ~65% ditolak.",
+  "uji_foto_utuh": {
+    "tomat_diterima_pct": 98.2,
+    "tomat_diterima_selain_plantdoc_min_pct": 98.6,
+    "tomat_plantdoc_diterima_pct": 77.3,
+    "bukan_tomat_ditolak_pct": 96.8,
+    "cabai_ditolak_pct": 91.9,
+    "paprika_ditolak_pct": 98.5,
+    "kentang_ditolak_pct": 93.6,
+    "terong_ditolak_pct": 100.0
+  },
+  "multicrop_default": false,
+  "threshold_multicrop": 0.89,
+  "multicrop_note": "Multi-crop (skor potongan tertinggi) hanya aktif bila env GATE_MULTICROP=1. Pada data uji tidak lebih baik dari foto utuh: tomat 97,8%, cabai ditolak 86,7%, semua bukan-tomat ditolak 89,4% (ambang 0,89, aturan validasi yang sama).",
+  "output": "p_tomat (sigmoid, 0-1)",
+  "input": "RGB 0-255 float32, preprocessing di dalam graf",
+  "source": "notebook v9.1 (agrivision_gate_v9_penyaring_tomat.ipynb), sidik jari data 41a5c1b2307c",
+  "fingerprint": "41a5c1b2307c"
+}

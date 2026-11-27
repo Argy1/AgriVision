@@ -40,7 +40,14 @@ def _make_test_jpeg() -> bytes:
     return buf.getvalue()
 
 
-def test_diagnose_end_to_end():
+def test_diagnose_end_to_end(monkeypatch):
+    # Tes ini menguji integrasi (auth, RLS, Storage, DB), bukan akurasi model. Gambar uji
+    # sintetis (lingkaran hijau) bukan daun tomat sungguhan, jadi penyaring daun tomat
+    # (GATE_THRESHOLD) dan ambang keyakinan (REJECT_CONFIDENCE) akan menolaknya (400).
+    # Keduanya dinolkan di tes ini saja; perilaku penolakan diuji di tests/test_gate.py dan
+    # tests/test_cv_quality.py.
+    monkeypatch.setenv("GATE_THRESHOLD", "0")
+    monkeypatch.setattr("app.cv.photo_quality.REJECT_CONFIDENCE", 0.0)
     admin = get_client()  # service role, dari app.supabase_client (settings dari .env)
     anon = create_client(settings.supabase_url, _ANON_KEY)
 

@@ -61,7 +61,7 @@ Dipanggil setelah foto berhasil diunggah ke Supabase Storage dan record `uploads
 ```
 
 **Error responses:**
-- `400` — `image_path` tidak ditemukan di Storage, `upload_id` tidak ditemukan, file bukan gambar valid, atau **foto tidak memuat daun yang dapat dikenali** (wilayah daun < 3% foto; `detail` berisi saran mengambil foto satu daun dari dekat), atau **model tidak cukup yakin** (keyakinan tertinggi < 50%, env `REJECT_CONFIDENCE`; `detail` menyebut keyakinannya dan meminta foto daun tomat satu daun dari dekat). Heuristik: foto non-tomat yang diprediksi dengan keyakinan tinggi tetap lolos; penolakan penuh butuh kelas "bukan tomat" pada model. Tidak ada perubahan field kontrak.
+- `400` — `image_path` tidak ditemukan di Storage, `upload_id` tidak ditemukan, file bukan gambar valid, atau foto ditolak (tidak disimpan; web/app menampilkan `detail` apa adanya dan menawarkan pilih foto lain): **(a) bukan daun tomat** — penyaring daun tomat (model v9.1, `app/ml/gate.py`) memberi peluang daun tomat di bawah ambang (`models/gate_config.json`, 0,45; env `GATE_THRESHOLD`); `detail`: "Foto ini tidak dikenali sebagai daun tomat (kemiripan …%)…"; **(b) tidak memuat daun yang dapat dikenali** (wilayah daun < 3% foto); **(c) model belum cukup yakin menentukan penyakit** (keyakinan tertinggi < 30%, env `REJECT_CONFIDENCE`). Keyakinan 30–60% TIDAK ditolak: hasil disimpan dengan peringatan "model ragu" di `recommendation.warning_note`. Penyaring tidak sempurna (data uji v9.1: tomat 98,2% diterima, cabai 91,9% ditolak). Tidak ada perubahan field kontrak.
 - `422` — body tidak valid, termasuk `crop_type` selain `tomat` (divalidasi sebagai `Literal["tomat"]`).
 - `401` — token tidak valid/kedaluwarsa.
 - `403` — user bukan pemilik zona terkait dan bukan `admin_ppl`.
@@ -73,8 +73,9 @@ Health check untuk Railway (dipanggil otomatis oleh platform, bukan oleh fronten
 
 **Response:**
 ```json
-{ "status": "ok", "model_loaded": true, "model_version": "v1" }
+{ "status": "ok", "model_loaded": true, "model_version": "v8" }
 ```
+`model_loaded` = model diagnosis (`tomato_classifier.tflite`) **dan** penyaring daun tomat (`tomato_gate.tflite`) termuat; `model_version` = versi model diagnosis dari `label_map.json`.
 
 ## Catatan Implementasi
 - **Idempotensi:** `diagnoses.upload_id` UNIQUE. Memanggil endpoint ini dua kali untuk `upload_id` yang sama menghasilkan `500`. Klien WAJIB mengecek `diagnoses` by `upload_id` sebelum memanggil/mengulang.

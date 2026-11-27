@@ -18,7 +18,10 @@ services:
       STORAGE_BUCKET: ${STORAGE_BUCKET:-plant-photos}
       MODEL_DIR: models
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000}
-      REJECT_CONFIDENCE: ${REJECT_CONFIDENCE:-0.50}
+      REJECT_CONFIDENCE: ${REJECT_CONFIDENCE:-0.30}
+      # Kosong = pakai nilai di ml-service/models/gate_config.json (ambang 0,45, multi-crop mati)
+      GATE_THRESHOLD: ${GATE_THRESHOLD:-}
+      GATE_MULTICROP: ${GATE_MULTICROP:-}
     # Gagal cepat dengan pesan jelas bila .env belum diisi.
     command:
       - sh

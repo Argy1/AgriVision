@@ -3,13 +3,13 @@
 Sistem Diagnosis Penyakit Daun Tomat berbasis Computer Vision (klasifikasi CNN) dengan skor kesehatan tanaman (ExG/VARI) dan rekomendasi penanganan, untuk precision farming.
 Tugas akhir mata kuliah Visual Komputer Cerdas — Argy Fawwaz Akbar, TRPL, Sekolah Vokasi IPB University.
 
-**Status (2026-11-17): sistem sudah dibangun, di-deploy, dan diuji end-to-end; model produksi v2 terpasang.** Yang tersisa: foto lapangan berlabel untuk evaluasi, verifikasi isi rekomendasi, dan penulisan laporan/naskah. Rincian di [`docs/08-status-dan-progres.md`](docs/08-status-dan-progres.md).
+**Status (2026-11-28): sistem sudah dibangun, di-deploy, dan diuji end-to-end; model diagnosis v8 + penyaring daun tomat v9.1 (branch `fitur/model-v8-penyaring-v9`, menunggu merge).** Yang tersisa: foto lapangan berlabel untuk evaluasi, verifikasi isi rekomendasi, uji aplikasi HP, dan penulisan laporan/naskah. Rincian di [`docs/08-status-dan-progres.md`](docs/08-status-dan-progres.md).
 
 > **Fokus tomat saja** (arahan pembimbing, 2026-11-12). Model hanya mengenal 10 kelas daun tomat; foto tanaman lain tidak didukung.
 
 ## Cara kerja singkat
 
-Pengguna memotret daun → foto ke Supabase Storage → FastAPI (Railway) menjalankan model CNN (diagnosis penyakit), menghitung ExG/VARI (skor kesehatan), dan mencari rekomendasi di tabel `disease_reference` → hasil tersimpan di Postgres → tampil di web (Next.js) dan app (Flutter). Siapa pun bisa mendaftar sendiri (akun otomatis "petani"). Foto yang membuat model ragu (keyakinan < 50%) atau tanpa daun ditolak.
+Pengguna memotret daun → foto ke Supabase Storage → FastAPI (Railway) menjalankan model CNN (diagnosis penyakit), menghitung ExG/VARI (skor kesehatan), dan mencari rekomendasi di tabel `disease_reference` → hasil tersimpan di Postgres → tampil di web (Next.js) dan app (Flutter). Siapa pun bisa mendaftar sendiri (akun otomatis "petani"). Sebelum diagnosis, pengguna bisa memotong foto ke satu daun; model penyaring menolak foto yang bukan daun tomat; foto tanpa daun atau berkeyakinan < 30% ditolak, keyakinan 30–60% diberi peringatan "model ragu".
 
 | Bagian | Teknologi | Live |
 |---|---|---|
@@ -17,7 +17,7 @@ Pengguna memotret daun → foto ke Supabase Storage → FastAPI (Railway) menjal
 | ML service | FastAPI + TFLite + OpenCV | https://agrivision-production.up.railway.app/api/health |
 | App | Flutter + Riverpod | APK dipasang ke HP (`app/`) |
 | Data | Supabase (Postgres/Auth/Storage) | project `ymfcrxymizwwolikgrhq` |
-| Model | MobileNetV2 (v2: lab + PlantDoc + Tomato-Village), TFLite float16 4,5 MB | `ml-service/models/` |
+| Model | Diagnosis: MobileNetV2 v8 (lab + PlantDoc + Tomato-Village digabung per kelas, 70/10/20), TFLite float16 4,5 MB; penyaring daun tomat: MobileNetV2 biner v9.1, 4,5 MB | `ml-service/models/` |
 
 ## Mulai dari mana?
 

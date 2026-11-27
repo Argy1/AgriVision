@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
 import { CameraIcon } from "@/components/icons";
+import { CropPanel } from "@/components/upload/CropPanel";
 import { diagnose, MlServiceError } from "@/lib/ml-service/client";
 import { createClient } from "@/lib/supabase/client";
 import type { Tables } from "@/types/database.types";
@@ -13,6 +14,7 @@ const ACCEPTED_TYPES = ["image/jpeg", "image/png"];
 
 type Stage =
   | { name: "idle" }
+  | { name: "cropping"; file: File; imageUrl: string }
   | { name: "uploading" }
   | { name: "diagnosing" }
   | { name: "error"; message: string; retry: () => void };
@@ -68,7 +70,7 @@ export function Dropzone({ zone }: { zone: Tables<"zones"> | null }) {
       router.push(`/diagnosis/${result.diagnosis.id}`);
     } catch (err) {
       const message = err instanceof MlServiceError ? err.message : "Gagal menjalankan diagnosis.";
-      // 4xx = server menolak foto/permintaan ini (mis. keyakinan < 50%, tanpa daun): kirim
+      // 4xx = server menolak foto/permintaan ini (bukan daun tomat, tanpa daun, keyakinan < 30%): kirim
       // ulang foto yang sama pasti ditolak lagi, jadi "Coba lagi" kembali ke pilih foto.
       // Gagal jaringan (status 0) atau 5xx tetap mengulang diagnosis untuk upload yang sama.
       const rejected = err instanceof MlServiceError && err.status >= 400 && err.status < 500;
@@ -184,6 +186,45 @@ export function Dropzone({ zone }: { zone: Tables<"zones"> | null }) {
     await runDiagnose(uploadRow.id, path, zone.crop_type);
   }
 
+  /** Validasi ringan lalu tampilkan langkah potong foto (CropPanel) sebelum diunggah. */
+  function startCrop(file: File) {
+    if (!ACCEPTED_TYPES.includes(file.type)) {
+      setStage({
+        name: "error",
+        message: "Format file harus JPG atau PNG.",
+        retry: () => setStage({ name: "idle" }),
+      });
+      return;
+    }
+    if (file.size > MAX_SIZE_BYTES) {
+      setStage({
+        name: "error",
+        message: "Ukuran file maksimum 10MB.",
+        retry: () => setStage({ name: "idle" }),
+      });
+      return;
+    }
+    setStage({ name: "cropping", file, imageUrl: URL.createObjectURL(file) });
+  }
+
+  if (stage.name === "cropping") {
+    const { file, imageUrl } = stage;
+    const leave = (next: () => void) => {
+      URL.revokeObjectURL(imageUrl);
+      if (inputRef.current) inputRef.current.value = "";
+      next();
+    };
+    return (
+      <CropPanel
+        file={file}
+        imageUrl={imageUrl}
+        onConfirm={(cropped) => leave(() => runUploadFlow(cropped))}
+        onUseFull={() => leave(() => runUploadFlow(file))}
+        onCancel={() => leave(() => setStage({ name: "idle" }))}
+      />
+    );
+  }
+
   if (stage.name === "uploading" || stage.name === "diagnosing") {
     return (
       <div className="flex h-60 flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-panel-body bg-dropzone-bg">
@@ -221,7 +262,7 @@ export function Dropzone({ zone }: { zone: Tables<"zones"> | null }) {
         e.preventDefault();
         setDragOver(false);
         const file = e.dataTransfer.files?.[0];
-        if (file) runUploadFlow(file);
+        if (file) startCrop(file);
       }}
       onClick={() => inputRef.current?.click()}
       className={`flex min-h-60 cursor-pointer flex-col items-center justify-center gap-2.5 rounded-lg px-4 py-6 text-center border-2 border-dashed bg-dropzone-bg transition-colors ${
@@ -235,7 +276,7 @@ export function Dropzone({ zone }: { zone: Tables<"zones"> | null }) {
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0];
-          if (file) runUploadFlow(file);
+          if (file) startCrop(file);
         }}
       />
       <div className="flex h-14 w-14 items-center justify-center rounded-full bg-moss-tint">
