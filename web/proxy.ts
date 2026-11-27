@@ -9,6 +9,8 @@ import { NextResponse, type NextRequest } from "next/server";
 const PUBLIC_PATHS = ["/login", "/register", "/signup", "/forgot-password", "/reset-password"];
 
 function isPublicPath(pathname: string) {
+  // "/" = landing page publik (hanya path persis "/", bukan semua path di bawahnya).
+  if (pathname === "/") return true;
   return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 

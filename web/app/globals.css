@@ -48,6 +48,14 @@
   --color-leaf-panel-bg: #f0eee2;
   --color-meter-inactive: #e7e0cc;
 
+  /* Ilustrasi maskot & landing SAJA (bukan warna status; trio moss/ochre/rust tetap khusus
+     severity). Lihat components/brand/Mascot.tsx. */
+  --color-tomato: #e5533d;
+  --color-tomato-deep: #b93a27;
+  --color-straw: #e8c77e;
+  --color-leaf: #4f8a3f;
+  --color-night: #141a10;
+
   --font-display: var(--font-fraunces), Georgia, serif;
   --font-sans: var(--font-ibm-plex-sans), Arial, Helvetica, sans-serif;
 
@@ -62,6 +70,99 @@ body {
   background: var(--color-parchment);
   color: var(--color-ink);
   font-family: var(--font-sans);
+}
+
+/* ---------- Maskot Si Tomat & animasi halus ---------- */
+.mascot-animated .mascot-bob {
+  animation: mascot-bob 3.2s ease-in-out infinite;
+}
+.mascot-animated .mascot-shadow {
+  animation: mascot-shadow 3.2s ease-in-out infinite;
+  transform-origin: 100px 218px;
+}
+.mascot-animated .mascot-eyes {
+  animation: mascot-blink 4.6s ease-in-out infinite;
+}
+.mascot-animated .mascot-wave {
+  animation: mascot-wave 1.6s ease-in-out infinite;
+}
+.mascot-animated .mascot-lens {
+  animation: mascot-lens 3.2s ease-in-out infinite;
+}
+.mascot-animated .mascot-sprout {
+  animation: mascot-sprout 2.4s ease-in-out infinite;
+}
+@keyframes mascot-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+@keyframes mascot-shadow {
+  0%, 100% { transform: scaleX(1); opacity: 0.18; }
+  50% { transform: scaleX(0.86); opacity: 0.12; }
+}
+@keyframes mascot-blink {
+  0%, 44%, 50%, 100% { transform: scaleY(1); }
+  47% { transform: scaleY(0.1); }
+}
+@keyframes mascot-wave {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-16deg); }
+}
+@keyframes mascot-lens {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-5deg); }
+}
+@keyframes mascot-sprout {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(6deg); }
+}
+
+/* Muncul perlahan dari bawah (landing, kartu) */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rise-in {
+  animation: rise-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* Splash screen: tampil sekali per sesi (skrip di app/layout.tsx menandai data-splash="seen") */
+html[data-splash="seen"] .av-splash {
+  display: none;
+}
+.av-splash {
+  animation: splash-out 0.5s ease-in 2.6s forwards;
+}
+.av-splash-bar {
+  animation: splash-bar 2.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.av-splash-pop {
+  animation: splash-pop 0.8s cubic-bezier(0.2, 0.9, 0.25, 1.25) both;
+}
+@keyframes splash-out {
+  to { opacity: 0; visibility: hidden; }
+}
+@keyframes splash-bar {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes splash-pop {
+  from { opacity: 0; transform: scale(0.6) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot-animated *,
+  .rise-in,
+  .av-splash-pop {
+    animation: none !important;
+  }
+  .av-splash {
+    animation: splash-out 0.3s ease-in 1.2s forwards;
+  }
+  .av-splash-bar {
+    animation-duration: 1.2s;
+  }
 }
 
 /* Reset dasar yang dipakai konsisten di semua mockup */
