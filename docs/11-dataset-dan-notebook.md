@@ -7,7 +7,7 @@ Dokumen ini menjawab: data apa yang dipakai, di mana mendapatkannya, notebook ma
 | Item | Di repo? | Keterangan |
 |---|---|---|
 | Model produksi | **Ya** | `ml-service/models/tomato_classifier.tflite` (4,5 MB, v2) + `label_map.json`. Railway dan Docker memakainya langsung; tidak perlu training ulang untuk menjalankan sistem. Model v1 ada di riwayat git (sebelum commit `e005c93`). |
-| Notebook training/eksperimen | **Ya** | 9 berkas `ml-service/*.ipynb` (tabel bagian 3). |
+| Notebook training/eksperimen | **Ya** | 10 berkas `ml-service/*.ipynb` (tabel bagian 3). |
 | Hasil mentah eksperimen | **Ya** | `ml-service/results/` (`v4_partial_results.csv`, `v4b_results.csv`, `metrics_v6_prod_v2.json`), `ml-service/evaluation/confusion_matrix_tomat.png`. Keluaran sel notebook sudah dikosongkan; angka ringkasnya ada di `05-ml-pipeline.md`. |
 | Dataset mentah | **Tidak** | Besar (PlantVillage ±2,2 GB) dan berlisensi masing-masing. Notebook mengunduhnya sendiri saat dijalankan (bagian 2). |
 | Bobot Keras (`.keras`, `.h5`) | **Tidak** | Di-gitignore dan tidak diunduh dari Colab; hanya TFLite hasil ekspor yang disimpan. Untuk bobot Keras, latih ulang notebook. |
@@ -42,6 +42,7 @@ Semua dijalankan di **Google Colab** (Runtime → Run all). Notebook meng-`git c
 | `agrivision_experiment_v5_cpu_frozen.ipynb` | Versi **backbone beku** dari v4 (5 seed) | CPU | Selesai; angka mutlak tidak sebanding dengan fine-tuning. |
 | `agrivision_experiment_v5b_effb0.ipynb` | EfficientNetB0 beku, komposisi A–D | CPU (±39 menit ekstraksi fitur) | Selesai. |
 | `agrivision_production_v6_tomato.ipynb` | **Model produksi v2**: MobileNetV2, komposisi D (75% lab + 12,5% PlantDoc + 12,5% Tomato-Village), 1 seed, ekspor TFLite float16 | GPU T4 | Dipasang di produksi 2026-11-17. Metrik: `results/metrics_v6_prod_v2.json`. |
+| `agrivision_experiment_v8_skenario_dataset.ipynb` | **Revisi dataset sesuai arahan dosen**: ketiga dataset digabung **per kelas** (10 kelas; kelas tanpa data tambahan tetap), pembagian **70/10/20 per kelas per dataset** (PlantVillage per daun; split resmi PlantVillage/Tomato-Village tidak dipakai), near-duplicate dibuang sebelum dibagi. Dua skenario: **lab saja** vs **gabungan (gabung polos, tanpa porsi batch)**, 3 seed, resep training sama dengan Tabel 2 naskah. Mencetak Tabel A (per dataset), B (per skenario), C–F (akurasi, F1, McNemar, per kelas) + confusion matrix; hasil per model disimpan ke Drive (`MyDrive/AgriVision_v8`) dan dilanjutkan otomatis bila sesi putus | GPU T4, ±1,5–2,5 jam | Dibuat 2026-11-27; diuji dry-run lokal dengan data sintetis. **Belum dijalankan di Colab.** Pembagiannya berbeda dari v3–v6, jadi angkanya tidak bisa dicampur dengan Tabel 1/5 naskah lama. |
 
 Kuota GPU gratis Colab terbatas: v4 (24 model) tidak selesai dalam satu kuota sehingga dipecah menjadi v4b; v6 (satu model) cukup. Dua kali menjalankan seed yang sama memberi hasil berbeda (nondeterminisme GPU), jadi angka satu run bukan angka pasti.
 
