@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { HistoryTable } from "@/components/history/HistoryTable";
 import { Pagination } from "@/components/history/Pagination";
 import { PageContainer } from "@/components/layout/PageContainer";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { Card, CardTitle } from "@/components/ui/Card";
 import { getDiagnosesHistory } from "@/lib/data/history";
 import { getZones } from "@/lib/data/zones";
@@ -47,14 +48,17 @@ export default async function RiwayatPage({
 
   return (
     <PageContainer>
-      <div>
-        <h1 className="font-display text-[27px] font-semibold text-ink">Riwayat Diagnosis</h1>
-        <p className="mt-1.5 font-sans text-[14px] text-sage">
-          {history.total} diagnosis tercatat
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="Riwayat"
+        title="Catatan diagnosis Anda"
+        subtitle={`${history.total} diagnosis tercatat — saring berdasarkan zona atau tingkat keparahan.`}
+        pose="wave"
+      />
 
-      <form method="get" className="flex flex-wrap items-end gap-3 rounded-md border border-border-soft bg-paper p-4">
+      <form
+        method="get"
+        className="flex flex-wrap items-end gap-3 rounded-xl border border-border-soft bg-paper p-4 shadow-[0_1px_2px_rgba(32,38,27,0.04),0_10px_28px_-18px_rgba(32,38,27,0.18)]"
+      >
         <div className="flex min-w-[140px] flex-1 flex-col gap-1 sm:flex-none">
           <label className="font-sans text-[12px] font-medium text-sage">Zona</label>
           <select

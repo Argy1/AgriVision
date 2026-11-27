@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { DiseaseFrequencyChart } from "@/components/analytics/DiseaseFrequencyChart";
 import { SeverityTrendChart } from "@/components/analytics/SeverityTrendChart";
 import { PageContainer } from "@/components/layout/PageContainer";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { Card, CardTitle } from "@/components/ui/Card";
 import { getAverageConfidence, getDiseaseFrequency, getSeverityTrendByWeek } from "@/lib/data/analytics";
 
@@ -17,24 +18,23 @@ export default async function AnalitikPage() {
 
   return (
     <PageContainer>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-[27px] font-semibold text-ink">Analitik</h1>
-          <p className="mt-1.5 font-sans text-[14px] text-sage">
-            Insight agregat lintas zona dari 8 minggu terakhir
-          </p>
-        </div>
-      </div>
-
-      <Card className="w-full p-4.5 sm:w-fit">
-        <div className="font-display text-[26px] font-semibold text-ink">
-          {avgConfidence != null ? `${Math.round(avgConfidence * 100)}%` : "—"}
-        </div>
-        <div className="font-sans text-[12.5px] text-sage">
-          Rata-rata Keyakinan Model{" "}
-          <span className="text-muted-2">(bukan ukuran akurasi — lihat catatan evaluasi model)</span>
-        </div>
-      </Card>
+      <PageHeader
+        eyebrow="Analitik"
+        title="Wawasan kebun 8 minggu terakhir"
+        subtitle="Ringkasan penyakit yang paling sering muncul dan tren keparahannya di semua zona."
+        pose="happy"
+        actions={
+          <div className="rounded-xl bg-white/10 px-4 py-3 ring-1 ring-white/20 backdrop-blur-sm">
+            <div className="font-display text-[26px] font-semibold leading-none text-white">
+              {avgConfidence != null ? `${Math.round(avgConfidence * 100)}%` : "—"}
+            </div>
+            <div className="mt-1 font-sans text-[12px] text-white/80">
+              Rata-rata keyakinan model
+              <span className="block text-[11px] text-white/60">bukan ukuran akurasi</span>
+            </div>
+          </div>
+        }
+      />
 
       <div className="grid gap-5 md:grid-cols-2">
         <Card className="min-w-0 p-4 sm:p-5.5">

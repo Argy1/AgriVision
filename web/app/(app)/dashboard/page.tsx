@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { HealthTrendChart } from "@/components/charts/HealthTrendChart";
 import { RecentActivityList } from "@/components/dashboard/RecentActivityList";
@@ -6,6 +7,7 @@ import { StatTile } from "@/components/dashboard/StatTile";
 import { ZoneStatusList } from "@/components/dashboard/ZoneStatusList";
 import { CameraIcon, GridIcon, LeafLogoIcon, WarningTriangleIcon } from "@/components/icons";
 import { PageContainer } from "@/components/layout/PageContainer";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { Card, CardTitle } from "@/components/ui/Card";
 import { getProfile } from "@/lib/data/auth";
 import { getDashboardStats, getRecentActivity } from "@/lib/data/dashboard";
@@ -43,14 +45,28 @@ export default async function DashboardPage() {
 
   return (
     <PageContainer>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-[22px] sm:text-[26px] font-semibold text-ink">
-            {greeting()}, {firstName(profile.full_name)}
-          </h1>
-          <p className="mt-1 font-sans text-[13.5px] text-sage">{formatLongDate(new Date())}</p>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow={formatLongDate(new Date())}
+        title={`${greeting()}, ${firstName(profile.full_name)}`}
+        subtitle="Ringkasan kesehatan kebun tomat Anda hari ini."
+        pose="wave"
+        actions={
+          <>
+            <Link
+              href="/upload"
+              className="inline-flex items-center gap-2 rounded-sm bg-straw px-4 py-2.5 font-sans text-[13.5px] font-semibold text-ink hover:brightness-105"
+            >
+              <CameraIcon size={16} /> Diagnosis baru
+            </Link>
+            <Link
+              href="/monitoring"
+              className="inline-flex items-center rounded-sm border border-white/40 px-4 py-2.5 font-sans text-[13.5px] font-semibold text-white hover:bg-white/10"
+            >
+              Lihat monitoring
+            </Link>
+          </>
+        }
+      />
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
         <StatTile icon={<GridIcon size={19} className="text-moss" />} value={stats.zoneCount} label="Zona dipantau" />
@@ -60,10 +76,10 @@ export default async function DashboardPage() {
           label="Diagnosis minggu ini"
         />
         <StatTile
-          icon={<WarningTriangleIcon size={19} className="text-rust" />}
+          icon={<WarningTriangleIcon size={19} className={attentionZones > 0 ? "text-rust" : "text-sage"} />}
           value={attentionZones}
           label="Zona perlu perhatian"
-          variant="attention"
+          variant={attentionZones > 0 ? "attention" : "default"}
         />
         <StatTile
           icon={<LeafLogoIcon size={19} className="text-moss" />}

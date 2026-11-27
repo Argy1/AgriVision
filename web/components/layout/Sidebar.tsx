@@ -15,6 +15,7 @@ import {
   SlidersIcon,
   TrendLineIcon,
 } from "@/components/icons";
+import { Mascot } from "@/components/brand/Mascot";
 import type { Enums } from "@/types/database.types";
 
 const NAV_ITEMS = [
@@ -118,6 +119,25 @@ export function Sidebar({ fullName, role }: { fullName: string; role: Enums<"use
             })}
           </nav>
         </div>
+        <div>
+        <div className="px-4 pb-3 pt-4">
+          <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-moss-deep to-[#24301d] p-4 pr-16 ring-1 ring-white/10">
+            <p className="font-sans text-[12.5px] font-semibold text-straw">Tips Si Tomat</p>
+            <p className="mt-1 font-sans text-[12px] leading-snug text-panel-body">
+              Foto satu daun dari dekat (±15–20 cm) supaya hasilnya lebih yakin.
+            </p>
+            <Link
+              href="/upload"
+              onClick={() => setOpen(false)}
+              className="mt-3 inline-flex items-center gap-1.5 rounded-pill bg-straw px-3 py-1.5 font-sans text-[12px] font-semibold text-ink hover:brightness-105"
+            >
+              <CameraIcon size={14} /> Diagnosis baru
+            </Link>
+            <div className="pointer-events-none absolute -bottom-2 -right-3">
+              <Mascot size={76} pose="lens" animated={false} />
+            </div>
+          </div>
+        </div>
         <div className="flex items-center gap-2.5 border-t border-sidebar-divider px-6 pb-7 pt-5">
           <div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-moss font-sans text-[13px] font-semibold text-white">
             {initials(fullName)}
@@ -126,6 +146,7 @@ export function Sidebar({ fullName, role }: { fullName: string; role: Enums<"use
             <span className="truncate font-sans text-[13.5px] font-medium text-parchment">{fullName}</span>
             <span className="font-sans text-[12px] text-sage">{ROLE_LABEL[role]}</span>
           </div>
+        </div>
         </div>
       </aside>
     </>

@@ -5,6 +5,7 @@ import { MultiZoneTrendChart } from "@/components/charts/MultiZoneTrendChart";
 import { TimeRangeToggle } from "@/components/monitoring/TimeRangeToggle";
 import { ZoneHealthRanking } from "@/components/monitoring/ZoneHealthRanking";
 import { PageContainer } from "@/components/layout/PageContainer";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { Card, CardTitle } from "@/components/ui/Card";
 import { getLatestZoneHealth, buildPerZoneSeries, computeTrendDelta, getZoneHealthHistory } from "@/lib/data/zone-health";
 
@@ -49,19 +50,17 @@ export default async function MonitoringPage({
 
   return (
     <PageContainer>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="font-display text-[27px] font-semibold text-ink">
-            Monitoring Kesehatan Tanaman
-          </h1>
-          <p className="mt-1.5 font-sans text-[14px] text-sage">
-            Pantau tren ExG/VARI seluruh zona dari waktu ke waktu
-          </p>
-        </div>
-        <Suspense fallback={null}>
-          <TimeRangeToggle current={String(days)} />
-        </Suspense>
-      </div>
+      <PageHeader
+        eyebrow="Monitoring"
+        title="Kesehatan tanaman per zona"
+        subtitle="Pantau tren skor kesehatan seluruh zona kebun dari waktu ke waktu."
+        pose="lens"
+        actions={
+          <Suspense fallback={null}>
+            <TimeRangeToggle current={String(days)} />
+          </Suspense>
+        }
+      />
 
       <Card className="p-4 sm:p-5.5">
         <CardTitle className="mb-4">

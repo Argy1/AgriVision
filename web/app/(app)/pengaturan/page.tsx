@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { PageContainer } from "@/components/layout/PageContainer";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { Card, CardTitle } from "@/components/ui/Card";
 import { ChangePasswordForm } from "@/components/settings/ChangePasswordForm";
 import { ProfileForm } from "@/components/settings/ProfileForm";
@@ -16,12 +17,12 @@ export default async function PengaturanPage() {
 
   return (
     <PageContainer>
-      <div>
-        <h1 className="font-display text-[27px] font-semibold text-ink">Pengaturan</h1>
-        <p className="mt-1.5 font-sans text-[14px] text-sage">
-          Kelola profil, zona, dan keamanan akun Anda
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="Pengaturan"
+        title="Akun & kebun Anda"
+        subtitle="Kelola profil, zona kebun, dan keamanan akun."
+        pose="happy"
+      />
 
       <div className="grid gap-5 md:grid-cols-2 xl:max-w-[860px]">
         <Card className="min-w-0 p-4 sm:p-5.5">

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, IBM_Plex_Sans } from "next/font/google";
+import Script from "next/script";
 
 import { SplashScreen } from "@/components/brand/SplashScreen";
 
@@ -37,7 +38,9 @@ export default function RootLayout({
   return (
     <html lang="id" className={`${fraunces.variable} ${ibmPlexSans.variable}`} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: SPLASH_ONCE }} />
+        <Script id="av-splash-once" strategy="beforeInteractive">
+          {SPLASH_ONCE}
+        </Script>
       </head>
       <body className="antialiased">
         <SplashScreen />

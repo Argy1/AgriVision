@@ -30,7 +30,7 @@ export function DiseaseFrequencyChart({
           </div>
           <div className="h-2 w-full rounded-pill bg-meter-inactive/60">
             <div
-              className="h-2 rounded-pill bg-moss-mid"
+              className="h-2 rounded-pill bg-ink/70"
               style={{ width: `${Math.max(3, (d.count / max) * 100)}%` }}
             />
           </div>

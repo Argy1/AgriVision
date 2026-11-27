@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
+import { PageHeader } from "@/components/layout/PageHeader";
 import { CreateZoneModal } from "@/components/upload/CreateZoneModal";
 import { Dropzone } from "@/components/upload/Dropzone";
 import { ZoneSelector } from "@/components/upload/ZoneSelector";
@@ -20,20 +21,20 @@ export function UploadPageClient({ initialZones }: { initialZones: Tables<"zones
 
   return (
     <>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="font-display text-[24px] sm:text-[27px] font-semibold text-ink">Unggah Foto Tanaman</h1>
-          <p className="mt-1.5 font-sans text-[14px] text-sage">
-            Ambil atau unggah foto daun untuk mulai diagnosis
-          </p>
-        </div>
-        <ZoneSelector
-          zones={zones}
-          selectedZoneId={selectedZoneId}
-          onSelect={setSelectedZoneId}
-          onAddNew={() => setModalOpen(true)}
-        />
-      </div>
+      <PageHeader
+        eyebrow="Diagnosis baru"
+        title="Unggah foto daun tomat"
+        subtitle="Ambil atau unggah foto satu daun — Si Tomat akan memeriksanya untuk Anda."
+        pose="lens"
+        actions={
+          <ZoneSelector
+            zones={zones}
+            selectedZoneId={selectedZoneId}
+            onSelect={setSelectedZoneId}
+            onAddNew={() => setModalOpen(true)}
+          />
+        }
+      />
 
       <Dropzone zone={selectedZone} />
 
